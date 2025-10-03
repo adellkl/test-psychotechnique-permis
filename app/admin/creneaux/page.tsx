@@ -3,8 +3,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
-import { format, addDays, startOfWeek, isSameDay, parseISO } from 'date-fns'
+import Sidebar from '../components/Sidebar'
+import NotificationSystem from '../components/NotificationSystem'
+import SlotsCalendar from '../components/SlotsCalendar'
+import AddSlotModal from '../components/AddSlotModal'
+import { format, addDays, startOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
 
 interface TimeSlot {
   id: string
@@ -12,6 +17,10 @@ interface TimeSlot {
   start_time: string
   end_time: string
   is_available: boolean
+  is_booked?: boolean
+  appointment_id?: string
+  client_name?: string
+  booking_status?: string
 }
 
 export default function TimeSlotManagement() {
@@ -25,8 +34,16 @@ export default function TimeSlotManagement() {
 function TimeSlotContent() {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(true)
+  const [admin, setAdmin] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddForm, setShowAddForm] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [notification, setNotification] = useState<{type: 'success' | 'error', message: string} | null>(null)
+  const [activeSection] = useState('slots')
+  const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [newSlot, setNewSlot] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
     time: '09:00'
@@ -36,8 +53,21 @@ function TimeSlotContent() {
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
     '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
     '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-    '17:00', '17:30', '18:00', '18:30'
+    '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
+    '20:00', '20:30', '21:00'
   ]
+
+  useEffect(() => {
+    const adminSession = localStorage.getItem('admin_session')
+    if (!adminSession) {
+      window.location.href = '/admin'
+      return
+    }
+    const adminData = JSON.parse(adminSession)
+    setAdmin(adminData)
+    
+    logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed slots management')
+  }, [])
 
   useEffect(() => {
     fetchTimeSlots()
@@ -49,18 +79,52 @@ function TimeSlotContent() {
       const startDate = format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
       const endDate = format(addDays(startOfWeek(selectedDate, { weekStartsOn: 1 }), 6), 'yyyy-MM-dd')
 
-      const { data, error } = await supabase
+      const { data: slots, error: slotsError } = await supabase
         .from('available_slots')
         .select('*')
         .gte('date', startDate)
         .lte('date', endDate)
         .order('date')
-        .order('time')
+        .order('start_time')
 
-      if (error) throw error
-      setTimeSlots(data || [])
+      if (slotsError) throw slotsError
+
+      const { data: appointments, error: appointmentsError } = await supabase
+        .from('appointments')
+        .select('id, appointment_date, appointment_time, first_name, last_name, status')
+        .gte('appointment_date', startDate)
+        .lte('appointment_date', endDate)
+        .in('status', ['confirmed', 'completed'])
+
+      if (appointmentsError) throw appointmentsError
+
+      const bookedSlotsMap = new Map()
+      appointments?.forEach(apt => {
+        const key = `${apt.appointment_date}_${apt.appointment_time}`
+        bookedSlotsMap.set(key, {
+          appointment_id: apt.id,
+          client_name: `${apt.first_name} ${apt.last_name}`,
+          status: apt.status
+        })
+      })
+
+      const enrichedSlots = slots?.map(slot => {
+        const key = `${slot.date}_${slot.start_time}`
+        const bookingInfo = bookedSlotsMap.get(key)
+        return {
+          ...slot,
+          is_booked: !!bookingInfo,
+          appointment_id: bookingInfo?.appointment_id,
+          client_name: bookingInfo?.client_name,
+          booking_status: bookingInfo?.status
+        }
+      }) || []
+
+      setTimeSlots(enrichedSlots)
     } catch (error) {
       console.error('Error fetching time slots:', error)
+      setNotification({type: 'error', message: 'Erreur lors du chargement des créneaux'})
+      setTimeout(() => setNotification(null), 3000)
     } finally {
       setLoading(false)
     }
@@ -68,7 +132,6 @@ function TimeSlotContent() {
 
   const addTimeSlot = async () => {
     try {
-      // Calculate end time (2 hours later)
       const [hours, minutes] = newSlot.time.split(':').map(Number)
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
@@ -84,47 +147,23 @@ function TimeSlotContent() {
 
       if (error) throw error
       
+      await logAdminActivity(
+        AdminLogger.ACTIONS.CREATE_SLOT,
+        `Created slot for ${newSlot.date} at ${newSlot.time}`
+      )
+      
       setShowAddForm(false)
       setNewSlot({
         date: format(new Date(), 'yyyy-MM-dd'),
         time: '09:00'
       })
       fetchTimeSlots()
+      setNotification({type: 'success', message: 'Créneau ajouté avec succès'})
+      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error adding time slot:', error)
-      alert('Erreur lors de l\'ajout du créneau: ' + (error as any).message)
-    }
-  }
-
-  const deleteTimeSlot = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce créneau ?')) return
-
-    try {
-      const { error } = await supabase
-        .from('available_slots')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
-      fetchTimeSlots()
-    } catch (error) {
-      console.error('Error deleting time slot:', error)
-      alert('Erreur lors de la suppression du créneau')
-    }
-  }
-
-  const toggleAvailability = async (id: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('available_slots')
-        .update({ is_available: !currentStatus })
-        .eq('id', id)
-
-      if (error) throw error
-      fetchTimeSlots()
-    } catch (error) {
-      console.error('Error updating availability:', error)
-      alert('Erreur lors de la mise à jour')
+      setNotification({type: 'error', message: 'Erreur lors de l\'ajout du créneau'})
+      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -132,15 +171,12 @@ function TimeSlotContent() {
     const slotsToAdd = []
     const startDate = new Date(newSlot.date)
     
-    // Add slots for the next 7 days
     for (let i = 0; i < 7; i++) {
       const currentDate = addDays(startDate, i)
       const dateStr = format(currentDate, 'yyyy-MM-dd')
       
-      // Skip weekends if desired
       if (currentDate.getDay() === 0 || currentDate.getDay() === 6) continue
       
-      // Calculate end time (2 hours later)
       const [hours, minutes] = newSlot.time.split(':').map(Number)
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
@@ -162,11 +198,69 @@ function TimeSlotContent() {
       
       setShowAddForm(false)
       fetchTimeSlots()
-      alert(`${slotsToAdd.length} créneaux ajoutés avec succès`)
+      setNotification({type: 'success', message: `${slotsToAdd.length} créneaux ajoutés avec succès`})
+      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error adding multiple slots:', error)
-      alert('Erreur lors de l\'ajout des créneaux: ' + (error as any).message)
+      setNotification({type: 'error', message: 'Erreur lors de l\'ajout des créneaux'})
+      setTimeout(() => setNotification(null), 3000)
     }
+  }
+
+  const deleteTimeSlot = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('available_slots')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+      
+      await logAdminActivity(
+        AdminLogger.ACTIONS.DELETE_SLOT,
+        `Deleted slot with ID: ${id}`
+      )
+      
+      setDeleteConfirmId(null)
+      fetchTimeSlots()
+      setNotification({type: 'success', message: 'Créneau supprimé avec succès'})
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error) {
+      console.error('Error deleting time slot:', error)
+      setNotification({type: 'error', message: 'Erreur lors de la suppression'})
+      setTimeout(() => setNotification(null), 3000)
+    }
+  }
+
+  const toggleAvailability = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('available_slots')
+        .update({ is_available: !currentStatus })
+        .eq('id', id)
+
+      if (error) throw error
+      
+      await logAdminActivity(
+        AdminLogger.ACTIONS.UPDATE_SLOT,
+        `Updated slot ${id} availability to ${!currentStatus}`
+      )
+      
+      fetchTimeSlots()
+      setNotification({type: 'success', message: 'Disponibilité mise à jour'})
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error) {
+      console.error('Error updating availability:', error)
+      setNotification({type: 'error', message: 'Erreur lors de la mise à jour'})
+      setTimeout(() => setNotification(null), 3000)
+    }
+  }
+
+  const logout = async () => {
+    await logAdminActivity(AdminLogger.ACTIONS.LOGOUT, `Admin ${admin?.full_name} logged out`)
+    localStorage.removeItem('admin_session')
+    localStorage.removeItem('admin_session_timestamp')
+    window.location.href = '/admin'
   }
 
   const getWeekDays = () => {
@@ -174,196 +268,496 @@ function TimeSlotContent() {
     return Array.from({ length: 7 }, (_, i) => addDays(start, i))
   }
 
-  const getSlotsForDate = (date: Date) => {
-    const dateStr = format(date, 'yyyy-MM-dd')
-    return timeSlots.filter(slot => slot.date === dateStr)
+  const getFilteredSlots = () => {
+    let filtered = timeSlots
+    
+    if (filterStatus === 'available') {
+      filtered = timeSlots.filter(s => s.is_available && !s.is_booked)
+    } else if (filterStatus === 'booked') {
+      filtered = timeSlots.filter(s => s.is_booked)
+    } else if (filterStatus === 'disabled') {
+      filtered = timeSlots.filter(s => !s.is_available && !s.is_booked)
+    }
+    
+    return filtered
+  }
+
+  const stats = {
+    total: timeSlots.length,
+    available: timeSlots.filter(s => s.is_available && !s.is_booked).length,
+    booked: timeSlots.filter(s => s.is_booked).length,
+    disabled: timeSlots.filter(s => !s.is_available && !s.is_booked).length
+  }
+
+  if (loading && timeSlots.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Chargement des créneaux...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <Sidebar 
+        activeSection="slots"
+        onSectionChange={(section) => {
+          if (section === 'dashboard') window.location.href = '/admin/dashboard#dashboard'
+          else if (section === 'appointments') window.location.href = '/admin/dashboard#appointments'
+          else if (section === 'statistics') window.location.href = '/admin/dashboard#statistics'
+        }}
+        adminName={admin?.full_name || 'Admin'}
+        onLogout={() => setShowLogoutConfirm(true)}
+        isCollapsed={sidebarCollapsed}
+        setIsCollapsed={setSidebarCollapsed}
+      />
+
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+      }`}>
+        <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
+          <div className="px-4 lg:px-6 py-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Gestion des Créneaux</h1>
+                <p className="text-xs lg:text-sm text-gray-600 mt-1">
+                  Semaine du {format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'dd MMMM yyyy', { locale: fr })}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 lg:gap-3">
+                {/* Filter */}
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value as any)}
+                  className="px-3 py-2.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm font-medium"
+                >
+                  <option value="all">Tous les créneaux</option>
+                  <option value="available">Disponibles</option>
+                  <option value="booked">Réservés</option>
+                  <option value="disabled">Désactivés</option>
+                </select>
+
+                {/* View Mode Toggle - Hidden on mobile */}
+                <div className="hidden sm:flex bg-gray-100 rounded-xl p-1">
+                  <button
+                    onClick={() => setViewMode('week')}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      viewMode === 'week' 
+                        ? 'bg-white text-blue-600 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      viewMode === 'list' 
+                        ? 'bg-white text-blue-600 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                </div>
+
+                <NotificationSystem />
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 font-medium"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Nouveau créneau
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto p-6">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-5 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm opacity-90">Total</p>
+                  <p className="text-3xl font-bold">{stats.total}</p>
+                </div>
+                <svg className="w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-5 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm opacity-90">Disponibles</p>
+                  <p className="text-3xl font-bold">{stats.available}</p>
+                </div>
+                <svg className="w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg p-5 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm opacity-90">Réservés</p>
+                  <p className="text-3xl font-bold">{stats.booked}</p>
+                </div>
+                <svg className="w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-lg p-5 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm opacity-90">Désactivés</p>
+                  <p className="text-3xl font-bold">{stats.disabled}</p>
+                </div>
+                <svg className="w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Week Navigation */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 mb-6">
+            <div className="flex items-center justify-between">
               <button
-                onClick={() => window.location.href = '/admin/dashboard'}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                onClick={() => setSelectedDate(addDays(selectedDate, -7))}
+                className="p-3 text-gray-600 hover:text-gray-900 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h1 className="text-2xl font-bold text-gray-900">Gestion des Créneaux</h1>
-            </div>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Ajouter un créneau
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Week Navigation */}
-        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setSelectedDate(addDays(selectedDate, -7))}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            
-            <h2 className="text-lg font-semibold text-gray-900">
-              Semaine du {format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'dd MMMM yyyy', { locale: fr })}
-            </h2>
-            
-            <button
-              onClick={() => setSelectedDate(addDays(selectedDate, 7))}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Calendar Grid */}
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
-            {getWeekDays().map((day, index) => {
-              const daySlots = getSlotsForDate(day)
-              const isToday = isSameDay(day, new Date())
               
-              return (
-                <div key={index} className="bg-white rounded-lg shadow-sm border">
-                  <div className={`p-3 border-b ${isToday ? 'bg-blue-50 border-blue-200' : 'bg-gray-50'}`}>
-                    <h3 className={`font-semibold text-sm ${isToday ? 'text-blue-900' : 'text-gray-900'}`}>
-                      {format(day, 'EEEE dd/MM', { locale: fr })}
-                    </h3>
-                  </div>
-                  
-                  <div className="p-3 space-y-2 min-h-[200px]">
-                    {daySlots.length === 0 ? (
-                      <p className="text-gray-500 text-sm text-center py-4">Aucun créneau</p>
-                    ) : (
-                      daySlots.map((slot) => (
-                        <div
-                          key={slot.id}
-                          className={`p-2 rounded border text-xs ${
-                            slot.is_available 
-                              ? 'bg-green-50 border-green-200 text-green-800' 
-                              : 'bg-red-50 border-red-200 text-red-800'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium">{slot.start_time}</span>
-                            <div className="flex gap-1">
+              <button
+                onClick={() => setSelectedDate(new Date())}
+                className="px-6 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-900 font-semibold rounded-xl hover:from-blue-200 hover:to-purple-200 transition-all"
+              >
+                Aujourd'hui
+              </button>
+              
+              <button
+                onClick={() => setSelectedDate(addDays(selectedDate, 7))}
+                className="p-3 text-gray-600 hover:text-gray-900 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Calendar or List View */}
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
+            </div>
+          ) : viewMode === 'week' ? (
+            <SlotsCalendar
+              weekDays={getWeekDays()}
+              timeSlots={getFilteredSlots()}
+              onToggleAvailability={toggleAvailability}
+              onDeleteSlot={(id) => setDeleteConfirmId(id)}
+            />
+          ) : (
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
+              {/* Desktop Table - Hidden on mobile */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Heure</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Statut</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Client</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {getFilteredSlots().map((slot) => (
+                      <tr key={slot.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {format(new Date(slot.date), 'dd/MM/yyyy', { locale: fr })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {slot.start_time} - {slot.end_time}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {slot.is_booked ? (
+                            <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-300">
+                              Réservé
+                            </span>
+                          ) : !slot.is_available ? (
+                            <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-300">
+                              Désactivé
+                            </span>
+                          ) : (
+                            <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-300">
+                              Disponible
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {slot.client_name || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <div className="flex items-center gap-2">
+                            {!slot.is_booked && (
                               <button
                                 onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                                className={`p-1 rounded ${
-                                  slot.is_available 
-                                    ? 'text-green-600 hover:bg-green-100' 
-                                    : 'text-red-600 hover:bg-red-100'
+                                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                                  slot.is_available
+                                    ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200'
                                 }`}
-                                title={slot.is_available ? 'Désactiver' : 'Activer'}
                               >
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                    d={slot.is_available ? "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" : "M15 12a3 3 0 11-6 0 3 3 0 016 0z"} 
-                                  />
-                                </svg>
+                                {slot.is_available ? 'Désactiver' : 'Activer'}
                               </button>
-                              <button
-                                onClick={() => deleteTimeSlot(slot.id)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                title="Supprimer"
-                              >
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </button>
-                            </div>
+                            )}
+                            <button
+                              onClick={() => setDeleteConfirmId(slot.id)}
+                              disabled={slot.is_booked}
+                              className="px-3 py-1 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
+                            >
+                              Supprimer
+                            </button>
                           </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards - Hidden on desktop */}
+              <div className="lg:hidden">
+                {getFilteredSlots().map((slot) => (
+                  <div
+                    key={slot.id}
+                    className="p-4 border-b border-gray-200 last:border-b-0"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span className="text-sm font-bold text-gray-900">
+                            {format(new Date(slot.date), 'dd/MM/yyyy', { locale: fr })}
+                          </span>
                         </div>
-                      ))
-                    )}
+                        <div className="flex items-center gap-2 mb-2">
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm text-gray-700 font-medium">
+                            {slot.start_time} - {slot.end_time}
+                          </span>
+                        </div>
+                        {slot.client_name && (
+                          <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span className="text-sm text-gray-600">{slot.client_name}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        {slot.is_booked ? (
+                          <span className="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-300">
+                            Réservé
+                          </span>
+                        ) : !slot.is_available ? (
+                          <span className="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-300">
+                            Désactivé
+                          </span>
+                        ) : (
+                          <span className="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-300">
+                            Disponible
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {!slot.is_booked && (
+                        <button
+                          onClick={() => toggleAvailability(slot.id, slot.is_available)}
+                          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                            slot.is_available
+                              ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                              : 'bg-green-500 text-white hover:bg-green-600'
+                          }`}
+                        >
+                          {slot.is_available ? 'Désactiver' : 'Activer'}
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setDeleteConfirmId(slot.id)}
+                        disabled={slot.is_booked}
+                        className="px-4 py-2.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Supprimer
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
       </div>
 
-      {/* Add Slot Modal */}
-      {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Ajouter un créneau</h3>
+      <AddSlotModal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        newSlot={newSlot}
+        setNewSlot={setNewSlot}
+        onAddSingle={addTimeSlot}
+        onAddMultiple={addMultipleSlots}
+        timeOptions={timeOptions}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Confirmer la suppression</h3>
+                <p className="text-sm text-gray-600">Êtes-vous sûr de vouloir supprimer ce créneau ?</p>
+              </div>
+            </div>
+            
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+              <p className="text-sm text-yellow-800">
+                <strong>Attention :</strong> Cette action est irréversible.
+              </p>
+            </div>
+            
+            <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowAddForm(false)}
-                className="text-gray-400 hover:text-gray-600"
+                onClick={() => setDeleteConfirmId(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                Annuler
+              </button>
+              <button
+                onClick={() => deleteTimeSlot(deleteConfirmId)}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Supprimer définitivement
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Confirmer la déconnexion</h3>
+                <p className="text-sm text-gray-600">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={logout}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Se déconnecter
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notification && (
+        <div 
+          className={`fixed top-6 right-6 min-w-[320px] max-w-md rounded-xl shadow-2xl backdrop-blur-md border transition-all duration-500 transform z-[9998] ${
+            notification.type === 'success' 
+              ? 'bg-gradient-to-r from-green-50/95 to-emerald-50/95 border-green-300/50 text-green-900' 
+              : 'bg-gradient-to-r from-red-50/95 to-rose-50/95 border-red-300/50 text-red-900'
+          } animate-in slide-in-from-right-5 fade-in-0`}
+          style={{ zIndex: 2147483647 }}
+        >
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
+                notification.type === 'success' 
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+                  : 'bg-gradient-to-r from-red-500 to-rose-500'
+              }`}>
+                {notification.type === 'success' ? (
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold mb-1">
+                  {notification.type === 'success' ? 'Succès' : 'Erreur'}
+                </p>
+                <p className="text-sm opacity-90">{notification.message}</p>
+              </div>
+              <button 
+                onClick={() => setNotification(null)}
+                className={`flex-shrink-0 p-1 rounded-lg transition-all duration-200 ${
+                  notification.type === 'success' 
+                    ? 'hover:bg-green-200/50 text-green-700' 
+                    : 'hover:bg-red-200/50 text-red-700'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                <input
-                  type="date"
-                  value={newSlot.date}
-                  onChange={(e) => setNewSlot({ ...newSlot, date: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Heure</label>
-                <select
-                  value={newSlot.time}
-                  onChange={(e) => setNewSlot({ ...newSlot, time: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  {timeOptions.map(time => (
-                    <option key={time} value={time}>{time}</option>
-                  ))}
-                </select>
-              </div>
-
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={addTimeSlot}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                >
-                  Ajouter ce créneau
-                </button>
-                <button
-                  onClick={addMultipleSlots}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                >
-                  Ajouter pour 7 jours
-                </button>
-              </div>
             </div>
           </div>
         </div>

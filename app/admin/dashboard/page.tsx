@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import type { Appointment } from '../../../lib/supabase'
-import AuthGuard, { useAdmin } from '../components/AuthGuard'
+import AuthGuard from '../components/AuthGuard'
+import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
+import Sidebar from '../components/Sidebar'
+import EnhancedStats from '../components/EnhancedStats'
+import AppointmentsTable from '../components/AppointmentsTable'
+import NotificationSystem from '../components/NotificationSystem'
+import StatisticsCharts from '../components/StatisticsCharts'
 
 export default function AdminDashboard() {
   return (
@@ -17,7 +23,10 @@ function DashboardContent() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [admin, setAdmin] = useState<any>(null)
-  const [filter, setFilter] = useState('all')
+  const [activeSection, setActiveSection] = useState('appointments')
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [notification, setNotification] = useState<{type: 'success' | 'error', message: string} | null>(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   useEffect(() => {
     // Check admin session
@@ -26,25 +35,30 @@ function DashboardContent() {
       window.location.href = '/admin'
       return
     }
-    setAdmin(JSON.parse(adminSession))
+    const adminData = JSON.parse(adminSession)
+    setAdmin(adminData)
+    
+    // Check URL hash for active section
+    const hash = window.location.hash.replace('#', '')
+    if (hash && ['dashboard', 'appointments', 'statistics'].includes(hash)) {
+      setActiveSection(hash)
+    }
+    
+    // Log dashboard view
+    logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
     
     fetchAppointments()
-  }, [filter])
+  }, [])
 
   const fetchAppointments = async () => {
     try {
       setLoading(true)
-      let query = supabase
+      const { data, error } = await supabase
         .from('appointments')
         .select('*')
         .order('appointment_date', { ascending: true })
         .order('appointment_time', { ascending: true })
 
-      if (filter !== 'all') {
-        query = query.eq('status', filter)
-      }
-
-      const { data, error } = await query
       if (error) throw error
       setAppointments(data || [])
     } catch (error) {
@@ -62,355 +76,276 @@ function DashboardContent() {
         .eq('id', id)
 
       if (error) throw error
-      fetchAppointments()
+      await fetchAppointments()
+      setNotification({type: 'success', message: 'Statut mis à jour avec succès'})
+      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error updating appointment:', error)
+      setNotification({type: 'error', message: 'Erreur lors de la mise à jour'})
+      setTimeout(() => setNotification(null), 3000)
     }
   }
 
-  const logout = () => {
+  const deleteAppointment = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('appointments')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+
+      await fetchAppointments()
+      setNotification({type: 'success', message: 'Rendez-vous supprimé avec succès'})
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error) {
+      console.error('Error deleting appointment:', error)
+      setNotification({type: 'error', message: 'Erreur lors de la suppression du rendez-vous'})
+      setTimeout(() => setNotification(null), 3000)
+    }
+  }
+
+  const handleBulkDelete = async (ids: string[]) => {
+    try {
+      const { error } = await supabase
+        .from('appointments')
+        .delete()
+        .in('id', ids)
+
+      if (error) throw error
+
+      await fetchAppointments()
+      setNotification({type: 'success', message: `${ids.length} rendez-vous supprimés avec succès`})
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error) {
+      console.error('Error deleting appointments:', error)
+      setNotification({type: 'error', message: 'Erreur lors de la suppression des rendez-vous'})
+      setTimeout(() => setNotification(null), 3000)
+    }
+  }
+
+  const logout = async () => {
+    await logAdminActivity(AdminLogger.ACTIONS.LOGOUT, `Admin ${admin?.full_name} logged out`)
     localStorage.removeItem('admin_session')
+    localStorage.removeItem('admin_session_timestamp')
     window.location.href = '/admin'
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed': return 'bg-blue-100 text-blue-800'
-      case 'completed': return 'bg-green-100 text-green-800'
-      case 'cancelled': return 'bg-red-100 text-red-800'
-      case 'no_show': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'confirmed': return 'Confirmé'
-      case 'completed': return 'Terminé'
-      case 'cancelled': return 'Annulé'
-      case 'no_show': return 'Absent'
-      default: return status
-    }
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Chargement du tableau de bord...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Mobile-First Header */}
-      <div className="bg-white shadow-lg border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 space-y-3 sm:space-y-0">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      {/* Sidebar */}
+      <Sidebar 
+        activeSection={activeSection}
+        onSectionChange={(section) => {
+          setActiveSection(section)
+          window.history.replaceState(null, '', `#${section}`)
+        }}
+        adminName={admin?.full_name || 'Admin'}
+        onLogout={handleLogoutClick}
+        isCollapsed={sidebarCollapsed}
+        setIsCollapsed={setSidebarCollapsed}
+      />
+
+      {/* Main Content */}
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+      }`}>
+        {/* Top Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
+          <div className="px-4 lg:px-6 py-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+              <div>
+                <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
+                  {activeSection === 'dashboard' && 'Vue d\'ensemble'}
+                  {activeSection === 'appointments' && 'Gestion des rendez-vous'}
+                  {activeSection === 'statistics' && 'Statistiques'}
+                </h1>
+                <p className="text-xs lg:text-sm text-gray-600 mt-1">
+                  Bienvenue, {admin?.full_name}
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <NotificationSystem />
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <a
-                href="/admin/creneaux"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+          {/* Dashboard Section */}
+          {activeSection === 'dashboard' && (
+            <div className="space-y-6">
+              <EnhancedStats appointments={appointments} />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Quick Stats */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Aperçu rapide</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">Total rendez-vous</span>
+                      <span className="text-lg font-bold text-blue-600">{appointments.length}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">Confirmés</span>
+                      <span className="text-lg font-bold text-green-600">
+                        {appointments.filter(a => a.status === 'confirmed').length}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">Terminés</span>
+                      <span className="text-lg font-bold text-purple-600">
+                        {appointments.filter(a => a.status === 'completed').length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Activité récente</h3>
+                  <div className="space-y-3">
+                    {appointments.slice(0, 5).map((apt) => (
+                      <div key={apt.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                          {apt.first_name[0]}{apt.last_name[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {apt.first_name} {apt.last_name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(apt.appointment_date).toLocaleDateString('fr-FR')}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Appointments Section */}
+          {activeSection === 'appointments' && (
+            <div>
+              <AppointmentsTable 
+                appointments={appointments}
+                onUpdateStatus={updateAppointmentStatus}
+                onDelete={deleteAppointment}
+                onBulkDelete={handleBulkDelete}
+              />
+            </div>
+          )}
+
+          {/* Statistics Section */}
+          {activeSection === 'statistics' && (
+            <div className="space-y-6">
+              <StatisticsCharts appointments={appointments} />
+            </div>
+          )}
+        </main>
+      </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
-                Gérer les créneaux
-              </a>
-              <span className="text-sm text-gray-600">
-                Connecté en tant que <span className="font-semibold">{admin?.full_name}</span>
-              </span>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Confirmer la déconnexion</h3>
+                <p className="text-sm text-gray-600">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Annuler
+              </button>
               <button
                 onClick={logout}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
               >
-                Déconnexion
+                Se déconnecter
               </button>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Mobile-Optimized Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total RDV</p>
-                <p className="text-2xl font-bold text-gray-900">{appointments.length}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      )}
+      
+      {/* Notification Toast */}
+      {notification && (
+        <div 
+          className={`fixed top-6 right-6 min-w-[320px] max-w-md rounded-xl shadow-2xl backdrop-blur-md border transition-all duration-500 transform ${
+            notification.type === 'success' 
+              ? 'bg-gradient-to-r from-green-50/95 to-emerald-50/95 border-green-300/50 text-green-900' 
+              : 'bg-gradient-to-r from-red-50/95 to-rose-50/95 border-red-300/50 text-red-900'
+          } animate-in slide-in-from-right-5 fade-in-0`}
+          style={{ zIndex: 9998 }}
+        >
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
+                notification.type === 'success' 
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+                  : 'bg-gradient-to-r from-red-500 to-rose-500'
+              }`}>
+                {notification.type === 'success' ? (
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Confirmés</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {appointments.filter(a => a.status === 'confirmed').length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                ) : (
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                   </svg>
-                </div>
+                )}
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Terminés</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {appointments.filter(a => a.status === 'completed').length}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold mb-1">
+                  {notification.type === 'success' ? 'Succès' : 'Erreur'}
                 </p>
+                <p className="text-sm opacity-90">{notification.message}</p>
               </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Annulés</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {appointments.filter(a => a.status === 'cancelled').length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile-Responsive Appointments */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-              <h2 className="text-lg font-semibold text-gray-900">Rendez-vous</h2>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              <button 
+                onClick={() => setNotification(null)}
+                className={`flex-shrink-0 p-1 rounded-lg transition-all duration-200 ${
+                  notification.type === 'success' 
+                    ? 'hover:bg-green-200/50 text-green-700' 
+                    : 'hover:bg-red-200/50 text-red-700'
+                }`}
               >
-                <option value="all">Tous les RDV</option>
-                <option value="confirmed">Confirmés</option>
-                <option value="completed">Terminés</option>
-                <option value="cancelled">Annulés</option>
-                <option value="no_show">Absents</option>
-              </select>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </div>
-
-          {/* Mobile Cards View */}
-          <div className="block sm:hidden">
-            {appointments.map((appointment) => (
-              <div key={appointment.id} className="border-b border-gray-200 p-4 hover:bg-gray-50">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {appointment.first_name} {appointment.last_name}
-                    </h3>
-                    {appointment.is_second_chance && (
-                      <span className="text-xs text-orange-600 font-medium">2ème chance</span>
-                    )}
-                  </div>
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(appointment.status)}`}>
-                    {getStatusLabel(appointment.status)}
-                  </span>
-                </div>
-                
-                <div className="space-y-2 text-sm text-gray-600 mb-3">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {new Date(appointment.appointment_date).toLocaleDateString('fr-FR')} à {appointment.appointment_time.slice(0, 5)}
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                    </svg>
-                    {appointment.email}
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    {appointment.phone}
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="capitalize">{appointment.reason}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {appointment.status === 'confirmed' && (
-                    <>
-                      <button
-                        onClick={() => updateAppointmentStatus(appointment.id, 'completed')}
-                        className="flex-1 text-green-600 hover:text-green-900 text-xs px-3 py-2 border border-green-300 rounded-lg hover:bg-green-50 font-medium"
-                      >
-                        ✓ Terminer
-                      </button>
-                      <button
-                        onClick={() => updateAppointmentStatus(appointment.id, 'cancelled')}
-                        className="flex-1 text-red-600 hover:text-red-900 text-xs px-3 py-2 border border-red-300 rounded-lg hover:bg-red-50 font-medium"
-                      >
-                        ✕ Annuler
-                      </button>
-                    </>
-                  )}
-                  {appointment.status === 'cancelled' && (
-                    <button
-                      onClick={() => updateAppointmentStatus(appointment.id, 'confirmed')}
-                      className="w-full text-blue-600 hover:text-blue-900 text-xs px-3 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 font-medium"
-                    >
-                      ↻ Restaurer
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Desktop Table View */}
-          <div className="hidden sm:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Client
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date & Heure
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Motif
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {appointments.map((appointment) => (
-                  <tr key={appointment.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {appointment.first_name} {appointment.last_name}
-                        </div>
-                        {appointment.is_second_chance && (
-                          <div className="text-xs text-orange-600 font-medium">
-                            2ème chance
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{appointment.email}</div>
-                      <div className="text-sm text-gray-500">{appointment.phone}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-{new Date(appointment.appointment_date).toLocaleDateString('fr-FR')}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {appointment.appointment_time.slice(0, 5)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 capitalize">
-                        {appointment.reason}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(appointment.status)}`}>
-                        {getStatusLabel(appointment.status)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        {appointment.status === 'confirmed' && (
-                          <>
-                            <button
-                              onClick={() => updateAppointmentStatus(appointment.id, 'completed')}
-                              className="text-green-600 hover:text-green-900 text-xs px-2 py-1 border border-green-300 rounded hover:bg-green-50"
-                            >
-                              Terminer
-                            </button>
-                            <button
-                              onClick={() => updateAppointmentStatus(appointment.id, 'cancelled')}
-                              className="text-red-600 hover:text-red-900 text-xs px-2 py-1 border border-red-300 rounded hover:bg-red-50"
-                            >
-                              Annuler
-                            </button>
-                          </>
-                        )}
-                        {appointment.status === 'cancelled' && (
-                          <button
-                            onClick={() => updateAppointmentStatus(appointment.id, 'confirmed')}
-                            className="text-blue-600 hover:text-blue-900 text-xs px-2 py-1 border border-blue-300 rounded hover:bg-blue-50"
-                          >
-                            Restaurer
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {appointments.length === 0 && (
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Aucun rendez-vous</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {filter === 'all' ? 'Aucun rendez-vous trouvé.' : `Aucun rendez-vous ${getStatusLabel(filter).toLowerCase()} trouvé.`}
-              </p>
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </div>
   )
 }

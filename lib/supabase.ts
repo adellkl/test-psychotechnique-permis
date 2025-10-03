@@ -1,7 +1,11 @@
 import { createBrowserClient } from '@supabase/ssr'
 
-const supabaseUrl = 'https://hzfpscgdyrqbplmhgwhi.supabase.co'
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://hzfpscgdyrqbplmhgwhi.supabase.co'
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('⚠️ Variables Supabase manquantes dans .env.local')
+}
 
 export const supabase = createBrowserClient(supabaseUrl, supabaseKey)
 

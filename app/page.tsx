@@ -1,6 +1,22 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import HeroBanner from './components/HeroBanner'
 import FAQ from './components/FAQ'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: "Test Psychotechnique Permis - Centre Agréé Clichy | Récupération Permis de Conduire",
+  description: "Centre agréé préfecture pour tests psychotechniques du permis de conduire à Clichy. Invalidation, suspension, annulation. Psychologue certifiée ADELI 929334555. Deuxième chance gratuite. RDV immédiat 07 65 56 53 79.",
+  keywords: "test psychotechnique permis, centre agréé préfecture, invalidation permis, suspension permis, annulation permis, psychologue ADELI, Clichy, récupération permis conduire, test psychotechnique Clichy, permis invalidé, ligne 13 métro",
+  openGraph: {
+    title: "Test Psychotechnique Permis - Centre Agréé Clichy",
+    description: "Centre agréé préfecture pour tests psychotechniques. Psychologue certifiée ADELI. Deuxième chance gratuite. À 3min du métro Mairie de Clichy.",
+    url: "https://test-psychotechnique-permis.com",
+  },
+  alternates: {
+    canonical: "https://test-psychotechnique-permis.com",
+  },
+}
 
 export default function HomePage() {
   return (
@@ -12,33 +28,44 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-              À propos du centre
+              Test Psychotechnique Permis - Centre Agréé Clichy
             </h2>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Contenu principal */}
             <div className="space-y-8 animate-slide-in-left">
-              {/* Localisation */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <div className="flex items-start gap-4">
+              {/* Localisation avec image */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Localisation idéale</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Centre Test Psychotechnique Permis Agréé</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      Notre centre de test psychotechnique est situé à <span className="font-semibold text-blue-600">3 min du métro Mairie de Clichy</span>, sur la ligne 13 et à <span className="font-semibold text-blue-600">10 min à pied de la gare de Clichy-Levallois</span>, vous pouvez donc vous y rendre depuis Paris ainsi que de toute l'Île de France.
+                      Notre <strong>centre de test psychotechnique agréé préfecture</strong> est situé à <span className="font-semibold text-blue-600">3 min du métro Mairie de Clichy</span>, sur la ligne 13 et à <span className="font-semibold text-blue-600">10 min à pied de la gare de Clichy-Levallois</span>. Accessible depuis Paris et toute l'Île-de-France pour votre <strong>récupération de permis de conduire</strong>.
                     </p>
+                  </div>
+                </div>
+                <div className="relative h-48 rounded-lg overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    alt="Centre de test psychotechnique moderne et accueillant à Clichy"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900">
+                    📍 Clichy - Ligne 13
                   </div>
                 </div>
               </div>
 
-              {/* Paiement */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <div className="flex items-start gap-4">
+              {/* Paiement avec image */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
@@ -51,39 +78,62 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
+                <div className="relative h-32 rounded-lg overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    alt="Paiement sécurisé et simplifié pour test psychotechnique"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute top-3 right-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    90€
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Deuxième chance gratuite */}
+            {/* Deuxième chance gratuite avec image */}
             <div className="animate-slide-in-right">
-              <div className="bg-gradient-to-br from-blue-50 to-emerald-50 p-8 rounded-2xl border border-blue-100">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Une deuxième chance gratuite</h3>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full text-sm font-medium mb-4">
-                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    En cas d'échec
-                  </div>
+              <div className="bg-gradient-to-br from-blue-50 to-emerald-50 p-8 rounded-2xl border border-blue-100 overflow-hidden relative">
+                {/* Image de fond subtile */}
+                <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+                  <Image
+                    src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                    alt="Psychologue bienveillante - Deuxième chance"
+                    fill
+                    className="object-cover rounded-full"
+                  />
                 </div>
                 
-                <p className="text-gray-700 leading-relaxed mb-6 text-center">
-                  Le test psychotechnique peut être un moment stressant pour certains et il peut arriver que votre test soit un échec à cause de cela. Notre psychologue vous proposera de passer le test une <span className="font-bold text-blue-600">deuxième fois gratuitement</span>, pour vous donner toutes les chances de récupérer votre permis de conduire.
-                </p>
-                
-                <div className="text-center">
-                  <Link 
-                    href="/a-propos" 
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    En savoir plus
-                  </Link>
+                <div className="relative z-10">
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Une deuxième chance gratuite</h3>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full text-sm font-medium mb-4">
+                      <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                      En cas d'échec
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-700 leading-relaxed mb-6 text-center">
+                    Le test psychotechnique peut être un moment stressant pour certains et il peut arriver que votre test soit un échec à cause de cela. Notre psychologue vous proposera de passer le test une <span className="font-bold text-blue-600">deuxième fois gratuitement</span>, pour vous donner toutes les chances de récupérer votre permis de conduire.
+                  </p>
+                  
+                  <div className="text-center">
+                    <Link 
+                      href="/a-propos" 
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      En savoir plus
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -100,7 +150,7 @@ export default function HomePage() {
             </h2>
             <div className="max-w-4xl mx-auto">
               <p className="text-lg text-gray-600 leading-relaxed mb-6 animate-slide-in-left">
-                Le centre de Clichy est un <span className="font-semibold text-blue-600">centre agréé préfecture</span> pour les tests psychotechniques d'aptitude à la conduite, lorsque l'on perd son permis de conduire suite à :
+                <strong>Test Psychotechnique Permis</strong> est un <span className="font-semibold text-blue-600">centre agréé préfecture</span> spécialisé dans les <strong>tests psychotechniques d'aptitude à la conduite</strong>, obligatoires pour récupérer votre permis de conduire après :
               </p>
             </div>
           </div>
@@ -115,10 +165,10 @@ export default function HomePage() {
                     <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">L'invalidation du permis</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Test Psychotechnique Invalidation Permis</h3>
               </div>
               <p className="text-gray-600 leading-relaxed mb-6 text-center">
-                Après une invalidation du permis de conduire pour solde nul de <span className="font-semibold text-red-600">6 mois ou plus</span>, un test psychotechnique est nécessaire pour récupérer le permis.
+                Après une <strong>invalidation du permis de conduire</strong> pour solde nul de <span className="font-semibold text-red-600">6 mois ou plus</span>, un <strong>test psychotechnique</strong> est obligatoire pour récupérer votre permis de conduire.
               </p>
               <div className="text-center">
                 <Link 
@@ -141,10 +191,10 @@ export default function HomePage() {
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zM9 8a1 1 0 012 0v4a1 1 0 11-2 0V8zM11 8a1 1 0 012 0v4a1 1 0 11-2 0V8z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">La suspension du permis</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Test Psychotechnique Suspension Permis</h3>
               </div>
               <p className="text-gray-600 leading-relaxed mb-6 text-center">
-                Dans le cas d'une suspension de permis de conduire de <span className="font-semibold text-orange-600">6 mois ou plus</span>, il est nécessaire d'effectuer un test psychotechnique.
+                En cas de <strong>suspension de permis de conduire</strong> de <span className="font-semibold text-orange-600">6 mois ou plus</span>, il est obligatoire d'effectuer un <strong>test psychotechnique</strong> dans un centre agréé.
               </p>
               <div className="text-center">
                 <Link 
@@ -167,10 +217,10 @@ export default function HomePage() {
                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">L'annulation du permis</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Test Psychotechnique Annulation Permis</h3>
               </div>
               <p className="text-gray-600 leading-relaxed mb-6 text-center">
-                Dans le cas d'une annulation de votre permis de conduire, la première étape est également de <span className="font-semibold text-purple-600">passer un test psychotechnique</span>.
+                En cas d'<strong>annulation de votre permis de conduire</strong>, la première étape obligatoire est de <span className="font-semibold text-purple-600">passer un test psychotechnique</span> dans un centre agréé préfecture.
               </p>
               <div className="text-center">
                 <Link 
@@ -263,13 +313,21 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Psychologue Agréée */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-fade-in-up animation-delay-400">
+            {/* Psychologue Agréée avec image */}
+            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-fade-in-up animation-delay-400 overflow-hidden">
               <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                <div className="relative w-24 h-24 mx-auto mb-4">
+                  <Image
+                    src="https://lh3.googleusercontent.com/p/AF1QipPl6CYxHRPJgTMrnTDkdm3Kmbtc9ueH90ZpEGI4=s1360-w1360-h1020-rw"
+                    alt="SEBTI Fatiha - Psychologue certifiée ADELI pour tests psychotechniques"
+                    fill
+                    className="object-cover rounded-full"
+                  />
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Psychologue certifiée</h3>
               </div>

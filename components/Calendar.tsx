@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { format, addDays, startOfWeek, isSameDay, isToday, isBefore, startOfMonth, endOfMonth, addMonths, subMonths, eachDayOfInterval } from 'date-fns'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isSameMonth, isSameDay, isToday, isPast, startOfWeek, addDays, isBefore } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { supabase, AvailableSlot } from '../lib/supabase'
 
@@ -34,24 +34,22 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
   const fetchAvailableSlots = async () => {
     try {
       setLoading(true)
-      const monthStart = startOfMonth(currentDate)
-      const monthEnd = endOfMonth(currentDate)
-      const startDate = format(monthStart, 'yyyy-MM-dd')
-      const endDate = format(monthEnd, 'yyyy-MM-dd')
+      const startDate = format(startOfMonth(currentDate), 'yyyy-MM-dd')
+      const endDate = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
-      const { data, error } = await supabase
-        .from('available_slots')
-        .select('*')
-        .gte('date', startDate)
-        .lte('date', endDate)
-        .eq('is_available', true)
-        .order('date', { ascending: true })
-        .order('start_time', { ascending: true })
+      console.log('📅 Fetching slots for:', { startDate, endDate })
+      const response = await fetch(`/api/available-slots?startDate=${startDate}&endDate=${endDate}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch available slots')
+      }
 
-      if (error) throw error
-      setAvailableSlots(data || [])
+      const data = await response.json()
+      console.log('📊 Slots received:', data.slots?.length || 0, 'slots')
+      console.log('📋 Slots data:', data.slots)
+      setAvailableSlots(data.slots || [])
     } catch (error) {
       console.error('Error fetching slots:', error)
+      setAvailableSlots([])
     } finally {
       setLoading(false)
     }
@@ -78,10 +76,16 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     
     const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd })
     
+    console.log('🗓️ Generating calendar with', availableSlots.length, 'total slots')
+    
     return days.map((day: Date) => {
       const daySlots = availableSlots.filter(slot => 
         isSameDay(new Date(slot.date), day)
       )
+      
+      if (daySlots.length > 0) {
+        console.log(`📍 ${format(day, 'yyyy-MM-dd')} has ${daySlots.length} slots`)
+      }
       
       return {
         date: day,

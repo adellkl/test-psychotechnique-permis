@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://test-psychotechnique-permis.com/sitemap.xml
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /api/
+
+# Allow important pages
+Allow: /invalidation-permis
+Allow: /suspension-permis
+Allow: /annulation-permis
+Allow: /prendre-rendez-vous
+Allow: /contact
+Allow: /a-propos
+Allow: /agrement-prefectoral
+
+# Crawl delay
+Crawl-delay: 1

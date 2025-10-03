@@ -1,6 +1,7 @@
 'use client'
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useState, useEffect } from "react"
 
@@ -52,9 +53,17 @@ export default function Navigation() {
     <header className="bg-white shadow-md sticky top-0 z-50 border-b border-gray-100">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between py-4">
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-2xl group-hover:scale-110 transition-transform duration-300">🚗</span>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+              <Image
+                src="/images/logo site .png"
+                alt="Logo Test Psychotechnique Permis"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-800">
               test psychotechnique permis
             </h1>
           </Link>
