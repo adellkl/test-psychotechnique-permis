@@ -1,9 +1,0 @@
-{
-  "/a-propos/page": "app/a-propos/page.js",
-  "/contact/page": "app/contact/page.js",
-  "/rendez-vous/page": "app/rendez-vous/page.js",
-  "/invalidation-permis/page": "app/invalidation-permis/page.js",
-  "/page": "app/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/dashboard/page": "app/admin/dashboard/page.js"
-}
