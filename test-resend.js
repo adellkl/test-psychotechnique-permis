@@ -1,35 +1,38 @@
 const { Resend } = require('resend');
+require('dotenv').config({ path: '.env.local' });
 
-const resend = new Resend('re_DdhZzjoL_DWUXFDm8hq4dFBokVfSYgavT');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-async function testResendAPI() {
+async function testEmail() {
   try {
+    console.log('🧪 Testing Resend configuration...');
+    console.log('From:', process.env.FROM_EMAIL);
+    console.log('To:', process.env.ADMIN_EMAIL);
+    
     const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: 'adelloukal2@gmail.com',
-      subject: 'Test API Resend - Permis Expert',
+      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
+      subject: 'Test Email - Permis Expert',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">Configuration API Testée ✅</h2>
-          <p>Votre nouvelle clé API Resend fonctionne parfaitement !</p>
-          <p><strong>Clé API:</strong> re_DdhZzjoL_DWUXFDm8hq4dFBokVfSYgavT</p>
-          <p><strong>Date:</strong> ${new Date().toLocaleString('fr-FR')}</p>
+          <h2 style="color: #2563eb;">Test Email ✅</h2>
+          <p>This is a test email from your Permis Expert application.</p>
+          <p><strong>Sent at:</strong> ${new Date().toLocaleString('fr-FR')}</p>
         </div>
       `,
-      text: 'Configuration API Resend testée avec succès.'
+      text: 'Test email from Permis Expert'
     });
 
     if (error) {
-      console.error('❌ Erreur:', error);
+      console.error('❌ Error:', error);
       return;
     }
 
-    console.log('✅ Email envoyé avec succès!');
-    console.log('📧 ID de l\'email:', data.id);
-    console.log('🎯 Destinataire: adelloukal2@gmail.com');
+    console.log('✅ Email sent successfully!');
+    console.log('Message ID:', data.id);
   } catch (error) {
-    console.error('❌ Erreur lors du test:', error);
+    console.error('❌ Failed to send email:', error);
   }
 }
 
-testResendAPI();
+testEmail();
