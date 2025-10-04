@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendAppointmentConfirmation, sendAppointmentNotificationToAdmin } from '../../../lib/emailServiceNodemailer'
+import { sendAppointmentConfirmation, sendAppointmentNotificationToAdmin } from '../../../lib/emailService'
 import { isValidEmail, isValidPhone, isValidName, sanitizeString } from '../../../lib/validation'
 
 export async function POST(request: NextRequest) {
@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      client_email_id: clientEmailResult?.messageId,
-      admin_email_id: adminEmailResult?.messageId
+      client_email_id: clientEmailResult?.id,
+      admin_email_id: adminEmailResult?.id
     })
   } catch (error) {
     console.error('❌ Error sending emails:', error)
