@@ -12,15 +12,15 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const isAdminPage = pathname?.startsWith('/admin')
 
   if (isAdminPage) {
-    // For admin pages, only render the page content (last child)
+    // For admin pages, only render the page content (index 3 = children in layout)
     const childrenArray = Array.isArray(children) ? children : [children]
-    const pageContent = childrenArray[childrenArray.length - 1] // Get the last child (page content)
-    return <main>{pageContent}</main>
+    const pageContent = childrenArray[3] || childrenArray[childrenArray.length - 1] // Get the actual page content
+    return <>{pageContent}</>
   }
 
   // For regular pages, render all components
   const childrenArray = Array.isArray(children) ? children : [children]
-  const [InfoBar, Navigation, Footer, pageContent] = childrenArray
+  const [InfoBar, Navigation, Footer, pageContent, ...rest] = childrenArray
 
   return (
     <>
@@ -28,6 +28,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       {Navigation}
       <main className="-mt-16">{pageContent}</main>
       {Footer}
+      {rest}
     </>
   )
 }

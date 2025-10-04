@@ -27,33 +27,7 @@ export default function RendezVous() {
   const continueButtonRef = useRef<HTMLButtonElement>(null)
   const personalInfoRef = useRef<HTMLDivElement>(null)
 
-  // Auto-scroll intelligent vers le bouton continuer
-  useEffect(() => {
-    if (selectedDate && selectedTime && continueButtonRef.current) {
-      setTimeout(() => {
-        const element = continueButtonRef.current
-        if (element) {
-          const rect = element.getBoundingClientRect()
-          const windowHeight = window.innerHeight
-          
-          // Vérifier si le bouton est déjà visible à l'écran
-          const isVisible = rect.top >= 80 && rect.bottom <= windowHeight - 20
-          
-          // Ne scroller que si le bouton n'est pas visible
-          if (!isVisible) {
-            // Calculer le scroll minimal pour voir le bouton
-            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-            const offsetPosition = elementPosition - 150 // Petit offset pour voir le bouton confortablement
-            
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            })
-          }
-        }
-      }, 400)
-    }
-  }, [selectedDate, selectedTime])
+  // Scroll automatique désactivé - l'utilisateur scroll manuellement
 
   const handleSlotSelect = (date: string, time: string) => {
     setSelectedDate(date)
