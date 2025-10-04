@@ -11,6 +11,7 @@ import AppointmentsTable from '../components/AppointmentsTable'
 import NotificationSystem from '../components/NotificationSystem'
 import StatisticsCharts from '../components/StatisticsCharts'
 import AdminSettingsContent from '../components/AdminSettingsContent'
+import SearchBar, { SearchFilters } from '../components/SearchBar'
 
 export default function AdminDashboard() {
   return (
@@ -22,12 +23,14 @@ export default function AdminDashboard() {
 
 function DashboardContent() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [admin, setAdmin] = useState<any>(null)
   const [activeSection, setActiveSection] = useState('appointments')
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null)
 
   useEffect(() => {
     // Check admin session
@@ -57,16 +60,80 @@ function DashboardContent() {
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
-        .order('appointment_date', { ascending: true })
-        .order('appointment_time', { ascending: true })
+        .order('appointment_date', { ascending: false })
+        .order('appointment_time', { ascending: false })
 
       if (error) throw error
       setAppointments(data || [])
+      setFilteredAppointments(data || [])
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  // Filtrer les rendez-vous selon les critères de recherche
+  useEffect(() => {
+    if (!searchFilters || !searchFilters.searchTerm) {
+      // Filtrer uniquement par dates si spécifiées
+      if (searchFilters?.dateFrom || searchFilters?.dateTo) {
+        const filtered = appointments.filter(apt => {
+          const aptDate = apt.appointment_date
+          const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
+          const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
+          return fromMatch && toMatch
+        })
+        setFilteredAppointments(filtered)
+      } else {
+        setFilteredAppointments(appointments)
+      }
+      return
+    }
+
+    const term = searchFilters.searchTerm.toLowerCase()
+    const filtered = appointments.filter(apt => {
+      // Filtrage par dates
+      const aptDate = apt.appointment_date
+      const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
+      const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
+      
+      if (!fromMatch || !toMatch) return false
+
+      // Filtrage par terme de recherche
+      const fullName = `${apt.first_name} ${apt.last_name}`.toLowerCase()
+      
+      switch (searchFilters.searchField) {
+        case 'name':
+          return fullName.includes(term)
+        case 'email':
+          return apt.email.toLowerCase().includes(term)
+        case 'phone':
+          return apt.phone?.toLowerCase().includes(term)
+        case 'date':
+          return apt.appointment_date.includes(term)
+        case 'all':
+        default:
+          return (
+            fullName.includes(term) ||
+            apt.email.toLowerCase().includes(term) ||
+            apt.phone?.toLowerCase().includes(term) ||
+            apt.appointment_date.includes(term)
+          )
+      }
+    })
+
+    setFilteredAppointments(filtered)
+  }, [searchFilters, appointments])
+
+  const handleSearch = (filters: SearchFilters) => {
+    setSearchFilters(filters)
+    logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, `Recherche rendez-vous: ${filters.searchTerm || 'filtrage par date'}`)
+  }
+
+  const handleResetSearch = () => {
+    setSearchFilters(null)
+    setFilteredAppointments(appointments)
   }
 
   const updateAppointmentStatus = async (id: string, status: string) => {
@@ -246,8 +313,26 @@ function DashboardContent() {
           {/* Appointments Section */}
           {activeSection === 'appointments' && (
             <div>
+              <SearchBar 
+                onSearch={handleSearch}
+                onReset={handleResetSearch}
+              />
+              
+              {/* Résultats de recherche */}
+              {searchFilters && (
+                <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm text-blue-800">
+                    <strong>{filteredAppointments.length}</strong> résultat{filteredAppointments.length !== 1 ? 's' : ''} trouvé{filteredAppointments.length !== 1 ? 's' : ''}
+                    {searchFilters.searchTerm && ` pour "${searchFilters.searchTerm}"`}
+                  </span>
+                </div>
+              )}
+
               <AppointmentsTable
-                appointments={appointments}
+                appointments={filteredAppointments}
                 onUpdateStatus={updateAppointmentStatus}
                 onDelete={deleteAppointment}
                 onBulkDelete={handleBulkDelete}

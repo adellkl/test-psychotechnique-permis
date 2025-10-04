@@ -19,16 +19,13 @@ export default function AppointmentsTable({
 }: AppointmentsTableProps) {
   const [selectedAppointments, setSelectedAppointments] = useState<Set<string>>(new Set())
   const [filter, setFilter] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
   const [showBulkActions, setShowBulkActions] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteAppointmentId, setDeleteAppointmentId] = useState<string | null>(null)
 
   const filteredAppointments = appointments.filter(apt => {
     const matchesFilter = filter === 'all' || apt.status === filter
-    const matchesSearch = searchTerm === '' || 
-      `${apt.first_name} ${apt.last_name} ${apt.email} ${apt.phone}`.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesFilter && matchesSearch
+    return matchesFilter
   })
 
   const handleSelectAll = (checked: boolean) => {
@@ -97,20 +94,6 @@ export default function AppointmentsTable({
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
-            {/* Search */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-
             {/* Filter */}
             <select
               value={filter}
@@ -240,12 +223,16 @@ export default function AppointmentsTable({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredAppointments.map((appointment) => (
+            {filteredAppointments.map((appointment, index) => (
               <tr
                 key={appointment.id}
                 className={`hover:bg-gray-50 transition-colors ${
                   selectedAppointments.has(appointment.id) ? 'bg-blue-50' : ''
                 }`}
+                style={{
+                  opacity: 0,
+                  animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`
+                }}
               >
                 <td className="px-6 py-4">
                   <input
@@ -352,12 +339,17 @@ export default function AppointmentsTable({
 
       {/* Mobile Cards - Hidden on desktop */}
       <div className="lg:hidden">
-        {filteredAppointments.map((appointment) => (
+        {filteredAppointments.map((appointment, index) => (
           <div
             key={appointment.id}
-            className={`p-4 border-b border-gray-200 ${
-              selectedAppointments.has(appointment.id) ? 'bg-blue-50' : 'bg-white'
+            className={`border-b border-gray-100 hover:bg-blue-50/50 transition-all duration-200 animate-fade-in ${
+              selectedAppointments.has(appointment.id) ? 'bg-red-50' : ''
             }`}
+            style={{
+              animationDelay: `${index * 50}ms`,
+              opacity: 0,
+              animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`
+            }}
           >
             {/* Header avec checkbox et avatar */}
             <div className="flex items-start gap-3 mb-3">
@@ -486,7 +478,7 @@ export default function AppointmentsTable({
           </svg>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun rendez-vous trouvé</h3>
           <p className="text-gray-500">
-            {searchTerm ? 'Essayez une autre recherche' : 'Aucun rendez-vous ne correspond aux critères sélectionnés'}
+            Aucun rendez-vous ne correspond aux critères sélectionnés
           </p>
         </div>
       )}
