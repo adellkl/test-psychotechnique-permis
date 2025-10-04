@@ -38,15 +38,12 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
       const startDate = format(startOfMonth(currentDate), 'yyyy-MM-dd')
       const endDate = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
-      console.log('📅 Fetching slots for:', { startDate, endDate })
       const response = await fetch(`/api/available-slots?startDate=${startDate}&endDate=${endDate}`)
       if (!response.ok) {
         throw new Error('Failed to fetch available slots')
       }
 
       const data = await response.json()
-      console.log('📊 Slots received:', data.slots?.length || 0, 'slots')
-      console.log('📋 Slots data:', data.slots)
       setAvailableSlots(data.slots || [])
     } catch (error) {
       console.error('Error fetching slots:', error)
@@ -73,8 +70,6 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     const monthStart = startOfMonth(currentDate)
     const monthEnd = endOfMonth(currentDate)
     
-    console.log('🗄️ Generating calendar with', availableSlots.length, 'total slots')
-    
     // Group slots by date
     const slotsByDate = new Map<string, AvailableSlot[]>()
     availableSlots.forEach(slot => {
@@ -92,8 +87,6 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
       
       // Only include if it's in current month or future
       if ((day >= monthStart && day <= monthEnd) || day > monthEnd) {
-        console.log(`📍 ${format(day, 'yyyy-MM-dd')} has ${slots.length} slots`)
-        
         days.push({
           date: day,
           slots: slots,

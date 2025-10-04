@@ -196,6 +196,11 @@ function TimeSlotContent() {
 
       if (error) throw error
       
+      await logAdminActivity(
+        AdminLogger.ACTIONS.CREATE_SLOT,
+        `Created ${slotsToAdd.length} slots starting from ${newSlot.date}`
+      )
+      
       setShowAddForm(false)
       fetchTimeSlots()
       setNotification({type: 'success', message: `${slotsToAdd.length} créneaux ajoutés avec succès`})
@@ -203,6 +208,56 @@ function TimeSlotContent() {
     } catch (error) {
       console.error('Error adding multiple slots:', error)
       setNotification({type: 'error', message: 'Erreur lors de l\'ajout des créneaux'})
+      setTimeout(() => setNotification(null), 3000)
+    }
+  }
+
+  const addBulkSlots = async (startDate: string, endDate: string, times: string[], workdaysOnly: boolean) => {
+    const slotsToAdd: Array<{date: string, start_time: string, end_time: string, is_available: boolean}> = []
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    
+    // Iterate through all dates in the range
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      // Skip weekends if workdaysOnly is true
+      if (workdaysOnly && (d.getDay() === 0 || d.getDay() === 6)) continue
+      
+      const dateStr = format(d, 'yyyy-MM-dd')
+      
+      // Add a slot for each selected time
+      times.forEach(time => {
+        const [hours, minutes] = time.split(':').map(Number)
+        const endHours = hours + 2
+        const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+        
+        slotsToAdd.push({
+          date: dateStr,
+          start_time: time,
+          end_time: endTime,
+          is_available: true
+        })
+      })
+    }
+
+    try {
+      const { error } = await supabase
+        .from('available_slots')
+        .insert(slotsToAdd)
+
+      if (error) throw error
+      
+      await logAdminActivity(
+        AdminLogger.ACTIONS.CREATE_SLOT,
+        `Bulk created ${slotsToAdd.length} slots from ${startDate} to ${endDate}`
+      )
+      
+      setShowAddForm(false)
+      fetchTimeSlots()
+      setNotification({type: 'success', message: `${slotsToAdd.length} créneaux créés avec succès!`})
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error) {
+      console.error('Error adding bulk slots:', error)
+      setNotification({type: 'error', message: 'Erreur lors de la création en masse'})
       setTimeout(() => setNotification(null), 3000)
     }
   }
@@ -637,6 +692,7 @@ function TimeSlotContent() {
         setNewSlot={setNewSlot}
         onAddSingle={addTimeSlot}
         onAddMultiple={addMultipleSlots}
+        onAddBulk={addBulkSlots}
         timeOptions={timeOptions}
       />
 

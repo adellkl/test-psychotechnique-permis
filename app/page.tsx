@@ -55,6 +55,7 @@ export default function HomePage() {
                     src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                     alt="Centre de test psychotechnique moderne et accueillant à Clichy"
                     fill
+                    sizes="(max-width: 768px) 100vw, 800px"
                     className="object-cover"
                   />
                   <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900">
@@ -83,6 +84,7 @@ export default function HomePage() {
                     src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                     alt="Paiement sécurisé et simplifié pour test psychotechnique"
                     fill
+                    sizes="(max-width: 768px) 100vw, 800px"
                     className="object-cover"
                   />
                   <div className="absolute top-3 right-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold">
@@ -101,6 +103,7 @@ export default function HomePage() {
                     src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
                     alt="Psychologue bienveillante - Deuxième chance"
                     fill
+                    sizes="128px"
                     className="object-cover rounded-full"
                   />
                 </div>
@@ -237,12 +240,12 @@ export default function HomePage() {
           </div>
 
           {/* CTA Principal */}
-          <div className="text-center animate-smooth-bounce animation-delay-800">
+          <div className="text-center mt-8 sm:mt-12 animate-smooth-bounce animation-delay-800">
             <Link 
               href="/rendez-vous" 
-              className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl"
+              className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3.5 sm:px-10 sm:py-5 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-xl sm:rounded-2xl font-bold text-base sm:text-xl hover:from-blue-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl w-full sm:w-auto max-w-sm sm:max-w-none mx-auto"
             >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
               </svg>
               Prendre rendez-vous
@@ -321,6 +324,7 @@ export default function HomePage() {
                     src="https://lh3.googleusercontent.com/p/AF1QipPl6CYxHRPJgTMrnTDkdm3Kmbtc9ueH90ZpEGI4=s1360-w1360-h1020-rw"
                     alt="SEBTI Fatiha - Psychologue certifiée ADELI pour tests psychotechniques"
                     fill
+                    sizes="96px"
                     className="object-cover rounded-full"
                   />
                   <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">

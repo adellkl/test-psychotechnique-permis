@@ -1,6 +1,6 @@
 export default function InfoBar() {
     return (
-        <div className="border-b border-gray-200 bg-gray-50/50 py-3">
+        <div className="border-b border-gray-200 bg-gray-50/50 py-3" suppressHydrationWarning>
             <div className="max-w-7xl mx-auto px-2 sm:px-4">
                 <div className="flex items-center justify-center gap-x-2 sm:gap-x-4 md:gap-x-6 text-[10px] sm:text-xs md:text-sm text-gray-600">
                     <div className="hidden md:flex items-center gap-1.5">

@@ -116,10 +116,10 @@ export default function FAQ() {
     <section className="py-16 bg-white">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 animate-fade-in-up">
+          <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 animate-fade-in-up">
             Questions fréquentes
           </h2>
-          <p className="text-lg text-gray-600 leading-relaxed animate-slide-in-left">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed animate-slide-in-left">
             Bienvenue dans notre Foire aux Questions (FAQ) pour notre Centre de Test Psychotechnique à Clichy. Voici les réponses aux questions les plus fréquemment posées :
           </p>
         </div>
@@ -133,9 +133,9 @@ export default function FAQ() {
             >
               <button
                 onClick={() => toggleItem(index)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
               >
-                <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 pr-2 sm:pr-4">
                   {item.question}
                 </h3>
                 <div className={`transform transition-transform duration-300 ${openItems.includes(index) ? 'rotate-180' : ''}`}>
@@ -150,7 +150,7 @@ export default function FAQ() {
                   ? 'max-h-screen opacity-100' 
                   : 'max-h-0 opacity-0'
               }`}>
-                <div className="px-6 pb-4 text-gray-600 leading-relaxed animate-slide-down">
+                <div className="px-4 sm:px-6 pb-3 sm:pb-4 text-sm sm:text-base text-gray-600 leading-relaxed animate-slide-down">
                   {typeof item.answer === 'string' ? (
                     <p>{item.answer}</p>
                   ) : (

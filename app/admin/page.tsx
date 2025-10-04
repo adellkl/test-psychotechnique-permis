@@ -104,7 +104,7 @@ export default function AdminLogin() {
         </div>
 
         {/* Login Form */}
-        <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-8 transform hover:scale-[1.01] sm:hover:scale-[1.02] transition-all duration-300">
+        <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-8">
           <form onSubmit={handleLogin} className="space-y-4 sm:space-y-6">
             {error && (
               <div className="bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-300 p-3 sm:p-4 rounded-lg sm:rounded-xl animate-shake">
@@ -122,7 +122,7 @@ export default function AdminLogin() {
               </div>
             )}
 
-            <div className="transform transition-all duration-200 hover:scale-[1.01]">
+            <div>
               <label htmlFor="email" className="block text-xs sm:text-sm font-bold text-gray-800 mb-2">
                 Adresse email
               </label>
@@ -145,7 +145,7 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            <div className="transform transition-all duration-200 hover:scale-[1.01]">
+            <div>
               <label htmlFor="password" className="block text-xs sm:text-sm font-bold text-gray-800 mb-2">
                 Mot de passe
               </label>

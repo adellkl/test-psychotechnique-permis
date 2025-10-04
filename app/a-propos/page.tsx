@@ -38,6 +38,7 @@ export default function APropos() {
                   src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Centre Test Psychotechnique Permis - Accueil professionnel"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                   priority
                 />
@@ -91,6 +92,7 @@ export default function APropos() {
                   src="/images/metro-13.jpg"
                   alt="Métro Mairie de Clichy ligne 13 - Accès facile au centre"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
               </div>
@@ -126,6 +128,7 @@ export default function APropos() {
                   src="https://lh3.googleusercontent.com/p/AF1QipPl6CYxHRPJgTMrnTDkdm3Kmbtc9ueH90ZpEGI4=s1360-w1360-h1020-rw"
                   alt="SEBTI Fatiha - Psychologue certifiée ADELI pour tests psychotechniques"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
               </div>

@@ -10,6 +10,7 @@ interface AddSlotModalProps {
   setNewSlot: (slot: { date: string; time: string }) => void
   onAddSingle: () => void
   onAddMultiple: () => void
+  onAddBulk?: (startDate: string, endDate: string, times: string[], workdaysOnly: boolean) => void
   timeOptions: string[]
 }
 
@@ -20,9 +21,17 @@ export default function AddSlotModal({
   setNewSlot,
   onAddSingle,
   onAddMultiple,
+  onAddBulk,
   timeOptions
 }: AddSlotModalProps) {
   const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [mode, setMode] = useState<'single' | 'bulk'>('single')
+  const [bulkConfig, setBulkConfig] = useState({
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+    selectedTimes: [] as string[],
+    workdaysOnly: true
+  })
 
   const handleAddSingle = () => {
     setErrors({})
@@ -42,6 +51,49 @@ export default function AddSlotModal({
       return
     }
     onAddMultiple()
+  }
+
+  const handleAddBulk = () => {
+    setErrors({})
+    if (!bulkConfig.startDate || !bulkConfig.endDate) {
+      setErrors({ date: 'Veuillez sélectionner les dates de début et de fin' })
+      return
+    }
+    if (bulkConfig.selectedTimes.length === 0) {
+      setErrors({ time: 'Veuillez sélectionner au moins un horaire' })
+      return
+    }
+    if (new Date(bulkConfig.startDate) > new Date(bulkConfig.endDate)) {
+      setErrors({ date: 'La date de début doit être avant la date de fin' })
+      return
+    }
+    if (onAddBulk) {
+      onAddBulk(bulkConfig.startDate, bulkConfig.endDate, bulkConfig.selectedTimes, bulkConfig.workdaysOnly)
+    }
+  }
+
+  const toggleTime = (time: string) => {
+    setBulkConfig(prev => ({
+      ...prev,
+      selectedTimes: prev.selectedTimes.includes(time)
+        ? prev.selectedTimes.filter(t => t !== time)
+        : [...prev.selectedTimes, time].sort()
+    }))
+  }
+
+  const calculateTotalSlots = () => {
+    if (!bulkConfig.startDate || !bulkConfig.endDate || bulkConfig.selectedTimes.length === 0) return 0
+    
+    let count = 0
+    const start = new Date(bulkConfig.startDate)
+    const end = new Date(bulkConfig.endDate)
+    
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      if (bulkConfig.workdaysOnly && (d.getDay() === 0 || d.getDay() === 6)) continue
+      count += bulkConfig.selectedTimes.length
+    }
+    
+    return count
   }
 
   if (!isOpen) return null
@@ -65,10 +117,26 @@ export default function AddSlotModal({
               </svg>
             </button>
           </div>
+          
+          {/* Mode Toggle */}
+          <div className="mt-4 flex gap-2">
+            <button
+              onClick={() => setMode('single')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${mode === 'single' ? 'bg-white text-blue-600' : 'bg-white/20 text-white hover:bg-white/30'}`}
+            >
+              Mode simple
+            </button>
+            <button
+              onClick={() => setMode('bulk')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${mode === 'bulk' ? 'bg-white text-purple-600' : 'bg-white/20 text-white hover:bg-white/30'}`}
+            >
+              Ajout en masse
+            </button>
+          </div>
         </div>
 
         {/* Form */}
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
           {/* Error Messages */}
           {(errors.date || errors.time) && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -84,85 +152,192 @@ export default function AddSlotModal({
             </div>
           )}
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Date du créneau
-            </label>
-            <input
-              type="date"
-              value={newSlot.date}
-              onChange={(e) => {
-                setNewSlot({ ...newSlot, date: e.target.value })
-                setErrors(prev => ({ ...prev, date: '' }))
-              }}
-              min={new Date().toISOString().split('T')[0]}
-              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              }`}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Heure de début
-            </label>
-            <select
-              value={newSlot.time}
-              onChange={(e) => {
-                setNewSlot({ ...newSlot, time: e.target.value })
-                setErrors(prev => ({ ...prev, time: '' }))
-              }}
-              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                errors.time ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              }`}
-            >
-              {timeOptions.map(time => (
-                <option key={time} value={time}>{time}</option>
-              ))}
-            </select>
-            <p className="text-xs text-gray-500 mt-2">Durée automatique : 2 heures</p>
-          </div>
-
-          {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <div className="flex gap-3">
-              <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          {mode === 'single' ? (
+            <>
               <div>
-                <p className="text-sm font-medium text-blue-900">Options d'ajout</p>
-                <p className="text-xs text-blue-700 mt-1">
-                  Vous pouvez ajouter un seul créneau ou créer le même créneau pour les 7 prochains jours (jours ouvrables uniquement)
-                </p>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Date du créneau
+                </label>
+                <input
+                  type="date"
+                  value={newSlot.date}
+                  onChange={(e) => {
+                    setNewSlot({ ...newSlot, date: e.target.value })
+                    setErrors(prev => ({ ...prev, date: '' }))
+                  }}
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
+                    errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  }`}
+                />
               </div>
-            </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <button
-              onClick={handleAddSingle}
-              className="px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Ajouter 1 créneau
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Heure de début
+                </label>
+                <select
+                  value={newSlot.time}
+                  onChange={(e) => {
+                    setNewSlot({ ...newSlot, time: e.target.value })
+                    setErrors(prev => ({ ...prev, time: '' }))
+                  }}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
+                    errors.time ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  }`}
+                >
+                  {timeOptions.map(time => (
+                    <option key={time} value={time}>{time}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500 mt-2">Durée automatique : 2 heures</p>
               </div>
-            </button>
-            <button
-              onClick={handleAddMultiple}
-              className="px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Ajouter pour 7 jours
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <div className="flex gap-3">
+                  <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-blue-900">Options d'ajout</p>
+                    <p className="text-xs text-blue-700 mt-1">
+                      Ajoutez un seul créneau ou créez le même créneau pour les 7 prochains jours ouvrables
+                    </p>
+                  </div>
+                </div>
               </div>
-            </button>
-          </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <button
+                  onClick={handleAddSingle}
+                  className="px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Ajouter 1 créneau
+                  </div>
+                </button>
+                <button
+                  onClick={handleAddMultiple}
+                  className="px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Ajouter pour 7 jours
+                  </div>
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Date de début
+                  </label>
+                  <input
+                    type="date"
+                    value={bulkConfig.startDate}
+                    onChange={(e) => {
+                      setBulkConfig({ ...bulkConfig, startDate: e.target.value })
+                      setErrors(prev => ({ ...prev, date: '' }))
+                    }}
+                    min={new Date().toISOString().split('T')[0]}
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
+                      errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Date de fin
+                  </label>
+                  <input
+                    type="date"
+                    value={bulkConfig.endDate}
+                    onChange={(e) => {
+                      setBulkConfig({ ...bulkConfig, endDate: e.target.value })
+                      setErrors(prev => ({ ...prev, date: '' }))
+                    }}
+                    min={bulkConfig.startDate}
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
+                      errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Sélectionnez les horaires ({bulkConfig.selectedTimes.length} sélectionné{bulkConfig.selectedTimes.length > 1 ? 's' : ''})
+                </label>
+                <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 border-2 border-gray-200 rounded-xl">
+                  {timeOptions.map(time => (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => toggleTime(time)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        bulkConfig.selectedTimes.includes(time)
+                          ? 'bg-purple-600 text-white ring-2 ring-purple-300'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+                {errors.time && <p className="text-sm text-red-600 mt-2">{errors.time}</p>}
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="workdaysOnly"
+                    checked={bulkConfig.workdaysOnly}
+                    onChange={(e) => setBulkConfig({ ...bulkConfig, workdaysOnly: e.target.checked })}
+                    className="w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
+                  />
+                  <label htmlFor="workdaysOnly" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    Jours ouvrables uniquement (Lun-Ven)
+                  </label>
+                </div>
+              </div>
+
+              {calculateTotalSlots() > 0 && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                      <span className="text-2xl font-bold text-white">{calculateTotalSlots()}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-purple-900">Total de créneaux à créer</p>
+                      <p className="text-xs text-purple-700">
+                        {bulkConfig.selectedTimes.length} horaire{bulkConfig.selectedTimes.length > 1 ? 's' : ''} × plusieurs jours
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={handleAddBulk}
+                className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105 text-lg"
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Créer {calculateTotalSlots()} créneaux
+                </div>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
