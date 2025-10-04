@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Retourner les nouvelles données (sans le mot de passe)
-    const { password, ...adminWithoutPassword } = { ...admin, ...updates }
+    const updatedAdmin = { ...admin, ...updates }
+    const { password: _password, ...adminWithoutPassword } = updatedAdmin
 
     return NextResponse.json({ 
       success: true, 

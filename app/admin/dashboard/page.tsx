@@ -10,6 +10,7 @@ import EnhancedStats from '../components/EnhancedStats'
 import AppointmentsTable from '../components/AppointmentsTable'
 import NotificationSystem from '../components/NotificationSystem'
 import StatisticsCharts from '../components/StatisticsCharts'
+import AdminSettingsContent from '../components/AdminSettingsContent'
 
 export default function AdminDashboard() {
   return (
