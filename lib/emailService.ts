@@ -50,11 +50,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
   appointment_time: string
 }) {
   try {
-    // In production, send to actual client email; in development, send to admin for testing
-    const isProduction = process.env.NODE_ENV === 'production'
-    const targetEmail = isProduction ? appointmentData.email : 'f.sebti@outlook.com'
-    
-    console.log(`📧 Sending confirmation email to: ${targetEmail} ${isProduction ? '(production)' : '(development)'}`)
+    console.log(`📧 Sending confirmation email to: ${appointmentData.email}`)
 
     const template = await getEmailTemplate('appointment_confirmation_client')
 
@@ -86,7 +82,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
 
     const { data, error } = await resend.emails.send({
       from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
-      to: targetEmail,
+      to: appointmentData.email,
       subject,
       html: htmlContent,
       text: textContent,
@@ -96,7 +92,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
       throw error
     }
 
-    console.log('✅ Confirmation email sent to client:', targetEmail, 'ID:', data?.id)
+    console.log('✅ Confirmation email sent to client:', appointmentData.email, 'ID:', data?.id)
     return data
   } catch (error) {
     console.error('❌ Error sending confirmation email:', error)

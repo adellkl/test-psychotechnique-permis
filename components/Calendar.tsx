@@ -25,6 +25,7 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'week' | 'month'>('month')
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set())
 
   // Fetch available slots
   useEffect(() => {
@@ -67,33 +68,43 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     return !data || data.length === 0
   }
 
-  // Generate calendar days for the full month
+  // Generate calendar days - only show days with available slots
   const generateCalendarDays = (): CalendarDay[] => {
     const monthStart = startOfMonth(currentDate)
     const monthEnd = endOfMonth(currentDate)
-    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 })
-    const calendarEnd = addDays(startOfWeek(addDays(monthEnd, 6), { weekStartsOn: 1 }), 6)
     
-    const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd })
+    console.log('🗄️ Generating calendar with', availableSlots.length, 'total slots')
     
-    console.log('🗓️ Generating calendar with', availableSlots.length, 'total slots')
-    
-    return days.map((day: Date) => {
-      const daySlots = availableSlots.filter(slot => 
-        isSameDay(new Date(slot.date), day)
-      )
-      
-      if (daySlots.length > 0) {
-        console.log(`📍 ${format(day, 'yyyy-MM-dd')} has ${daySlots.length} slots`)
+    // Group slots by date
+    const slotsByDate = new Map<string, AvailableSlot[]>()
+    availableSlots.forEach(slot => {
+      const dateKey = slot.date
+      if (!slotsByDate.has(dateKey)) {
+        slotsByDate.set(dateKey, [])
       }
+      slotsByDate.get(dateKey)!.push(slot)
+    })
+    
+    // Only create calendar days for dates with slots
+    const days: CalendarDay[] = []
+    slotsByDate.forEach((slots, dateStr) => {
+      const day = new Date(dateStr)
       
-      return {
-        date: day,
-        slots: daySlots,
-        isPast: isBefore(day, new Date()) && !isToday(day),
-        isCurrentMonth: isSameDay(monthStart, day) || (day >= monthStart && day <= monthEnd)
+      // Only include if it's in current month or future
+      if ((day >= monthStart && day <= monthEnd) || day > monthEnd) {
+        console.log(`📍 ${format(day, 'yyyy-MM-dd')} has ${slots.length} slots`)
+        
+        days.push({
+          date: day,
+          slots: slots,
+          isPast: isBefore(day, new Date()) && !isToday(day),
+          isCurrentMonth: day >= monthStart && day <= monthEnd
+        })
       }
     })
+    
+    // Sort by date
+    return days.sort((a, b) => a.date.getTime() - b.date.getTime())
   }
 
   const days = generateCalendarDays()
@@ -104,6 +115,18 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     if (available) {
       onSlotSelect(date, time)
     }
+  }
+
+  const toggleDayExpansion = (dateStr: string) => {
+    setExpandedDays(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(dateStr)) {
+        newSet.delete(dateStr)
+      } else {
+        newSet.add(dateStr)
+      }
+      return newSet
+    })
   }
 
   const goToPreviousMonth = () => {
@@ -136,11 +159,11 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
           </svg>
           <span className="hidden sm:inline text-sm text-gray-600">Mois précédent</span>
         </button>
-        
+
         <h3 className="text-xl font-bold text-gray-900 capitalize">
           {format(currentDate, 'MMMM yyyy', { locale: fr })}
         </h3>
-        
+
         <button
           onClick={goToNextMonth}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
@@ -152,94 +175,71 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
         </button>
       </div>
 
-      {/* Week days header - Hidden on mobile */}
-      <div className="hidden md:grid grid-cols-7 gap-1 mb-2">
-        {weekDays.map(day => (
-          <div key={day} className="text-center text-sm font-semibold text-gray-700 py-3 bg-gray-50 rounded-lg">
-            {day}
+      {/* Calendar Grid - Only days with available slots */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+        {/* Available days only */}
+        {days.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p className="text-gray-600 font-medium mb-2">Aucun créneau disponible ce mois-ci</p>
+            <p className="text-sm text-gray-500">Essayez le mois suivant ou contactez-nous au 07 65 56 53 79</p>
           </div>
-        ))}
-      </div>
+        ) : (
+          days.map((day: CalendarDay, index: number) => (
+            <div 
+              key={index} 
+              className="border-2 border-blue-200 bg-white rounded-xl p-3 sm:p-4 transition-all hover:shadow-lg hover:border-blue-400"
+            >
+              {/* Date header */}
+              <div className="mb-3 pb-2 border-b border-gray-200">
+                <div className="text-xs sm:text-sm text-gray-500 mb-0.5">
+                  {format(day.date, 'EEEE', { locale: fr })}
+                </div>
+                <div className={`text-lg sm:text-xl font-bold ${
+                  isToday(day.date) ? 'text-blue-600' : 'text-gray-900'
+                }`}>
+                  {format(day.date, 'd MMMM', { locale: fr })}
+                </div>
+              </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-1 md:gap-2">
-        {/* Calendar days */}
-        {days.map((day: CalendarDay, index: number) => (
-          <div 
-            key={index} 
-            className={`min-h-[100px] sm:min-h-[120px] md:min-h-[140px] border rounded-lg p-1 sm:p-2 transition-all ${
-              day.isCurrentMonth 
-                ? 'border-gray-200 bg-white' 
-                : 'border-gray-100 bg-gray-50'
-            }`}
-          >
-            {/* Mobile: Show day name + date */}
-            <div className="md:hidden text-xs text-gray-500 mb-1">
-              {format(day.date, 'EEE', { locale: fr })}
-            </div>
-            
-            <div className={`text-xs sm:text-sm font-medium mb-1 sm:mb-2 ${
-              isToday(day.date) 
-                ? 'text-blue-600 font-bold' 
-                : day.isPast 
-                  ? 'text-gray-400' 
-                  : day.isCurrentMonth
-                    ? 'text-gray-900'
-                    : 'text-gray-400'
-            }`}>
-              {format(day.date, 'd')}
-            </div>
-            
-            {!day.isPast && day.isCurrentMonth && day.slots.length > 0 && (
-              <div className="space-y-0.5 sm:space-y-1">
-                {/* Mobile: Show first 2 slots */}
-                <div className="md:hidden">
-                  {day.slots.slice(0, 2).map((slot: AvailableSlot) => (
-                    <button
-                      key={slot.id}
-                      onClick={() => handleSlotClick(slot.date, slot.start_time)}
-                      className={`w-full text-xs px-1 py-0.5 mb-0.5 rounded transition-colors truncate ${
-                        selectedDate === slot.date && selectedTime === slot.start_time
-                          ? 'bg-blue-600 text-white shadow-md'
-                          : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
-                      }`}
-                    >
-                      {slot.start_time.slice(0, 5)}
-                    </button>
-                  ))}
-                  {day.slots.length > 2 && (
-                    <div className="text-xs text-blue-600 text-center font-medium">
-                      +{day.slots.length - 2}
-                    </div>
-                  )}
+              {day.slots.length > 0 && (
+                <div className="space-y-2 sm:space-y-2.5">
+                  {/* Show first 3 slots or all if expanded */}
+                  <div className="space-y-2">
+                    {(expandedDays.has(format(day.date, 'yyyy-MM-dd')) ? day.slots : day.slots.slice(0, 3)).map((slot: AvailableSlot) => (
+                      <button
+                        key={slot.id}
+                        onClick={() => handleSlotClick(slot.date, slot.start_time)}
+                        className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${
+                          selectedDate === slot.date && selectedTime === slot.start_time
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
+                            : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
+                        }`}
+                      >
+                        {slot.start_time.slice(0, 5)}
+                      </button>
+                    ))}
+                    {day.slots.length > 3 && (
+                      <button
+                        onClick={() => toggleDayExpansion(format(day.date, 'yyyy-MM-dd'))}
+                        className="w-full text-sm text-blue-600 text-center font-semibold py-2 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200 mt-1.5"
+                      >
+                        {expandedDays.has(format(day.date, 'yyyy-MM-dd'))
+                          ? '↑ Réduire'
+                          : `↓ Voir tous (${day.slots.length})`
+                        }
+                      </button>
+                    )}
+                  </div>
                 </div>
-                
-                {/* Desktop: Show all slots */}
-                <div className="hidden md:block">
-                  {day.slots.map((slot: AvailableSlot) => (
-                    <button
-                      key={slot.id}
-                      onClick={() => handleSlotClick(slot.date, slot.start_time)}
-                      className={`w-full text-xs px-1 py-1 mb-1 rounded transition-colors truncate ${
-                        selectedDate === slot.date && selectedTime === slot.start_time
-                          ? 'bg-blue-600 text-white shadow-md'
-                          : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
-                      }`}
-                    >
-                      {slot.start_time.slice(0, 5)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {!day.isPast && day.isCurrentMonth && day.slots.length === 0 && (
-              <div className="text-xs text-gray-400 text-center mt-2 sm:mt-4">
-                —
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* Legend */}
