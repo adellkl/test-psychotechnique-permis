@@ -72,3 +72,9 @@ logs
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+
+# Test files
+check-slots.js
+check-future-slots.js
+test-api-slots.js
+test-calendar-direct.html

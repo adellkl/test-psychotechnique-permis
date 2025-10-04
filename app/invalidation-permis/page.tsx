@@ -83,11 +83,11 @@ export default function InvalidationPermisPage() {
             Test Psychotechnique Invalidation Permis - Solde Nul Points
           </h1>
           <p className="text-xl text-gray-700 leading-relaxed mb-8">
-            Votre permis de conduire a été <strong>invalidé pour solde nul de points</strong> ? 
+            Votre permis de conduire a été <strong>invalidé pour solde nul de points</strong> ?
             Découvrez la procédure pour le récupérer.
           </p>
-          <Link 
-            href="/prendre-rendez-vous" 
+          <Link
+            href="/prendre-rendez-vous"
             className="inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded-xl font-semibold text-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -125,7 +125,7 @@ export default function InvalidationPermisPage() {
             <p className="text-gray-700 leading-relaxed mb-8">
               Vous pouvez faire vos démarche sans attendre la fin de la période d'interdiction de conduire. Pour obtenir un nouveau permis :
             </p>
-            
+
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-start gap-4">
@@ -139,7 +139,7 @@ export default function InvalidationPermisPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
@@ -152,7 +152,7 @@ export default function InvalidationPermisPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
@@ -169,10 +169,10 @@ export default function InvalidationPermisPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-12 text-center">
-              <Link 
-                href="/prendre-rendez-vous" 
+              <Link
+                href="/prendre-rendez-vous"
                 className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -185,7 +185,7 @@ export default function InvalidationPermisPage() {
         </div>
       </section>
 
-      
+
       <FAQ />
     </>
   )

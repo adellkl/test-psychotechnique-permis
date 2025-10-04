@@ -83,11 +83,11 @@ export default function SuspensionPermisPage() {
             Test Psychotechnique Suspension Permis - Alcool Vitesse Stupéfiants
           </h1>
           <p className="text-xl text-gray-700 leading-relaxed mb-8">
-            Votre permis de conduire a été <strong>suspendu temporairement</strong> ? 
+            Votre permis de conduire a été <strong>suspendu temporairement</strong> ?
             Découvrez la procédure pour le récupérer.
           </p>
-          <Link 
-            href="/prendre-rendez-vous" 
+          <Link
+            href="/prendre-rendez-vous"
             className="inline-flex items-center gap-3 px-8 py-4 bg-orange-600 text-white rounded-xl font-semibold text-lg hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -125,7 +125,7 @@ export default function SuspensionPermisPage() {
             <p className="text-gray-700 leading-relaxed mb-8">
               La récupération du permis de conduire nécessitera l'accomplissement de quelques formalités :
             </p>
-            
+
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-start gap-4">
@@ -139,7 +139,7 @@ export default function SuspensionPermisPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
@@ -156,16 +156,16 @@ export default function SuspensionPermisPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-lg mt-8">
               <p className="text-gray-700 leading-relaxed">
                 <strong>Durée :</strong> La durée maximale de la suspension est de 6 mois. Elle peut, cependant, dans certains cas, être portée à 1 an.
               </p>
             </div>
-            
+
             <div className="mt-12 text-center">
-              <Link 
-                href="/prendre-rendez-vous" 
+              <Link
+                href="/prendre-rendez-vous"
                 className="inline-flex items-center gap-3 px-8 py-4 bg-orange-600 text-white rounded-xl font-semibold text-lg hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -184,7 +184,7 @@ export default function SuspensionPermisPage() {
           <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
             Infractions routières concernées
           </h2>
-          
+
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Alcool ou stupéfiants */}
             <div className="bg-red-50 p-6 rounded-xl border border-red-200">
@@ -259,8 +259,8 @@ export default function SuspensionPermisPage() {
           </div>
 
           <div className="mt-12 text-center">
-            <Link 
-              href="/prendre-rendez-vous" 
+            <Link
+              href="/prendre-rendez-vous"
               className="inline-flex items-center gap-3 px-8 py-4 bg-orange-600 text-white rounded-xl font-semibold text-lg hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -271,7 +271,7 @@ export default function SuspensionPermisPage() {
           </div>
         </div>
       </section>
-      
+
       <FAQ />
     </>
   )

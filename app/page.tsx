@@ -22,7 +22,7 @@ export default function HomePage() {
   return (
     <>
       <HeroBanner />
-      
+
       {/* À propos du centre */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-6">
@@ -31,7 +31,7 @@ export default function HomePage() {
               Test Psychotechnique Permis - Centre Agréé Clichy
             </h2>
           </div>
-          
+
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Contenu principal */}
             <div className="space-y-8 animate-slide-in-left">
@@ -107,7 +107,7 @@ export default function HomePage() {
                     className="object-cover rounded-full"
                   />
                 </div>
-                
+
                 <div className="relative z-10">
                   <div className="text-center mb-6">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -121,14 +121,14 @@ export default function HomePage() {
                       En cas d'échec
                     </div>
                   </div>
-                  
+
                   <p className="text-gray-700 leading-relaxed mb-6 text-center">
                     Le test psychotechnique peut être un moment stressant pour certains et il peut arriver que votre test soit un échec à cause de cela. Notre psychologue vous proposera de passer le test une <span className="font-bold text-blue-600">deuxième fois gratuitement</span>, pour vous donner toutes les chances de récupérer votre permis de conduire.
                   </p>
-                  
+
                   <div className="text-center">
-                    <Link 
-                      href="/a-propos" 
+                    <Link
+                      href="/a-propos"
                       className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,8 +174,8 @@ export default function HomePage() {
                 Après une <strong>invalidation du permis de conduire</strong> pour solde nul de <span className="font-semibold text-red-600">6 mois ou plus</span>, un <strong>test psychotechnique</strong> est obligatoire pour récupérer votre permis de conduire.
               </p>
               <div className="text-center">
-                <Link 
-                  href="/invalidation-permis" 
+                <Link
+                  href="/invalidation-permis"
                   className="inline-flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
                 >
                   En savoir plus
@@ -200,8 +200,8 @@ export default function HomePage() {
                 En cas de <strong>suspension de permis de conduire</strong> de <span className="font-semibold text-orange-600">6 mois ou plus</span>, il est obligatoire d'effectuer un <strong>test psychotechnique</strong> dans un centre agréé.
               </p>
               <div className="text-center">
-                <Link 
-                  href="/suspension-permis" 
+                <Link
+                  href="/suspension-permis"
                   className="inline-flex items-center gap-2 px-4 py-2 text-orange-600 hover:text-orange-700 font-medium transition-colors duration-200"
                 >
                   En savoir plus
@@ -226,8 +226,8 @@ export default function HomePage() {
                 En cas d'<strong>annulation de votre permis de conduire</strong>, la première étape obligatoire est de <span className="font-semibold text-purple-600">passer un test psychotechnique</span> dans un centre agréé préfecture.
               </p>
               <div className="text-center">
-                <Link 
-                  href="/annulation-permis" 
+                <Link
+                  href="/annulation-permis"
                   className="inline-flex items-center gap-2 px-4 py-2 text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200"
                 >
                   En savoir plus
@@ -241,8 +241,8 @@ export default function HomePage() {
 
           {/* CTA Principal */}
           <div className="text-center mt-8 sm:mt-12 animate-smooth-bounce animation-delay-800">
-            <Link 
-              href="/rendez-vous" 
+            <Link
+              href="/rendez-vous"
               className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3.5 sm:px-10 sm:py-5 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-xl sm:rounded-2xl font-bold text-base sm:text-xl hover:from-blue-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl w-full sm:w-auto max-w-sm sm:max-w-none mx-auto"
             >
               <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -278,13 +278,13 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Tarifs transparents</h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
                   <span className="font-semibold text-gray-700">Prix du test</span>
                   <span className="text-2xl font-bold text-emerald-600">90€</span>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
@@ -294,7 +294,7 @@ export default function HomePage() {
                     </div>
                     <span className="text-gray-600">Aucun acompte</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -303,7 +303,7 @@ export default function HomePage() {
                     </div>
                     <span className="text-gray-600">Paiement sur place</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -335,19 +335,19 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Psychologue certifiée</h3>
               </div>
-              
+
               <div className="text-center space-y-4">
                 <p className="text-gray-600 leading-relaxed">
                   Notre psychologue est <span className="font-semibold text-blue-600">agréée par la préfecture</span> et dispose d'un numéro ADELI délivré par l'ARS.
                 </p>
-                
+
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-gray-600 mb-2">Numéro ADELI</p>
                   <p className="text-xl font-bold text-blue-600 font-mono">929334555</p>
                 </div>
-                
-                <Link 
-                  href="/agrement-prefectoral" 
+
+                <Link
+                  href="/agrement-prefectoral"
                   className="inline-flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -368,12 +368,12 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Localisation idéale</h3>
               </div>
-              
+
               <div className="space-y-4">
                 <p className="text-gray-600 leading-relaxed text-center">
                   Proche de Paris, situé à <span className="font-semibold text-purple-600">3min du métro Mairie de Clichy</span>, sur la ligne 13 et à <span className="font-semibold text-purple-600">10min à pied de la gare de Clichy-Levallois</span>.
                 </p>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
                     <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -386,7 +386,7 @@ export default function HomePage() {
                       <p className="text-sm text-gray-600">3 min à pied</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
                     <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">

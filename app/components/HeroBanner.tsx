@@ -10,7 +10,7 @@ export default function HeroBanner() {
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <defs>
               <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e2e8f0" strokeWidth="0.5"/>
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e2e8f0" strokeWidth="0.5" />
               </pattern>
             </defs>
             <rect width="100" height="100" fill="url(#grid)" />
@@ -35,7 +35,7 @@ export default function HeroBanner() {
                 <span className="block text-blue-600 animate-text-reveal animation-delay-500">Psychotechnique</span>
                 <span className="block animate-text-reveal animation-delay-800">Permis</span>
               </h1>
-              
+
               <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed animate-slide-in-right animation-delay-1100">
                 En cas d'échec, une deuxième chance vous sera accordée{" "}
                 <span className="font-bold text-emerald-600 animate-highlight animation-delay-1400">gratuitement !</span>
@@ -44,7 +44,7 @@ export default function HeroBanner() {
 
             {/* Boutons */}
             <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 animate-slide-in-left animation-delay-1600">
-              <Link 
+              <Link
                 href="tel:0765565379"
                 className="group inline-flex items-center justify-center gap-2 lg:gap-3 px-6 py-3 lg:px-8 lg:py-4 bg-blue-600 text-white rounded-lg lg:rounded-xl font-semibold text-base lg:text-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl animate-button-glow"
               >
@@ -53,8 +53,8 @@ export default function HeroBanner() {
                 </svg>
                 Appelez nous !
               </Link>
-              
-              <Link 
+
+              <Link
                 href="/rendez-vous"
                 className="group inline-flex items-center justify-center gap-2 lg:gap-3 px-6 py-3 lg:px-8 lg:py-4 bg-white text-blue-600 border-2 border-blue-600 rounded-lg lg:rounded-xl font-semibold text-base lg:text-lg hover:bg-blue-50 transition-all duration-300"
               >
@@ -115,7 +115,7 @@ export default function HeroBanner() {
               <div className="absolute bottom-20 left-20 w-1.5 h-1.5 bg-purple-300 rounded-full animate-float-particle-3 opacity-40"></div>
               <div className="absolute top-32 left-32 w-1 h-1 bg-pink-300 rounded-full animate-float-particle-4 opacity-50"></div>
             </div>
-            
+
             <div className="relative animate-float">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-emerald-400 rounded-3xl transform rotate-6 animate-pulse-glow"></div>
               <div className="relative bg-white p-8 rounded-3xl shadow-2xl animate-card-appear animate-card-float-3d hover:shadow-3xl transition-shadow duration-500">
@@ -127,13 +127,13 @@ export default function HeroBanner() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  
+
                   {/* Texte avec animation de typewriter */}
                   <div className="animate-fade-in-up">
                     <h3 className="text-2xl font-bold text-gray-900 animate-text-shimmer">Test Réussi</h3>
                     <p className="text-gray-600 animate-fade-in-up animation-delay-300">Votre permis vous attend</p>
                   </div>
-                  
+
                   {/* Points de chargement améliorés */}
                   <div className="flex justify-center space-x-3">
                     <div className="relative">
@@ -149,7 +149,7 @@ export default function HeroBanner() {
                       <div className="absolute inset-0 w-4 h-4 bg-purple-300 rounded-full animate-ping opacity-30 animation-delay-400"></div>
                     </div>
                   </div>
-                  
+
                   {/* Barre de progression animée */}
                   <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full animate-progress-fill"></div>
@@ -157,12 +157,12 @@ export default function HeroBanner() {
                 </div>
               </div>
             </div>
-            
+
             {/* Éléments décoratifs flottants améliorés */}
             <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full animate-float-enhanced opacity-80 shadow-lg"></div>
             <div className="absolute -bottom-6 -left-6 w-6 h-6 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full animate-float-reverse-enhanced opacity-60 shadow-md"></div>
             <div className="absolute top-1/2 -right-8 w-4 h-4 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full animate-pulse-enhanced opacity-70 shadow-sm"></div>
-            
+
             {/* Rayons de lumière */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-20 bg-gradient-to-b from-yellow-300 to-transparent animate-light-ray-1 opacity-30"></div>
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 rotate-45 w-1 h-16 bg-gradient-to-b from-blue-300 to-transparent animate-light-ray-2 opacity-20"></div>
