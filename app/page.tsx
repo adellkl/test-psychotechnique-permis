@@ -37,13 +37,13 @@ export default function HomePage() {
             <div className="space-y-8 animate-slide-in-left">
               {/* Localisation avec image */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="flex items-start gap-4 mb-4">
+                <div className="flex flex-row-reverse lg:flex-row items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Centre Test Psychotechnique Permis Agréé</h3>
                     <p className="text-gray-600 leading-relaxed">
                       Notre <strong>centre de test psychotechnique agréé préfecture</strong> est situé à <span className="font-semibold text-blue-600">3 min du métro Mairie de Clichy</span>, sur la ligne 13 et à <span className="font-semibold text-blue-600">10 min à pied de la gare de Clichy-Levallois</span>. Accessible depuis Paris et toute l'Île-de-France pour votre <strong>récupération de permis de conduire</strong>.
@@ -66,13 +66,13 @@ export default function HomePage() {
 
               {/* Paiement avec image */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="flex items-start gap-4 mb-4">
+                <div className="flex flex-row-reverse lg:flex-row items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
                     </svg>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Paiement simplifié</h3>
                     <p className="text-gray-600 leading-relaxed">
                       <span className="font-semibold text-emerald-600">Paiement sur place</span>, aucun acompte ne vous sera demandé en ligne.
@@ -262,7 +262,7 @@ export default function HomePage() {
               Pourquoi choisir notre centre ?
             </h2>
             <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed animate-slide-in-left">
-              Notre centre propose des rendez-vous de tests psychotechniques en ligne ou par téléphone en fonction de vos disponibilités.
+              Un centre agréé, des psychologues qualifiés et un service de qualité pour votre récupération de permis.
             </p>
           </div>
 
@@ -276,13 +276,12 @@ export default function HomePage() {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Tarifs transparents</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Tarifs transparents</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
                   <span className="font-semibold text-gray-700">Prix du test</span>
-                  <span className="text-2xl font-bold text-emerald-600">90€</span>
                 </div>
 
                 <div className="space-y-3">

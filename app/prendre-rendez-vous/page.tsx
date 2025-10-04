@@ -25,16 +25,33 @@ export default function RendezVous() {
   const [success, setSuccess] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const continueButtonRef = useRef<HTMLButtonElement>(null)
+  const personalInfoRef = useRef<HTMLDivElement>(null)
 
-  // Auto-scroll to continue button when slot is selected
+  // Auto-scroll intelligent vers le bouton continuer
   useEffect(() => {
     if (selectedDate && selectedTime && continueButtonRef.current) {
       setTimeout(() => {
-        continueButtonRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        })
-      }, 300)
+        const element = continueButtonRef.current
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          const windowHeight = window.innerHeight
+          
+          // Vérifier si le bouton est déjà visible à l'écran
+          const isVisible = rect.top >= 80 && rect.bottom <= windowHeight - 20
+          
+          // Ne scroller que si le bouton n'est pas visible
+          if (!isVisible) {
+            // Calculer le scroll minimal pour voir le bouton
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+            const offsetPosition = elementPosition - 150 // Petit offset pour voir le bouton confortablement
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            })
+          }
+        }
+      }, 400)
     }
   }, [selectedDate, selectedTime])
 
@@ -259,7 +276,17 @@ export default function RendezVous() {
                       ref={continueButtonRef}
                       onClick={() => {
                         setStep(2)
-                        scrollToTop()
+                        // Scroll doux vers la section infos personnelles
+                        setTimeout(() => {
+                          if (personalInfoRef.current) {
+                            const elementPosition = personalInfoRef.current.getBoundingClientRect().top + window.pageYOffset
+                            const offsetPosition = elementPosition - 100
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            })
+                          }
+                        }, 100)
                       }}
                       disabled={!selectedDate || !selectedTime}
                       className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
@@ -275,7 +302,7 @@ export default function RendezVous() {
 
               {/* Step 2: Personal Information */}
               {step === 2 && (
-                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                <div ref={personalInfoRef} className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
                   <div className="mb-4">
                     <h2 className="text-xl font-bold text-gray-900 mb-1">Vos informations personnelles</h2>
                     <p className="text-sm text-gray-600">Complétez vos coordonnées pour finaliser votre réservation de test psychotechnique</p>
@@ -508,55 +535,55 @@ export default function RendezVous() {
                       </div>
                     </div>
 
-                    {/* Important information */}
-                    <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-                      <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
+                    {/* Important information - Mobile responsive */}
+                    <div className="bg-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200">
+                      <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2">
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
                         Informations importantes
                       </h3>
-                      <div className="grid gap-3">
-                        <div className="flex items-start gap-3">
-                          <div className="w-5 h-5 text-blue-600 mt-0.5">
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
+                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
                             <svg fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <span className="text-blue-800">Arrivée 10 minutes avant votre rendez-vous</span>
+                          <span className="text-sm sm:text-base text-blue-800">Arrivée 10 minutes avant votre rendez-vous</span>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-5 h-5 text-blue-600 mt-0.5">
+                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
+                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
                             <svg fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <span className="text-blue-800">Pièce d'identité obligatoire (carte d'identité ou passeport)</span>
+                          <span className="text-sm sm:text-base text-blue-800">Pièce d'identité obligatoire (carte d'identité ou passeport)</span>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-5 h-5 text-blue-600 mt-0.5">
+                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
+                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
                             <svg fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <span className="text-blue-800">Durée : environ 2 heures (tests + entretien)</span>
+                          <span className="text-sm sm:text-base text-blue-800">Durée : environ 2 heures (tests + entretien)</span>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-5 h-5 text-blue-600 mt-0.5">
+                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
+                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
                             <svg fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <span className="text-blue-800">Paiement sur place (aucun acompte requis)</span>
+                          <span className="text-sm sm:text-base text-blue-800">Paiement sur place (aucun acompte requis)</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 mt-8">
                     <button
                       onClick={() => window.location.href = '/'}
-                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                      className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />

@@ -25,7 +25,7 @@ function DashboardContent() {
   const [admin, setAdmin] = useState<any>(null)
   const [activeSection, setActiveSection] = useState('appointments')
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const [notification, setNotification] = useState<{type: 'success' | 'error', message: string} | null>(null)
+  const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   useEffect(() => {
@@ -37,16 +37,16 @@ function DashboardContent() {
     }
     const adminData = JSON.parse(adminSession)
     setAdmin(adminData)
-    
+
     // Check URL hash for active section
     const hash = window.location.hash.replace('#', '')
-    if (hash && ['dashboard', 'appointments', 'statistics'].includes(hash)) {
+    if (hash && ['dashboard', 'appointments', 'statistics', 'settings'].includes(hash)) {
       setActiveSection(hash)
     }
-    
+
     // Log dashboard view
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
-    
+
     fetchAppointments()
   }, [])
 
@@ -77,11 +77,11 @@ function DashboardContent() {
 
       if (error) throw error
       await fetchAppointments()
-      setNotification({type: 'success', message: 'Statut mis à jour avec succès'})
+      setNotification({ type: 'success', message: 'Statut mis à jour avec succès' })
       setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error updating appointment:', error)
-      setNotification({type: 'error', message: 'Erreur lors de la mise à jour'})
+      setNotification({ type: 'error', message: 'Erreur lors de la mise à jour' })
       setTimeout(() => setNotification(null), 3000)
     }
   }
@@ -96,11 +96,11 @@ function DashboardContent() {
       if (error) throw error
 
       await fetchAppointments()
-      setNotification({type: 'success', message: 'Rendez-vous supprimé avec succès'})
+      setNotification({ type: 'success', message: 'Rendez-vous supprimé avec succès' })
       setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error deleting appointment:', error)
-      setNotification({type: 'error', message: 'Erreur lors de la suppression du rendez-vous'})
+      setNotification({ type: 'error', message: 'Erreur lors de la suppression du rendez-vous' })
       setTimeout(() => setNotification(null), 3000)
     }
   }
@@ -115,11 +115,11 @@ function DashboardContent() {
       if (error) throw error
 
       await fetchAppointments()
-      setNotification({type: 'success', message: `${ids.length} rendez-vous supprimés avec succès`})
+      setNotification({ type: 'success', message: `${ids.length} rendez-vous supprimés avec succès` })
       setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error deleting appointments:', error)
-      setNotification({type: 'error', message: 'Erreur lors de la suppression des rendez-vous'})
+      setNotification({ type: 'error', message: 'Erreur lors de la suppression des rendez-vous' })
       setTimeout(() => setNotification(null), 3000)
     }
   }
@@ -149,7 +149,7 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Sidebar */}
-      <Sidebar 
+      <Sidebar
         activeSection={activeSection}
         onSectionChange={(section) => {
           setActiveSection(section)
@@ -162,9 +162,8 @@ function DashboardContent() {
       />
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-        sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
-      }`}>
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+        }`}>
         {/* Top Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
           <div className="px-4 lg:px-6 py-4">
@@ -174,6 +173,7 @@ function DashboardContent() {
                   {activeSection === 'dashboard' && 'Vue d\'ensemble'}
                   {activeSection === 'appointments' && 'Gestion des rendez-vous'}
                   {activeSection === 'statistics' && 'Statistiques'}
+                  {activeSection === 'settings' && 'Paramètres du compte'}
                 </h1>
                 <p className="text-xs lg:text-sm text-gray-600 mt-1">
                   Bienvenue, {admin?.full_name}
@@ -192,7 +192,7 @@ function DashboardContent() {
           {activeSection === 'dashboard' && (
             <div className="space-y-6">
               <EnhancedStats appointments={appointments} />
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Quick Stats */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -245,7 +245,7 @@ function DashboardContent() {
           {/* Appointments Section */}
           {activeSection === 'appointments' && (
             <div>
-              <AppointmentsTable 
+              <AppointmentsTable
                 appointments={appointments}
                 onUpdateStatus={updateAppointmentStatus}
                 onDelete={deleteAppointment}
@@ -259,6 +259,11 @@ function DashboardContent() {
             <div className="space-y-6">
               <StatisticsCharts appointments={appointments} />
             </div>
+          )}
+
+          {/* Settings Section */}
+          {activeSection === 'settings' && (
+            <AdminSettingsContent />
           )}
         </main>
       </div>
@@ -278,7 +283,7 @@ function DashboardContent() {
                 <p className="text-sm text-gray-600">Êtes-vous sûr de vouloir vous déconnecter ?</p>
               </div>
             </div>
-            
+
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
@@ -296,24 +301,22 @@ function DashboardContent() {
           </div>
         </div>
       )}
-      
+
       {/* Notification Toast */}
       {notification && (
-        <div 
-          className={`fixed top-6 right-6 min-w-[320px] max-w-md rounded-xl shadow-2xl backdrop-blur-md border transition-all duration-500 transform ${
-            notification.type === 'success' 
-              ? 'bg-gradient-to-r from-green-50/95 to-emerald-50/95 border-green-300/50 text-green-900' 
+        <div
+          className={`fixed top-6 right-6 min-w-[320px] max-w-md rounded-xl shadow-2xl backdrop-blur-md border transition-all duration-500 transform ${notification.type === 'success'
+              ? 'bg-gradient-to-r from-green-50/95 to-emerald-50/95 border-green-300/50 text-green-900'
               : 'bg-gradient-to-r from-red-50/95 to-rose-50/95 border-red-300/50 text-red-900'
-          } animate-in slide-in-from-right-5 fade-in-0`}
+            } animate-in slide-in-from-right-5 fade-in-0`}
           style={{ zIndex: 9998 }}
         >
           <div className="p-4">
             <div className="flex items-start gap-3">
-              <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                notification.type === 'success' 
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+              <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${notification.type === 'success'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500'
                   : 'bg-gradient-to-r from-red-500 to-rose-500'
-              }`}>
+                }`}>
                 {notification.type === 'success' ? (
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -330,13 +333,12 @@ function DashboardContent() {
                 </p>
                 <p className="text-sm opacity-90">{notification.message}</p>
               </div>
-              <button 
+              <button
                 onClick={() => setNotification(null)}
-                className={`flex-shrink-0 p-1 rounded-lg transition-all duration-200 ${
-                  notification.type === 'success' 
-                    ? 'hover:bg-green-200/50 text-green-700' 
+                className={`flex-shrink-0 p-1 rounded-lg transition-all duration-200 ${notification.type === 'success'
+                    ? 'hover:bg-green-200/50 text-green-700'
                     : 'hover:bg-red-200/50 text-red-700'
-                }`}
+                  }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

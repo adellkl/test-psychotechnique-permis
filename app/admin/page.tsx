@@ -35,43 +35,37 @@ export default function AdminLogin() {
       // Sanitize email
       const sanitizedEmail = sanitizeString(email).toLowerCase()
       
-      // Debug: Log the connection attempt
-      console.log('Attempting login with:', sanitizedEmail)
-      
-      // Simple authentication check against admins table
+      // Vérification simple pour admin@permis-expert.fr
       const { data, error } = await supabase
         .from('admins')
         .select('*')
         .eq('email', sanitizedEmail)
         .single()
 
-      console.log('Supabase response:', { data, error })
-
       if (error || !data) {
-        console.error('Database error:', error)
         throw new Error('Email ou mot de passe incorrect')
       }
 
-      // In production, you should hash and compare passwords properly
-      // For now, we'll use a simple comparison
-      if (password === 'admin123') {
-        // Store admin session with timestamp
-        const adminSession = {
-          id: data.id,
-          email: data.email,
-          full_name: data.full_name
-        }
-        localStorage.setItem('admin_session', JSON.stringify(adminSession))
-        localStorage.setItem('admin_session_timestamp', Date.now().toString())
-        
-        // Log the login activity
-        await logAdminActivity(AdminLogger.ACTIONS.LOGIN, `Admin ${data.full_name} logged in`)
-        
-        // Redirect to dashboard
-        window.location.href = '/admin/dashboard'
-      } else {
+      // Vérifier le mot de passe depuis localStorage ou défaut
+      const storedPassword = localStorage.getItem('admin_password') || 'admin123'
+      if (password !== storedPassword) {
         throw new Error('Email ou mot de passe incorrect')
       }
+
+      // Store admin session with timestamp
+      const adminSession = {
+        id: data.id,
+        email: data.email,
+        full_name: data.full_name
+      }
+      localStorage.setItem('admin_session', JSON.stringify(adminSession))
+      localStorage.setItem('admin_session_timestamp', Date.now().toString())
+      
+      // Log the login activity
+      await logAdminActivity(AdminLogger.ACTIONS.LOGIN, `Admin ${data.full_name} logged in`)
+      
+      // Redirect to dashboard
+      window.location.href = '/admin/dashboard'
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -208,32 +202,6 @@ export default function AdminLogin() {
               )}
             </button>
           </form>
-
-          {/* Info Section */}
-          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-blue-200">
-              <div className="flex items-start">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg sm:rounded-xl flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-900 mb-1.5 sm:mb-2">
-                    Identifiants de test
-                  </h3>
-                  <div className="space-y-0.5 sm:space-y-1">
-                    <p className="text-xs text-gray-700 break-words">
-                      <span className="font-semibold">Email :</span> admin@permis-expert.fr
-                    </p>
-                    <p className="text-xs text-gray-700">
-                      <span className="font-semibold">Mot de passe :</span> admin123
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
       </div>

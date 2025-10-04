@@ -41,6 +41,7 @@ export class AdminLogger {
   static readonly ACTIONS = {
     LOGIN: 'LOGIN',
     LOGOUT: 'LOGOUT',
+    UPDATE: 'UPDATE',
     CREATE_SLOT: 'CREATE_SLOT',
     UPDATE_SLOT: 'UPDATE_SLOT',
     DELETE_SLOT: 'DELETE_SLOT',

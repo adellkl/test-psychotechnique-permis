@@ -39,7 +39,7 @@ function TimeSlotContent() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [notification, setNotification] = useState<{type: 'success' | 'error', message: string} | null>(null)
-  const [activeSection] = useState('slots')
+  const [activeSection, setActiveSection] = useState('slots')
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
@@ -358,11 +358,12 @@ function TimeSlotContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <Sidebar 
-        activeSection="slots"
+        activeSection={activeSection}
         onSectionChange={(section) => {
-          if (section === 'dashboard') window.location.href = '/admin/dashboard#dashboard'
-          else if (section === 'appointments') window.location.href = '/admin/dashboard#appointments'
-          else if (section === 'statistics') window.location.href = '/admin/dashboard#statistics'
+          // Navigation vers le dashboard
+          if (section === 'dashboard' || section === 'appointments' || section === 'statistics' || section === 'settings') {
+            window.location.href = `/admin/dashboard#${section}`
+          }
         }}
         adminName={admin?.full_name || 'Admin'}
         onLogout={() => setShowLogoutConfirm(true)}

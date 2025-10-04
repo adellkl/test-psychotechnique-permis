@@ -1,0 +1,12 @@
+#!/bin/bash
+echo "⚠️  À faire APRÈS vérification du domaine sur Resend :"
+echo ""
+echo "1. Ouvrez .env.local"
+echo "2. Changez ces lignes :"
+echo ""
+echo "FROM_EMAIL=noreply@send.test-psychotechnique-permis.com"
+echo "ADMIN_EMAIL=f.sebti@outlook.com"
+echo ""
+echo "3. Redémarrez le serveur : npm run dev"
+echo ""
+echo "Les emails partiront alors automatiquement aux clients ! 🎉"
