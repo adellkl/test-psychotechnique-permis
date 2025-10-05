@@ -202,7 +202,7 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
       reason: appointmentData.reason,
-      dashboard_url: process.env.NEXT_PUBLIC_APP_URL + '/admin/dashboard'
+      dashboard_url: 'https://www.test-psychotechnique-permis.com/admin/dashboard'
     }
 
     const htmlContent = replaceTemplateVariables(template.html_content, variables)

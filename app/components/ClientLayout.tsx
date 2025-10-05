@@ -10,11 +10,12 @@ interface ClientLayoutProps {
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname()
   const isAdminPage = pathname?.startsWith('/admin')
+  const is404Page = pathname === null || pathname === undefined
 
-  if (isAdminPage) {
-    // For admin pages, only render the page content (index 3 = children in layout)
+  // Pour les pages admin et 404, afficher seulement le contenu sans menu/footer
+  if (isAdminPage || is404Page) {
     const childrenArray = Array.isArray(children) ? children : [children]
-    const pageContent = childrenArray[3] || childrenArray[childrenArray.length - 1] // Get the actual page content
+    const pageContent = childrenArray[3] || childrenArray[childrenArray.length - 1]
     return <>{pageContent}</>
   }
 

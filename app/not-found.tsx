@@ -1,15 +1,22 @@
 import Link from 'next/link'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: "Page non trouvée - Test Psychotechnique Permis Clichy",
-  description: "La page que vous recherchez n'existe pas. Retournez à l'accueil du centre Test Psychotechnique Permis à Clichy pour prendre rendez-vous.",
-  robots: "noindex, nofollow",
-}
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-6">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1.5rem',
+      margin: 0,
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 9999
+    }}>
       <div className="max-w-2xl mx-auto text-center">
         {/* Error Icon */}
         <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-8">
