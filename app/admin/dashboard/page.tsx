@@ -60,8 +60,7 @@ function DashboardContent() {
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
-        .order('appointment_date', { ascending: false })
-        .order('appointment_time', { ascending: false })
+        .order('created_at', { ascending: false })
 
       if (error) throw error
       setAppointments(data || [])

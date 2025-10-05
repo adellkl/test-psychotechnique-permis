@@ -29,59 +29,77 @@ async function sendAdminNotification() {
             day: 'numeric'
         });
 
-        // Template HTML pour notification admin
+        // Template HTML professionnel pour notification admin
         const htmlContent = `
       <html>
-        <body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9fafb;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h1 style="color: #dc2626; margin-top: 0;">🔔 Nouveau Rendez-vous</h1>
+        <head>
+          <meta charset="UTF-8">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             
-            <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
-              <p style="margin: 0; font-weight: bold;">Un nouveau client a réservé un rendez-vous</p>
+            <!-- Header -->
+            <div style="background-color: #2563eb; padding: 24px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 600;">Nouvelle réservation</h1>
             </div>
-
-            <h2 style="color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">Informations du client</h2>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 10px 0; font-weight: bold;">Nom :</td>
-                <td style="padding: 10px 0;">${appointmentData.first_name} ${appointmentData.last_name}</td>
-              </tr>
-              <tr style="background-color: #f9fafb;">
-                <td style="padding: 10px 0; font-weight: bold;">Email :</td>
-                <td style="padding: 10px 0;">${appointmentData.email}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px 0; font-weight: bold;">Téléphone :</td>
-                <td style="padding: 10px 0;">${appointmentData.phone}</td>
-              </tr>
-              <tr style="background-color: #f9fafb;">
-                <td style="padding: 10px 0; font-weight: bold;">Motif :</td>
-                <td style="padding: 10px 0;">${appointmentData.reason}</td>
-              </tr>
-            </table>
-
-            <h2 style="color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 30px;">Détails du rendez-vous</h2>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 10px 0; font-weight: bold;">Date :</td>
-                <td style="padding: 10px 0;">${formattedDate}</td>
-              </tr>
-              <tr style="background-color: #f9fafb;">
-                <td style="padding: 10px 0; font-weight: bold;">Heure :</td>
-                <td style="padding: 10px 0; font-size: 18px; color: #dc2626; font-weight: bold;">${appointmentData.appointment_time}</td>
-              </tr>
-            </table>
-
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="https://www.test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir dans le Dashboard</a>
-            </div>
-
-            <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
             
-            <p style="font-size: 12px; color: #6b7280; text-align: center;">
-              Ceci est une notification automatique du système de rendez-vous<br>
-              Test Psychotechnique Permis - 82 Rue Henri Barbusse, 92110 Clichy
-            </p>
+            <!-- Content -->
+            <div style="padding: 32px;">
+              
+              <!-- Client Info -->
+              <div style="margin-bottom: 24px;">
+                <h2 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 16px 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Informations client</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px; width: 120px;">Nom complet</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${appointmentData.first_name} ${appointmentData.last_name}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Email</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px;">${appointmentData.email}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Téléphone</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px;">${appointmentData.phone}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Motif</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px;">${appointmentData.reason}</td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Appointment Details -->
+              <div style="margin-bottom: 24px;">
+                <h2 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 16px 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Détails du rendez-vous</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px; width: 120px;">Date</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${formattedDate}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Heure</td>
+                    <td style="padding: 8px 0; color: #2563eb; font-size: 16px; font-weight: 600;">${appointmentData.appointment_time}</td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- CTA Button -->
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="https://www.test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">Accéder au tableau de bord</a>
+              </div>
+              
+            </div>
+            
+            <!-- Footer -->
+            <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0; font-size: 12px; color: #6b7280; line-height: 1.5;">
+                Test Psychotechnique Permis<br>
+                82 Rue Henri Barbusse, 92110 Clichy<br>
+                <a href="tel:0765565379" style="color: #2563eb; text-decoration: none;">07 65 56 53 79</a>
+              </p>
+            </div>
+            
           </div>
         </body>
       </html>
@@ -109,7 +127,7 @@ Accédez au dashboard : https://www.test-psychotechnique-permis.com/admin/dashbo
         formData.append('from', FROM_EMAIL);
         formData.append('fromName', 'Test Psychotechnique Permis');
         formData.append('to', ADMIN_EMAIL);
-        formData.append('subject', `🔔 Nouveau RDV : ${appointmentData.first_name} ${appointmentData.last_name} - ${formattedDate} ${appointmentData.appointment_time}`);
+        formData.append('subject', `Nouvelle réservation - ${appointmentData.first_name} ${appointmentData.last_name} - ${appointmentData.appointment_time}`);
         formData.append('bodyHtml', htmlContent);
         formData.append('bodyText', textContent);
 
