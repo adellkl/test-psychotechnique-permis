@@ -73,7 +73,7 @@ async function sendAdminNotification() {
             </table>
 
             <div style="text-align: center; margin: 30px 0;">
-              <a href="https://test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir dans le Dashboard</a>
+              <a href="https://www.test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir dans le Dashboard</a>
             </div>
 
             <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
@@ -100,7 +100,7 @@ Détails du rendez-vous :
 - Date : ${formattedDate}
 - Heure : ${appointmentData.appointment_time}
 
-Accédez au dashboard : https://test-psychotechnique-permis.com/admin/dashboard
+Accédez au dashboard : https://www.test-psychotechnique-permis.com/admin/dashboard
     `;
 
         // Préparer les données pour Elastic Email
