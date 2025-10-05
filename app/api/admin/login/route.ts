@@ -23,20 +23,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que le mot de passe existe
-    if (!admin.password) {
-      console.error('Password is missing for admin:', admin.email)
+    if (!admin.password_hash) {
+      console.error('Password hash is missing for admin:', admin.email)
       return NextResponse.json({ error: 'Compte non configuré. Utilisez le script setup-admin.js' }, { status: 500 })
     }
 
     // Comparer le mot de passe avec bcrypt
-    const isPasswordValid = await bcrypt.compare(password, admin.password)
+    const isPasswordValid = await bcrypt.compare(password, admin.password_hash)
 
     if (!isPasswordValid) {
       return NextResponse.json({ error: 'Email ou mot de passe incorrect' }, { status: 401 })
     }
 
     // Retourner les données admin (sans le mot de passe)
-    const { password: _, ...adminData } = admin
+    const { password_hash: _, password: __, ...adminData } = admin
 
     return NextResponse.json({ 
       success: true, 

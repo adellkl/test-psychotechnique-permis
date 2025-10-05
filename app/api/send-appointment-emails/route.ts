@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      client_email_id: clientEmailResult?.id,
-      admin_email_id: adminEmailResult?.id
+      client_email_id: clientEmailResult?.messageId,
+      admin_email_id: adminEmailResult?.messageId
     })
   } catch (error) {
     console.error('❌ Error sending emails:', error)

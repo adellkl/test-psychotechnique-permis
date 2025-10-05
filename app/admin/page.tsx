@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
-import { AdminLogger, logAdminActivity } from '../../lib/adminLogger'
-import { validateAdminLogin, sanitizeString, checkRateLimit } from '../../lib/validation'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -11,61 +9,59 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [availableAdmins, setAvailableAdmins] = useState<any[]>([])
+
+  // Récupérer la liste des admins au chargement
+  useEffect(() => {
+    fetchAvailableAdmins()
+  }, [])
+
+  const fetchAvailableAdmins = async () => {
+    try {
+      const response = await fetch('/api/admin/list')
+      if (response.ok) {
+        const data = await response.json()
+        setAvailableAdmins(data.admins || [])
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des admins:', error)
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-
-    // Rate limiting check (3 attempts per minute)
-    if (!checkRateLimit('admin_login', 3, 60000)) {
-      setError('Trop de tentatives de connexion. Veuillez patienter une minute.')
-      return
-    }
-
-    // Validate inputs
-    const validation = validateAdminLogin({ email, password })
-    if (!validation.isValid) {
-      setError(Object.values(validation.errors)[0])
-      return
-    }
-
     setLoading(true)
 
     try {
-      // Sanitize email
-      const sanitizedEmail = sanitizeString(email).toLowerCase()
-      
-      // Vérification simple pour admin@permis-expert.fr
-      const { data, error } = await supabase
-        .from('admins')
-        .select('*')
-        .eq('email', sanitizedEmail)
-        .single()
-
-      if (error || !data) {
-        throw new Error('Email ou mot de passe incorrect')
+      if (!email || !password) {
+        setError('Veuillez remplir tous les champs')
+        return
       }
 
-      // Vérifier le mot de passe depuis localStorage ou défaut
-      const storedPassword = localStorage.getItem('admin_password') || 'admin123'
-      if (password !== storedPassword) {
-        throw new Error('Email ou mot de passe incorrect')
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.toLowerCase().trim(),
+          password: password
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur de connexion')
       }
 
-      // Store admin session with timestamp
-      const adminSession = {
-        id: data.id,
-        email: data.email,
-        full_name: data.full_name
-      }
-      localStorage.setItem('admin_session', JSON.stringify(adminSession))
-      localStorage.setItem('admin_session_timestamp', Date.now().toString())
+      // Stocker la session admin
+      localStorage.setItem('admin_session', JSON.stringify(data.admin))
       
-      // Log the login activity
-      await logAdminActivity(AdminLogger.ACTIONS.LOGIN, `Admin ${data.full_name} logged in`)
-      
-      // Redirect to dashboard
+      // Rediriger vers le dashboard
       window.location.href = '/admin/dashboard'
+
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -134,9 +130,17 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-11 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-base text-gray-900 placeholder-gray-400 font-medium"
-                  placeholder="admin@permis-expert.fr"
+                  placeholder="Sélectionnez ou saisissez un email"
+                  list="admin-emails"
                 />
               </div>
+              <datalist id="admin-emails">
+                {availableAdmins.map((admin) => (
+                  <option key={admin.id} value={admin.email}>
+                    {admin.full_name} ({admin.email})
+                  </option>
+                ))}
+              </datalist>
             </div>
 
             <div>
@@ -201,6 +205,7 @@ export default function AdminLogin() {
                 </>
               )}
             </button>
+
           </form>
         </div>
 

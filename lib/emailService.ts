@@ -1,8 +1,85 @@
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 import { supabase } from './supabase'
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Configuration SMTP Outlook
+const outlookTransporter = nodemailer.createTransport({
+  host: 'smtp-mail.outlook.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.OUTLOOK_EMAIL || 'sebtifatiha@live.fr',
+    pass: process.env.OUTLOOK_APP_PASSWORD || 'klozfurpuolscefm'
+  },
+  tls: {
+    ciphers: 'SSLv3',
+    rejectUnauthorized: false
+  },
+  requireTLS: true
+})
+
+// Send email using SMTP (Outlook/Gmail)
+async function sendEmailWithSMTP(emailData: any) {
+  // Utiliser Outlook SMTP
+  const transporter = outlookTransporter
+
+  try {
+    const info = await transporter.sendMail({
+      from: emailData.from,
+      to: emailData.to,
+      subject: emailData.subject,
+      html: emailData.html,
+      text: emailData.text,
+    })
+
+    console.log(`✅ Email envoyé via SMTP: ${info.messageId}`)
+    return { messageId: info.messageId }
+  } catch (error) {
+    console.error('❌ Erreur SMTP:', error)
+    throw error
+  }
+}
+
+// Configuration Elastic Email API (solution fonctionnelle)
+async function sendEmailWithElasticEmail(emailData: {
+  from: string
+  to: string
+  subject: string
+  html: string
+  text: string
+}) {
+  try {
+    const formData = new FormData()
+    formData.append('apikey', process.env.ELASTIC_EMAIL_API_KEY || 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987')
+    formData.append('from', emailData.from)
+    formData.append('to', emailData.to)
+    formData.append('subject', emailData.subject)
+    formData.append('bodyHtml', emailData.html)
+    formData.append('bodyText', emailData.text)
+
+    const response = await fetch('https://api.elasticemail.com/v2/email/send', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.text()
+    
+    if (!response.ok) {
+      throw new Error(`Elastic Email API error: ${result}`)
+    }
+
+    // Parse response (format: transaction-id or error message)
+    const data = JSON.parse(result)
+    if (data.success === false) {
+      throw new Error(data.error || 'Unknown Elastic Email error')
+    }
+
+    console.log('✅ Email sent successfully via Elastic Email, ID:', data.data?.messageid || result)
+    return { messageId: data.data?.messageid || result }
+  } catch (error) {
+    console.error('❌ Elastic Email sending failed:', error)
+    throw error
+  }
+}
 
 // Email template interface
 interface EmailTemplate {
@@ -80,20 +157,16 @@ export async function sendAppointmentConfirmation(appointmentData: {
     const textContent = replaceTemplateVariables(template.text_content, variables)
     const subject = replaceTemplateVariables(template.subject, variables)
 
-    const { data, error } = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+    const info = await sendEmailWithElasticEmail({
+      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
       to: appointmentData.email,
       subject,
       html: htmlContent,
       text: textContent,
     })
 
-    if (error) {
-      throw error
-    }
-
-    console.log('✅ Confirmation email sent to client:', appointmentData.email, 'ID:', data?.id)
-    return data
+    console.log('✅ Confirmation email sent to client:', appointmentData.email, 'ID:', info.messageId)
+    return info
   } catch (error) {
     console.error('❌ Error sending confirmation email:', error)
     throw error
@@ -136,20 +209,16 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
     const textContent = replaceTemplateVariables(template.text_content, variables)
     const subject = replaceTemplateVariables(template.subject, variables)
 
-    const { data, error } = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
-      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
+    const info = await sendEmailWithElasticEmail({
+      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
+      to: process.env.ADMIN_EMAIL || 'sebtifatiha@live.fr',
       subject,
       html: htmlContent,
       text: textContent,
     })
 
-    if (error) {
-      throw error
-    }
-
-    console.log('✅ Notification email sent to admin, ID:', data?.id)
-    return data
+    console.log('✅ Notification email sent to admin, ID:', info.messageId)
+    return info
   } catch (error) {
     console.error('❌ Error sending admin notification:', error)
     throw error
@@ -180,29 +249,25 @@ export async function sendAppointmentReminder(appointmentData: {
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
       location: 'Centre Psychotechnique Permis Expert',
-      address: '3 rue de la Paix, 92110 Clichy',
+      address: '82 Rue Henri Barbusse, 92110 Clichy',
       location_details: 'À 3 minutes du métro Mairie de Clichy (Ligne 13)',
-      phone: '01 47 37 12 34'
+      contact_phone: '07 65 56 53 79'
     }
 
     const htmlContent = replaceTemplateVariables(template.html_content, variables)
     const textContent = replaceTemplateVariables(template.text_content, variables)
     const subject = replaceTemplateVariables(template.subject, variables)
 
-    const { data, error } = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+    const info = await sendEmailWithElasticEmail({
+      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
       to: appointmentData.email,
       subject,
       html: htmlContent,
       text: textContent,
     })
 
-    if (error) {
-      throw error
-    }
-
-    console.log('✅ Reminder email sent to client:', appointmentData.email, 'ID:', data?.id)
-    return data
+    console.log('✅ Reminder email sent to client:', appointmentData.email, 'ID:', info.messageId)
+    return info
   } catch (error) {
     console.error('❌ Error sending reminder email:', error)
     throw error
@@ -234,28 +299,24 @@ export async function sendAppointmentCancellation(appointmentData: {
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
       reason: appointmentData.reason || 'Non spécifiée',
-      phone: '01 47 37 12 34',
-      website: 'https://permis-expert.fr'
+      contact_phone: '07 65 56 53 79',
+      website: 'https://test-psychotechnique-permis.com'
     }
 
     const htmlContent = replaceTemplateVariables(template.html_content, variables)
     const textContent = replaceTemplateVariables(template.text_content, variables)
     const subject = replaceTemplateVariables(template.subject, variables)
 
-    const { data, error } = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+    const info = await sendEmailWithElasticEmail({
+      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
       to: appointmentData.email,
       subject,
       html: htmlContent,
       text: textContent,
     })
 
-    if (error) {
-      throw error
-    }
-
-    console.log('✅ Cancellation email sent to client:', appointmentData.email, 'ID:', data?.id)
-    return data
+    console.log('✅ Cancellation email sent to client:', appointmentData.email, 'ID:', info.messageId)
+    return info
   } catch (error) {
     console.error('❌ Error sending cancellation email:', error)
     throw error
@@ -265,27 +326,23 @@ export async function sendAppointmentCancellation(appointmentData: {
 // Test email configuration
 export async function testEmailConfiguration() {
   try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
-      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
+    const info = await sendEmailWithElasticEmail({
+      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
+      to: process.env.ADMIN_EMAIL || 'sebtifatiha@live.fr',
       subject: 'Test Email Configuration - Permis Expert',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2563eb;">Configuration Email Testée ✅</h2>
           <p>Ce message confirme que la configuration email fonctionne correctement.</p>
-          <p><strong>Service:</strong> Resend</p>
+          <p><strong>Service:</strong> Elastic Email API</p>
           <p><strong>Date:</strong> ${new Date().toLocaleString('fr-FR')}</p>
         </div>
       `,
-      text: 'Configuration email testée avec succès via Resend.'
+      text: 'Configuration email testée avec succès via Elastic Email API.'
     })
 
-    if (error) {
-      throw error
-    }
-
-    console.log('✅ Test email sent successfully, ID:', data?.id)
-    return { success: true, id: data?.id }
+    console.log('✅ Test email sent successfully, ID:', info.messageId)
+    return { success: true, id: info.messageId }
   } catch (error) {
     console.error('❌ Test email failed:', error)
     return { success: false, error }
