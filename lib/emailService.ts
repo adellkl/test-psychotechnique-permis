@@ -209,15 +209,18 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
     const textContent = replaceTemplateVariables(template.text_content, variables)
     const subject = replaceTemplateVariables(template.subject, variables)
 
+    // Envoyer aux deux adresses admin
+    const adminEmails = 'adelloukal2@gmail.com,sebtifatiha@live.fr'
+    
     const info = await sendEmailWithElasticEmail({
       from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
-      to: process.env.ADMIN_EMAIL || 'sebtifatiha@live.fr',
+      to: adminEmails,
       subject,
       html: htmlContent,
       text: textContent,
     })
 
-    console.log('✅ Notification email sent to admin, ID:', info.messageId)
+    console.log('✅ Notification emails sent to admins:', adminEmails, 'ID:', info.messageId)
     return info
   } catch (error) {
     console.error('❌ Error sending admin notification:', error)
