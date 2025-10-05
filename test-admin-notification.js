@@ -29,80 +29,164 @@ async function sendAdminNotification() {
             day: 'numeric'
         });
 
-        // Template HTML professionnel pour notification admin
+        // Template HTML professionnel compatible tous clients email
         const htmlContent = `
-      <html>
-        <head>
-          <meta charset="UTF-8">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            
-            <!-- Header -->
-            <div style="background-color: #2563eb; padding: 24px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 600;">Nouvelle réservation</h1>
-            </div>
-            
-            <!-- Content -->
-            <div style="padding: 32px;">
-              
-              <!-- Client Info -->
-              <div style="margin-bottom: 24px;">
-                <h2 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 16px 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Informations client</h2>
-                <table style="width: 100%; border-collapse: collapse;">
-                  <tr>
-                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px; width: 120px;">Nom complet</td>
-                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${appointmentData.first_name} ${appointmentData.last_name}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Email</td>
-                    <td style="padding: 8px 0; color: #111827; font-size: 14px;">${appointmentData.email}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Téléphone</td>
-                    <td style="padding: 8px 0; color: #111827; font-size: 14px;">${appointmentData.phone}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Motif</td>
-                    <td style="padding: 8px 0; color: #111827; font-size: 14px;">${appointmentData.reason}</td>
-                  </tr>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nouvelle réservation</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f4f6;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f3f4f6;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <!-- Container -->
+                <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 30px 20px; border-radius: 8px 8px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-family: Arial, sans-serif; font-weight: bold;">
+                                ✅ Nouvelle réservation
+                            </h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Alerte -->
+                    <tr>
+                        <td style="padding: 20px 30px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #dbeafe; border-left: 4px solid #2563eb; border-radius: 4px;">
+                                <tr>
+                                    <td style="padding: 15px 20px;">
+                                        <p style="margin: 0; color: #1e40af; font-size: 14px; font-family: Arial, sans-serif; font-weight: 600;">
+                                            🔔 Un nouveau client a réservé un rendez-vous
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Client Info -->
+                    <tr>
+                        <td style="padding: 10px 30px 20px;">
+                            <h2 style="margin: 0 0 15px 0; color: #111827; font-size: 18px; font-family: Arial, sans-serif; font-weight: bold; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">
+                                👤 Informations client
+                            </h2>
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td width="130" style="padding: 10px 0; color: #6b7280; font-size: 14px; font-family: Arial, sans-serif; vertical-align: top;">
+                                        <strong>Nom complet :</strong>
+                                    </td>
+                                    <td style="padding: 10px 0; color: #111827; font-size: 14px; font-family: Arial, sans-serif; font-weight: 600;">
+                                        ${appointmentData.first_name} ${appointmentData.last_name}
+                                    </td>
+                                </tr>
+                                <tr style="background-color: #f9fafb;">
+                                    <td style="padding: 10px 0; color: #6b7280; font-size: 14px; font-family: Arial, sans-serif; vertical-align: top;">
+                                        <strong>Email :</strong>
+                                    </td>
+                                    <td style="padding: 10px 0; color: #111827; font-size: 14px; font-family: Arial, sans-serif;">
+                                        <a href="mailto:${appointmentData.email}" style="color: #2563eb; text-decoration: none;">${appointmentData.email}</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0; color: #6b7280; font-size: 14px; font-family: Arial, sans-serif; vertical-align: top;">
+                                        <strong>Téléphone :</strong>
+                                    </td>
+                                    <td style="padding: 10px 0; color: #111827; font-size: 14px; font-family: Arial, sans-serif;">
+                                        <a href="tel:${appointmentData.phone}" style="color: #2563eb; text-decoration: none;">${appointmentData.phone}</a>
+                                    </td>
+                                </tr>
+                                <tr style="background-color: #f9fafb;">
+                                    <td style="padding: 10px 0; color: #6b7280; font-size: 14px; font-family: Arial, sans-serif; vertical-align: top;">
+                                        <strong>Motif :</strong>
+                                    </td>
+                                    <td style="padding: 10px 0; color: #111827; font-size: 14px; font-family: Arial, sans-serif;">
+                                        ${appointmentData.reason}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Appointment Details -->
+                    <tr>
+                        <td style="padding: 10px 30px 30px;">
+                            <h2 style="margin: 0 0 15px 0; color: #111827; font-size: 18px; font-family: Arial, sans-serif; font-weight: bold; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">
+                                📅 Détails du rendez-vous
+                            </h2>
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fef3c7; border-radius: 6px; border: 2px solid #fbbf24;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td width="100" style="padding: 8px 0; color: #92400e; font-size: 14px; font-family: Arial, sans-serif;">
+                                                    <strong>📆 Date :</strong>
+                                                </td>
+                                                <td style="padding: 8px 0; color: #78350f; font-size: 15px; font-family: Arial, sans-serif; font-weight: 600;">
+                                                    ${formattedDate}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #92400e; font-size: 14px; font-family: Arial, sans-serif;">
+                                                    <strong>⏰ Heure :</strong>
+                                                </td>
+                                                <td style="padding: 8px 0; color: #dc2626; font-size: 20px; font-family: Arial, sans-serif; font-weight: bold;">
+                                                    ${appointmentData.appointment_time}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- CTA Button -->
+                    <tr>
+                        <td align="center" style="padding: 10px 30px 40px;">
+                            <table border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="border-radius: 6px; background-color: #2563eb;">
+                                        <a href="https://www.test-psychotechnique-permis.com/admin/dashboard" target="_blank" style="font-size: 16px; font-family: Arial, sans-serif; font-weight: bold; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; display: inline-block;">
+                                            📊 Accéder au tableau de bord
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 25px 30px; border-top: 2px solid #e5e7eb; border-radius: 0 0 8px 8px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <p style="margin: 0 0 5px 0; color: #111827; font-size: 14px; font-family: Arial, sans-serif; font-weight: bold;">
+                                            Test Psychotechnique Permis
+                                        </p>
+                                        <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 13px; font-family: Arial, sans-serif;">
+                                            📍 82 Rue Henri Barbusse, 92110 Clichy
+                                        </p>
+                                        <p style="margin: 0; color: #6b7280; font-size: 13px; font-family: Arial, sans-serif;">
+                                            📞 <a href="tel:0765565379" style="color: #2563eb; text-decoration: none; font-weight: 600;">07 65 56 53 79</a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
                 </table>
-              </div>
-              
-              <!-- Appointment Details -->
-              <div style="margin-bottom: 24px;">
-                <h2 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 16px 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Détails du rendez-vous</h2>
-                <table style="width: 100%; border-collapse: collapse;">
-                  <tr>
-                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px; width: 120px;">Date</td>
-                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${formattedDate}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Heure</td>
-                    <td style="padding: 8px 0; color: #2563eb; font-size: 16px; font-weight: 600;">${appointmentData.appointment_time}</td>
-                  </tr>
-                </table>
-              </div>
-              
-              <!-- CTA Button -->
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="https://www.test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">Accéder au tableau de bord</a>
-              </div>
-              
-            </div>
-            
-            <!-- Footer -->
-            <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0; font-size: 12px; color: #6b7280; line-height: 1.5;">
-                Test Psychotechnique Permis<br>
-                82 Rue Henri Barbusse, 92110 Clichy<br>
-                <a href="tel:0765565379" style="color: #2563eb; text-decoration: none;">07 65 56 53 79</a>
-              </p>
-            </div>
-            
-          </div>
-        </body>
-      </html>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
     `;
 
         const textContent = `
