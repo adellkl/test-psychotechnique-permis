@@ -3,14 +3,20 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 export default function ModernHero() {
   const [currentText, setCurrentText] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
-  const texts = ['annulation ?', 'suspension ?', 'invalidation ?']
+  // Mémoriser le tableau pour éviter les re-renders
+  const texts = useMemo(() => ['annulation ?', 'suspension ?', 'invalidation ?'], [])
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -35,26 +41,26 @@ export default function ModernHero() {
     return () => clearTimeout(timeout)
   }, [currentText, currentIndex, isDeleting, texts])
 
-  const containerVariants = {
+  const containerVariants = useMemo(() => ({
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2
+        staggerChildren: 0.1,
+        delayChildren: 0.1
       }
     }
-  }
+  }), [])
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+  const itemVariants = useMemo(() => ({
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0
     }
-  }
+  }), [])
 
-  const itemTransition = { duration: 0.6 }
+  const itemTransition = useMemo(() => ({ duration: 0.4 }), [])
 
   return (
     <section className="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 overflow-hidden h-screen flex items-center justify-center pt-20">
@@ -67,14 +73,15 @@ export default function ModernHero() {
           backgroundPosition: ['0% 0%', '100% 100%']
         }}
         transition={{
-          duration: 20,
+          duration: 25,
           repeat: Infinity,
           repeatType: 'reverse',
           ease: 'linear'
         }}
         style={{
           backgroundImage: 'linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px)',
-          backgroundSize: '50px 50px'
+          backgroundSize: '50px 50px',
+          willChange: 'background-position'
         }}
       />
 
@@ -87,10 +94,12 @@ export default function ModernHero() {
           y: [0, 30, 0]
         }}
         transition={{
-          duration: 8,
+          duration: 10,
           repeat: Infinity,
-          repeatType: 'reverse'
+          repeatType: 'reverse',
+          ease: 'easeInOut'
         }}
+        style={{ willChange: 'transform' }}
       />
       <motion.div
         className="absolute bottom-20 right-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"
@@ -100,20 +109,22 @@ export default function ModernHero() {
           y: [0, -30, 0]
         }}
         transition={{
-          duration: 10,
+          duration: 12,
           repeat: Infinity,
-          repeatType: 'reverse'
+          repeatType: 'reverse',
+          ease: 'easeInOut'
         }}
+        style={{ willChange: 'transform' }}
       />
 
-      {/* Floating Bubbles */}
-      {[...Array(8)].map((_, i) => (
+      {/* Floating Bubbles - Optimisé avec moins d'éléments */}
+      {isMounted && [...Array(5)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-4 h-4 bg-blue-400/30 rounded-full blur-sm"
           initial={{
-            x: Math.random() * 1200,
-            y: Math.random() * 800,
+            x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : 0,
+            y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : 0,
             scale: Math.random() * 0.5 + 0.5
           }}
           animate={{
@@ -124,8 +135,10 @@ export default function ModernHero() {
           transition={{
             duration: Math.random() * 4 + 3,
             repeat: Infinity,
-            delay: Math.random() * 3
+            delay: Math.random() * 3,
+            ease: 'linear'
           }}
+          style={{ willChange: 'transform, opacity' }}
         />
       ))}
 
@@ -146,7 +159,8 @@ export default function ModernHero() {
                   background: 'linear-gradient(to right, #fff, #93c5fd)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
+                  backgroundClip: 'text',
+                  willChange: 'auto'
                 }}
               >
                 Centre de Test
@@ -156,7 +170,8 @@ export default function ModernHero() {
                   animate={{
                     textShadow: ['0 0 20px rgba(59, 130, 246, 0.5)', '0 0 40px rgba(59, 130, 246, 0.8)', '0 0 20px rgba(59, 130, 246, 0.5)']
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{ willChange: 'auto' }}
                 >
                   Psychotechnique
                 </motion.span>
@@ -191,7 +206,11 @@ export default function ModernHero() {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start"
             >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
                 <Link
                   href="tel:0765565379"
                   className="group relative inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold text-base sm:text-lg overflow-hidden shadow-lg shadow-blue-500/50"
@@ -209,7 +228,11 @@ export default function ModernHero() {
                 </Link>
               </motion.div>
 
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
                 <Link
                   href="/rendez-vous"
                   className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl font-semibold text-base sm:text-lg hover:bg-white/20 transition-colors"
@@ -259,12 +282,12 @@ export default function ModernHero() {
             {/* iPhone Mockup */}
             <motion.div
               className="relative mx-auto"
-              style={{ width: '340px', height: '680px' }}
+              style={{ width: '340px', height: '680px', willChange: 'transform' }}
               animate={{
                 y: [0, -15, 0]
               }}
               transition={{
-                duration: 5,
+                duration: 6,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}

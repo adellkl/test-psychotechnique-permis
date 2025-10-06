@@ -199,17 +199,18 @@ export default function Navigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.2 }}
+              style={{ willChange: 'opacity' }}
             />
 
             {/* Panneau menu avec effet glass */}
             <motion.div
               className="fixed top-0 right-0 w-[85vw] max-w-[380px] bg-white/95 backdrop-blur-xl z-[101] lg:hidden flex flex-col shadow-2xl border-l border-gray-200/50"
-              style={{ height: '100vh', maxHeight: '100vh' }}
+              style={{ height: '100vh', maxHeight: '100vh', willChange: 'transform' }}
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 35, mass: 0.8 }}
             >
               {/* En-tête moderne sans logo */}
               <div className="relative px-6 flex-shrink-0 border-b border-gray-200/50 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm h-16">
@@ -328,6 +329,7 @@ export default function Navigation() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
                       className="ml-8 space-y-2 mt-2 overflow-hidden"
                     >
                       <Link

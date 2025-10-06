@@ -1,0 +1,60 @@
+/* Optimisations pour les animations */
+
+/* Cache la scrollbar pour un effet plus propre */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Optimisation GPU pour les animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Smooth scroll pour toute l'application */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optimisation du rendu des animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Optimisation du blur pour les performances */
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.backdrop-blur-xl {
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+}
+
+/* Prévention du FOUT (Flash of Unstyled Text) */
+html.fonts-loading * {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+html.fonts-loaded * {
+  opacity: 1;
+}
+
+/* Optimisation des images */
+img {
+  content-visibility: auto;
+}
