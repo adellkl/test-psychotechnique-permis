@@ -7,6 +7,7 @@ import ClientLayout from "./components/ClientLayout"
 import CookieConsent from "./components/CookieConsent"
 import InfoBar from "./components/InfoBar"
 import PageTransition from "./components/PageTransition"
+import ConditionalLayout from "./components/ConditionalLayout"
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://test-psychotechnique-permis.com'),
@@ -168,13 +169,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body suppressHydrationWarning>
-        <InfoBar />
-        <Navigation />
-        <PageTransition>
+        <ConditionalLayout>
           {children}
-        </PageTransition>
-        <Footer />
-        <CookieConsent />
+        </ConditionalLayout>
       </body>
     </html>
   )
