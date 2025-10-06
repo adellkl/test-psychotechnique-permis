@@ -95,6 +95,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className="scroll-smooth">
       <head>
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-WTB97WH8');`,
+          }}
+        />
+        {/* End Google Tag Manager */}
         <meta name="google-site-verification" content="4pYjLHX5ai-q0_nkEDN4bvOWOAUDoV2Nubte0kHic20" />
         <link rel="canonical" href="https://test-psychotechnique-permis.com" />
         <link rel="icon" href="/favicon.ico" />
@@ -169,6 +180,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body suppressHydrationWarning>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-WTB97WH8"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <ConditionalLayout>
           {children}
         </ConditionalLayout>
