@@ -15,7 +15,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   // Pour les pages admin et 404, afficher seulement le contenu sans menu/footer
   if (isAdminPage || is404Page) {
     const childrenArray = Array.isArray(children) ? children : [children]
-    const pageContent = childrenArray[3] || childrenArray[childrenArray.length - 1]
+    const pageContent = childrenArray[4] || childrenArray[childrenArray.length - 1]
     return <>{pageContent}</>
   }
 

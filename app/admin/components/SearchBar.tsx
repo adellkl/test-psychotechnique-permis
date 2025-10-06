@@ -84,7 +84,8 @@ export default function SearchBar({ onSearch, onReset }: SearchBarProps) {
       </div>
 
       {/* Recherche rapide */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
+        {/* Input de recherche - pleine largeur sur mobile */}
         <div className="flex-1 relative">
           <input
             type="text"
@@ -96,31 +97,35 @@ export default function SearchBar({ onSearch, onReset }: SearchBarProps) {
           />
         </div>
         
-        <select
-          value={searchField}
-          onChange={(e) => setSearchField(e.target.value as SearchFilters['searchField'])}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-        >
-          <option value="all">Tous les champs</option>
-          <option value="name">Nom</option>
-          <option value="email">Email</option>
-          <option value="phone">Téléphone</option>
-          <option value="date">Date RDV</option>
-        </select>
+        {/* Ligne avec select et boutons - responsive */}
+        <div className="flex gap-2">
+          <select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value as SearchFilters['searchField'])}
+            className="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-sm"
+          >
+            <option value="all">Tous</option>
+            <option value="name">Nom</option>
+            <option value="email">Email</option>
+            <option value="phone">Tél</option>
+            <option value="date">Date</option>
+          </select>
 
-        <button
-          onClick={handleSearch}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-        >
-          Rechercher
-        </button>
+          <button
+            onClick={handleSearch}
+            className="hidden sm:flex px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium items-center justify-center"
+          >
+            Rechercher
+          </button>
 
-        <button
-          onClick={handleReset}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-        >
-          Réinitialiser
-        </button>
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm whitespace-nowrap"
+          >
+            <span className="hidden sm:inline">Réinitialiser</span>
+            <span className="sm:hidden">Reset</span>
+          </button>
+        </div>
       </div>
 
       {/* Options avancées */}

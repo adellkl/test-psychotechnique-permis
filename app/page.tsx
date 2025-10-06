@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import HeroBanner from './components/HeroBanner'
+import ModernHero from './components/ModernHero'
 import FAQ from './components/FAQ'
 import type { Metadata } from 'next'
 
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <HeroBanner />
+      <ModernHero />
 
       {/* À propos du centre */}
-      <section className="bg-gray-50 py-16">
+      <section className="bg-gray-50 py-16 -mt-1">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up">

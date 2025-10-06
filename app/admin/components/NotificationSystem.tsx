@@ -5,11 +5,14 @@ import { supabase } from '../../../lib/supabase'
 
 interface Notification {
   id: string
-  type: 'appointment' | 'slot' | 'system'
+  type: string
   title: string
   message: string
-  read: boolean
+  link?: string
+  is_read: boolean
   created_at: string
+  read_at?: string
+  metadata?: any
 }
 
 export default function NotificationSystem() {
@@ -20,25 +23,32 @@ export default function NotificationSystem() {
   const [animate, setAnimate] = useState(false)
 
   useEffect(() => {
+    console.log('🚀 [NOTIFICATIONS] Component mounted, fetching notifications...')
     fetchNotifications()
 
-    // Set up real-time subscription for new appointments
+    // Écouter les nouvelles notifications en temps réel
     const subscription = supabase
-      .channel('appointments')
+      .channel('notifications-realtime')
       .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'appointments' },
+        { event: 'INSERT', schema: 'public', table: 'notifications' },
         (payload) => {
-          const newAppointment = payload.new as any
-          addNotification({
-            type: 'appointment',
-            title: 'Nouveau rendez-vous',
-            message: `${newAppointment.first_name} ${newAppointment.last_name} a pris rendez-vous pour le ${new Date(newAppointment.appointment_date).toLocaleDateString('fr-FR')}`
-          })
+          console.log('⚡ [REALTIME] Nouvelle notification reçue:', payload.new)
+          const newNotification = payload.new as Notification
+          // Ajouter la nouvelle notification en tête de liste
+          setNotifications(prev => [newNotification, ...prev.slice(0, 19)])
+          setUnreadCount(prev => prev + 1)
+          
+          // Animation
+          setAnimate(true)
+          setTimeout(() => setAnimate(false), 500)
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('📡 [REALTIME] Subscription status:', status)
+      })
 
     return () => {
+      console.log('🔌 [NOTIFICATIONS] Unsubscribing from realtime')
       subscription.unsubscribe()
     }
   }, [])
@@ -46,40 +56,45 @@ export default function NotificationSystem() {
   const fetchNotifications = async () => {
     try {
       setLoading(true)
-      // For now, we'll create mock notifications based on recent appointments
-      const { data: recentAppointments } = await supabase
-        .from('appointments')
+      console.log('🔍 [NOTIFICATIONS] Fetching notifications...')
+      
+      // Récupérer les notifications depuis la table notifications
+      const { data: notificationsData, error } = await supabase
+        .from('notifications')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(20)
 
-      const mockNotifications: Notification[] = recentAppointments?.map((apt, index) => ({
-        id: `notif-${apt.id}`,
-        type: 'appointment' as const,
-        title: 'Nouveau rendez-vous',
-        message: `${apt.first_name} ${apt.last_name} a pris rendez-vous pour le ${new Date(apt.appointment_date).toLocaleDateString('fr-FR')}`,
-        read: index > 2, // Mark first 3 as unread
-        created_at: apt.created_at
-      })) || []
+      console.log('📊 [NOTIFICATIONS] Response:', { data: notificationsData, error })
 
-      setNotifications(mockNotifications)
-      setUnreadCount(mockNotifications.filter(n => !n.read).length)
+      if (error) {
+        console.error('❌ [NOTIFICATIONS] Error:', error)
+        throw error
+      }
+
+      console.log(`✅ [NOTIFICATIONS] Récupéré ${notificationsData?.length || 0} notifications`)
+      console.log('📋 [NOTIFICATIONS] Détails:', notificationsData)
+
+      setNotifications(notificationsData || [])
+      setUnreadCount(notificationsData?.filter(n => !n.is_read).length || 0)
+      
+      console.log(`🔔 [NOTIFICATIONS] Non lues: ${notificationsData?.filter(n => !n.is_read).length || 0}`)
     } catch (error) {
-      console.error('Error fetching notifications:', error)
+      console.error('❌ [NOTIFICATIONS] Error fetching notifications:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const addNotification = (notificationData: Omit<Notification, 'id' | 'read' | 'created_at'>) => {
+  const addNotification = (notificationData: Omit<Notification, 'id' | 'is_read' | 'created_at'>) => {
     const newNotification: Notification = {
       id: `notif-${Date.now()}`,
-      read: false,
+      is_read: false,
       created_at: new Date().toISOString(),
       ...notificationData
     }
 
-    setNotifications(prev => [newNotification, ...prev.slice(0, 19)]) // Keep only 20 notifications
+    setNotifications(prev => [newNotification, ...prev.slice(0, 19)])
     setUnreadCount(prev => prev + 1)
     
     // Trigger animation
@@ -87,28 +102,46 @@ export default function NotificationSystem() {
     setTimeout(() => setAnimate(false), 500)
   }
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(notif =>
-        notif.id === id ? { ...notif, read: true } : notif
-      )
-    )
-    setUnreadCount(prev => Math.max(0, prev - 1))
+  const markAsRead = async (id: string) => {
+    try {
+      // Mettre à jour dans la base de données
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq('id', id)
 
-    // Immediately remove notification once viewed
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(notif => notif.id !== id))
-    }, 500)
+      if (error) throw error
+
+      // Mettre à jour l'état local
+      setNotifications(prev =>
+        prev.map(notif =>
+          notif.id === id ? { ...notif, is_read: true, read_at: new Date().toISOString() } : notif
+        )
+      )
+      setUnreadCount(prev => Math.max(0, prev - 1))
+    } catch (error) {
+      console.error('Error marking notification as read:', error)
+    }
   }
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(notif => ({ ...notif, read: true })))
-    setUnreadCount(0)
+  const markAllAsRead = async () => {
+    try {
+      const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id)
+      
+      if (unreadIds.length > 0) {
+        const { error } = await supabase
+          .from('notifications')
+          .update({ is_read: true, read_at: new Date().toISOString() })
+          .in('id', unreadIds)
 
-    // Remove all notifications after marking as read
-    setTimeout(() => {
-      setNotifications([])
-    }, 500)
+        if (error) throw error
+      }
+
+      setNotifications(prev => prev.map(notif => ({ ...notif, is_read: true, read_at: new Date().toISOString() })))
+      setUnreadCount(0)
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error)
+    }
   }
 
   const getNotificationIcon = (type: string) => {
@@ -215,7 +248,7 @@ export default function NotificationSystem() {
                   <div
                     key={notification.id}
                     className={`p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 cursor-pointer transition-all duration-200 ${
-                      !notification.read ? 'bg-gradient-to-r from-blue-50 to-blue-50/50 border-l-4 border-blue-500' : ''
+                      !notification.is_read ? 'bg-gradient-to-r from-blue-50 to-blue-50/50 border-l-4 border-blue-500' : ''
                     }`}
                     onClick={() => markAsRead(notification.id)}
                     style={{ animationDelay: `${index * 50}ms` }}
@@ -225,7 +258,7 @@ export default function NotificationSystem() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <p className={`text-sm font-semibold ${
-                            !notification.read ? 'text-gray-900' : 'text-gray-600'
+                            !notification.is_read ? 'text-gray-900' : 'text-gray-600'
                           }`}>
                             {notification.title}
                           </p>
@@ -233,13 +266,13 @@ export default function NotificationSystem() {
                             <p className="text-xs text-gray-500 whitespace-nowrap">
                               {formatTime(notification.created_at)}
                             </p>
-                            {!notification.read && (
+                            {!notification.is_read && (
                               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                             )}
                           </div>
                         </div>
                         <p className={`text-sm ${
-                          !notification.read ? 'text-gray-700' : 'text-gray-500'
+                          !notification.is_read ? 'text-gray-700' : 'text-gray-500'
                         }`}>
                           {notification.message}
                         </p>

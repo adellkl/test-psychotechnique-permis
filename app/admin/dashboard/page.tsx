@@ -8,10 +8,10 @@ import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
 import Sidebar from '../components/Sidebar'
 import EnhancedStats from '../components/EnhancedStats'
 import AppointmentsTable from '../components/AppointmentsTable'
-import NotificationSystem from '../components/NotificationSystem'
 import StatisticsCharts from '../components/StatisticsCharts'
 import AdminSettingsContent from '../components/AdminSettingsContent'
 import SearchBar, { SearchFilters } from '../components/SearchBar'
+import ExportStatisticsButton from '../components/ExportStatisticsButton'
 
 export default function AdminDashboard() {
   return (
@@ -233,34 +233,34 @@ function DashboardContent() {
         }`}>
         {/* Top Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
-          <div className="px-4 lg:px-6 py-4">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                   {activeSection === 'dashboard' && 'Vue d\'ensemble'}
                   {activeSection === 'appointments' && 'Gestion des rendez-vous'}
                   {activeSection === 'statistics' && 'Statistiques'}
                   {activeSection === 'settings' && 'Paramètres du compte'}
                 </h1>
-                <p className="text-xs lg:text-sm text-gray-600 mt-1">
+                <p className="text-sm sm:text-base text-gray-600 mt-1">
                   Bienvenue, {admin?.full_name}
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <NotificationSystem />
-              </div>
+              {activeSection === 'statistics' && (
+                <ExportStatisticsButton appointments={appointments} />
+              )}
             </div>
           </div>
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {/* Dashboard Section */}
           {activeSection === 'dashboard' && (
-            <div className="space-y-6">
+            <div className="space-y-6 sm:space-y-8">
               <EnhancedStats appointments={appointments} />
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Quick Stats */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-4">Aperçu rapide</h3>
@@ -311,7 +311,7 @@ function DashboardContent() {
 
           {/* Appointments Section */}
           {activeSection === 'appointments' && (
-            <div>
+            <div className="space-y-6">
               <SearchBar 
                 onSearch={handleSearch}
                 onReset={handleResetSearch}
@@ -319,8 +319,8 @@ function DashboardContent() {
               
               {/* Résultats de recherche */}
               {searchFilters && (
-                <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span className="text-sm text-blue-800">

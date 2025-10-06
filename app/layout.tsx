@@ -1,10 +1,11 @@
 import "./globals.css"
 import type { Metadata } from "next"
-import InfoBar from "./components/InfoBar"
 import Navigation from "./components/Navigation"
 import Footer from "./components/Footer"
 import ClientLayout from "./components/ClientLayout"
 import CookieConsent from "./components/CookieConsent"
+import InfoBar from "./components/InfoBar"
+import PageTransition from "./components/PageTransition"
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://test-psychotechnique-permis.com'),
@@ -92,6 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className="scroll-smooth">
       <head>
+        <meta name="google-site-verification" content="4pYjLHX5ai-q0_nkEDN4bvOWOAUDoV2Nubte0kHic20" />
         <link rel="canonical" href="https://test-psychotechnique-permis.com" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -165,13 +167,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body suppressHydrationWarning>
-        <ClientLayout>
-          <InfoBar />
-          <Navigation />
-          <Footer />
+        <InfoBar />
+        <Navigation />
+        <PageTransition>
           {children}
-          <CookieConsent />
-        </ClientLayout>
+        </PageTransition>
+        <Footer />
+        <CookieConsent />
       </body>
     </html>
   )

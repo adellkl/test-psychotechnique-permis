@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { Appointment } from '../../../lib/supabase'
 import CleanupManager from './CleanupManager'
+import ExportButton from './ExportButton'
 
 interface AppointmentsTableProps {
   appointments: Appointment[]
@@ -81,6 +82,13 @@ export default function AppointmentsTable({
     }
   }
 
+  const isNewAppointment = (createdAt: string) => {
+    const created = new Date(createdAt)
+    const now = new Date()
+    const diffHours = (now.getTime() - created.getTime()) / (1000 * 60 * 60)
+    return diffHours < 24 // Nouveau si créé dans les dernières 24h
+  }
+
   const isAllSelected = filteredAppointments.length > 0 && selectedAppointments.size === filteredAppointments.length
 
   return (
@@ -107,10 +115,14 @@ export default function AppointmentsTable({
               <option value="no_show">Absents</option>
             </select>
 
-            {/* Cleanup */}
+            {/* Export & Cleanup */}
+            <ExportButton appointments={appointments} />
             <CleanupManager />
           </div>
         </div>
+
+        {/* Espace supplémentaire après le header */}
+        <div className="h-4 lg:h-0"></div>
 
         {/* Bulk Actions Bar */}
         {selectedAppointments.size > 0 && (
@@ -338,49 +350,57 @@ export default function AppointmentsTable({
       </div>
 
       {/* Mobile Cards - Hidden on desktop */}
-      <div className="lg:hidden">
+      <div className="lg:hidden space-y-4 p-4">
         {filteredAppointments.map((appointment, index) => (
           <div
             key={appointment.id}
-            className={`border-b border-gray-100 hover:bg-blue-50/50 transition-all duration-200 animate-fade-in ${
-              selectedAppointments.has(appointment.id) ? 'bg-red-50' : ''
+            className={`bg-white rounded-xl shadow-md border-2 p-4 hover:shadow-lg transition-all duration-200 ${
+              selectedAppointments.has(appointment.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
             }`}
             style={{
-              animationDelay: `${index * 50}ms`,
               opacity: 0,
               animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`
             }}
           >
             {/* Header avec checkbox et avatar */}
-            <div className="flex items-start gap-3 mb-3">
+            <div className="flex items-start gap-4 mb-4">
               <input
                 type="checkbox"
                 checked={selectedAppointments.has(appointment.id)}
                 onChange={(e) => handleSelectAppointment(appointment.id, e.target.checked)}
                 className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-1"
               />
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-md">
                 {appointment.first_name[0]}{appointment.last_name[0]}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-base font-bold text-gray-900 truncate">
-                    {appointment.first_name} {appointment.last_name}
-                  </h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border flex-shrink-0 ml-2 ${getStatusColor(appointment.status)}`}>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  {appointment.first_name} {appointment.last_name}
+                </h3>
+                
+                {/* Badges en ligne */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(appointment.status)}`}>
                     {getStatusLabel(appointment.status)}
                   </span>
+                  
+                  {appointment.is_second_chance && (
+                    <span className="inline-flex items-center px-2 py-1 text-xs text-orange-600 font-semibold bg-orange-100 rounded-full">
+                      ⭐ 2ème chance
+                    </span>
+                  )}
+                  
+                  {isNewAppointment(appointment.created_at) && (
+                    <span className="inline-flex items-center px-2 py-1 text-xs text-green-700 font-semibold bg-green-100 rounded-full">
+                      🆕 Nouveau
+                    </span>
+                  )}
                 </div>
-                {appointment.is_second_chance && (
-                  <div className="text-xs text-orange-600 font-medium mb-1">
-                    2ème chance
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Informations */}
-            <div className="space-y-2 mb-3 ml-16">
+            <div className="space-y-3 mb-4 pl-1">
               <div className="flex items-center gap-2 text-sm">
                 <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -423,7 +443,7 @@ export default function AppointmentsTable({
             </div>
 
             {/* Actions */}
-            <div className="flex gap-2 ml-16 flex-wrap">
+            <div className="flex gap-2 pt-3 border-t border-gray-200 flex-wrap">
               {appointment.status === 'confirmed' && (
                 <>
                   <button

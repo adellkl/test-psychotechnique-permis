@@ -157,7 +157,7 @@ export default function RendezVous() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-32">
         <div className="container mx-auto px-4 py-6">
           {/* Breadcrumb Navigation */}
           <nav className="mb-6" aria-label="Fil d'Ariane">

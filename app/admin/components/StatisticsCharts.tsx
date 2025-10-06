@@ -14,6 +14,8 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
   const appointmentsByStatusRef = useRef<HTMLCanvasElement>(null)
   const appointmentsByMonthRef = useRef<HTMLCanvasElement>(null)
   const appointmentsByReasonRef = useRef<HTMLCanvasElement>(null)
+  const evolutionRef = useRef<HTMLCanvasElement>(null)
+  const dailyRef = useRef<HTMLCanvasElement>(null)
   const chartInstances = useRef<Chart[]>([])
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
     chartInstances.current.forEach(chart => chart.destroy())
     chartInstances.current = []
 
-    if (!appointmentsByStatusRef.current || !appointmentsByMonthRef.current || !appointmentsByReasonRef.current) return
+    if (!appointmentsByStatusRef.current || !appointmentsByMonthRef.current || !appointmentsByReasonRef.current || !evolutionRef.current || !dailyRef.current) return
 
     // 1. Appointments by Status
     const statusCounts = {
@@ -173,6 +175,115 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
     })
     chartInstances.current.push(reasonChart)
 
+    // 4. Evolution Timeline (Line Chart)
+    const dailyCounts: { [key: string]: number } = {}
+    appointments.forEach(apt => {
+      const date = new Date(apt.appointment_date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
+      dailyCounts[date] = (dailyCounts[date] || 0) + 1
+    })
+
+    const sortedDates = Object.keys(dailyCounts).sort((a, b) => {
+      return new Date(a).getTime() - new Date(b).getTime()
+    }).slice(-30) // Last 30 days
+
+    const evolutionChart = new Chart(evolutionRef.current, {
+      type: 'line',
+      data: {
+        labels: sortedDates,
+        datasets: [{
+          label: 'Rendez-vous',
+          data: sortedDates.map(date => dailyCounts[date]),
+          borderColor: 'rgba(59, 130, 246, 1)',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'rgba(59, 130, 246, 1)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    })
+    chartInstances.current.push(evolutionChart)
+
+    // 5. Daily Distribution (Bar Chart)
+    const dayOfWeekCounts: { [key: string]: number } = {
+      'Lundi': 0, 'Mardi': 0, 'Mercredi': 0, 'Jeudi': 0, 'Vendredi': 0, 'Samedi': 0, 'Dimanche': 0
+    }
+    appointments.forEach(apt => {
+      const dayName = new Date(apt.appointment_date).toLocaleDateString('fr-FR', { weekday: 'long' })
+      const capitalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1)
+      if (dayOfWeekCounts[capitalizedDay] !== undefined) {
+        dayOfWeekCounts[capitalizedDay]++
+      }
+    })
+
+    const dailyChart = new Chart(dailyRef.current, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(dayOfWeekCounts),
+        datasets: [{
+          label: 'RDV par jour',
+          data: Object.values(dayOfWeekCounts),
+          backgroundColor: [
+            'rgba(239, 68, 68, 0.7)',
+            'rgba(249, 115, 22, 0.7)',
+            'rgba(234, 179, 8, 0.7)',
+            'rgba(34, 197, 94, 0.7)',
+            'rgba(59, 130, 246, 0.7)',
+            'rgba(168, 85, 247, 0.7)',
+            'rgba(236, 72, 153, 0.7)'
+          ],
+          borderColor: [
+            'rgba(239, 68, 68, 1)',
+            'rgba(249, 115, 22, 1)',
+            'rgba(234, 179, 8, 1)',
+            'rgba(34, 197, 94, 1)',
+            'rgba(59, 130, 246, 1)',
+            'rgba(168, 85, 247, 1)',
+            'rgba(236, 72, 153, 1)'
+          ],
+          borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    })
+    chartInstances.current.push(dailyChart)
+
     return () => {
       chartInstances.current.forEach(chart => chart.destroy())
     }
@@ -188,6 +299,40 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
   const cancelledRate = totalAppointments > 0
     ? ((appointments.filter(a => a.status === 'cancelled').length / totalAppointments) * 100).toFixed(1)
     : 0
+  const secondChanceCount = appointments.filter(a => a.is_second_chance).length
+  const avgPerDay = totalAppointments > 0 ? (totalAppointments / 30).toFixed(1) : 0
+
+  const exportStatistics = () => {
+    const stats = [
+      ['M\u00e9trique', 'Valeur'],
+      ['Total rendez-vous', totalAppointments.toString()],
+      ['Taux de confirmation', `${confirmedRate}%`],
+      ['Taux de r\u00e9alisation', `${completedRate}%`],
+      ['Taux d\'annulation', `${cancelledRate}%`],
+      ['2\u00e8me chances', secondChanceCount.toString()],
+      ['Moyenne par jour', avgPerDay.toString()],
+      [''],
+      ['R\u00e9partition par statut', ''],
+      ['Confirm\u00e9s', appointments.filter(a => a.status === 'confirmed').length.toString()],
+      ['Termin\u00e9s', appointments.filter(a => a.status === 'completed').length.toString()],
+      ['Annul\u00e9s', appointments.filter(a => a.status === 'cancelled').length.toString()],
+      ['Absents', appointments.filter(a => a.status === 'no_show').length.toString()]
+    ]
+
+    const csvContent = stats.map(row => row.map(cell => `"${cell}"`).join(';')).join('\n')
+    const BOM = '\uFEFF'
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    const date = new Date().toISOString().split('T')[0]
+    
+    link.setAttribute('href', url)
+    link.setAttribute('download', `statistiques_${date}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
     <div className="space-y-6">
@@ -238,6 +383,31 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
         </div>
       </div>
 
+      {/* Additional KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-xl">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold opacity-90">2ème chances</h3>
+            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <p className="text-4xl font-bold">{secondChanceCount}</p>
+          <p className="text-xs mt-2 opacity-75">Clients en 2ème chance</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-6 text-white shadow-xl">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold opacity-90">Moyenne journalière</h3>
+            <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <p className="text-4xl font-bold">{avgPerDay}</p>
+          <p className="text-xs mt-2 opacity-75">RDV par jour (30 derniers jours)</p>
+        </div>
+      </div>
+
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
@@ -269,7 +439,7 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-200 lg:col-span-2">
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
             <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
               <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,10 +448,36 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
             </div>
             Répartition par motif
           </h3>
-          <div className="h-80 flex items-center justify-center">
-            <div className="w-full max-w-md h-full">
-              <canvas ref={appointmentsByReasonRef}></canvas>
+          <div className="h-64">
+            <canvas ref={appointmentsByReasonRef}></canvas>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
+            Distribution par jour de semaine
+          </h3>
+          <div className="h-64">
+            <canvas ref={dailyRef}></canvas>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-200 lg:col-span-2">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+              </svg>
+            </div>
+            Évolution temporelle (30 derniers jours)
+          </h3>
+          <div className="h-80">
+            <canvas ref={evolutionRef}></canvas>
           </div>
         </div>
       </div>
