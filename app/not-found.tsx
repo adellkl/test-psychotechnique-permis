@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect } from 'react'
 
 export default function NotFound() {
@@ -49,19 +48,19 @@ export default function NotFound() {
 
         {/* Boutons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/"
+          <a
+            href="https://test-psychotechnique-permis.com/"
             className="inline-flex items-center justify-center px-8 py-4 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xl transition-all duration-300 hover:scale-105"
           >
             Retour à l'accueil
-          </Link>
+          </a>
 
-          <Link
-            href="/prendre-rendez-vous"
+          <a
+            href="https://test-psychotechnique-permis.com/prendre-rendez-vous"
             className="inline-flex items-center justify-center px-8 py-4 font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl shadow-xl transition-all duration-300 hover:scale-105"
           >
             Prendre rendez-vous
-          </Link>
+          </a>
         </div>
       </div>
 
