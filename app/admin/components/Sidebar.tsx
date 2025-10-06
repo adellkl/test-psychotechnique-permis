@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface SidebarProps {
   activeSection: string
@@ -12,10 +12,27 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeSection, onSectionChange, adminName, onLogout, isCollapsed: externalIsCollapsed, setIsCollapsed: externalSetIsCollapsed }: SidebarProps) {
-  const [internalIsCollapsed, setInternalIsCollapsed] = useState(true)
+  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut en desktop)
+  const [internalIsCollapsed, setInternalIsCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('admin_sidebar_collapsed')
+      return saved ? JSON.parse(saved) : false // Ouvert par défaut
+    }
+    return false
+  })
   
   const isCollapsed = externalIsCollapsed !== undefined ? externalIsCollapsed : internalIsCollapsed
-  const setIsCollapsed = externalSetIsCollapsed || setInternalIsCollapsed
+  const setIsCollapsed = (collapsed: boolean) => {
+    if (externalSetIsCollapsed) {
+      externalSetIsCollapsed(collapsed)
+    } else {
+      setInternalIsCollapsed(collapsed)
+    }
+    // Sauvegarder la préférence dans localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
+    }
+  }
 
   const menuItems = [
     {

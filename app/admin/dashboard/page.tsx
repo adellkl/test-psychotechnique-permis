@@ -29,7 +29,14 @@ function DashboardContent() {
   const [activeSection, setActiveSection] = useState('appointments')
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('admin_sidebar_collapsed')
+      return saved ? JSON.parse(saved) : false
+    }
+    return false
+  })
   const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null)
 
   useEffect(() => {
@@ -225,7 +232,11 @@ function DashboardContent() {
         adminName={admin?.full_name || 'Admin'}
         onLogout={handleLogoutClick}
         isCollapsed={sidebarCollapsed}
-        setIsCollapsed={setSidebarCollapsed}
+        setIsCollapsed={(collapsed) => {
+          setSidebarCollapsed(collapsed)
+          // Sauvegarder la préférence
+          localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
+        }}
       />
 
       {/* Main Content */}

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
 import Sidebar from '../components/Sidebar'
-import NotificationSystem from '../components/NotificationSystem'
 import SlotsCalendar from '../components/SlotsCalendar'
 import AddSlotModal from '../components/AddSlotModal'
 import { format, addDays, startOfWeek } from 'date-fns'
@@ -43,7 +42,14 @@ function TimeSlotContent() {
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('admin_sidebar_collapsed')
+      return saved ? JSON.parse(saved) : false
+    }
+    return false
+  })
   const [newSlot, setNewSlot] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
     time: '09:00'
@@ -368,7 +374,11 @@ function TimeSlotContent() {
         adminName={admin?.full_name || 'Admin'}
         onLogout={() => setShowLogoutConfirm(true)}
         isCollapsed={sidebarCollapsed}
-        setIsCollapsed={setSidebarCollapsed}
+        setIsCollapsed={(collapsed) => {
+          setSidebarCollapsed(collapsed)
+          // Sauvegarder la préférence
+          localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
+        }}
       />
 
       <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
@@ -424,7 +434,6 @@ function TimeSlotContent() {
                   </button>
                 </div>
 
-                <NotificationSystem />
                 <button
                   onClick={() => setShowAddForm(true)}
                   className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 font-medium"
