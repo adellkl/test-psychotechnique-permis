@@ -1,8 +1,67 @@
+'use client'
+
 import Link from "next/link"
+import { motion } from 'framer-motion'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white mt-16">
+    <footer className="relative bg-gray-900 text-white mt-24">
+      {/* Vagues animées au-dessus du footer */}
+      <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ transform: 'translateY(-100%)' }}>
+        <svg className="relative w-full" style={{ height: '100px' }} viewBox="0 0 1440 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="wave-gradient-1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style={{ stopColor: '#3B82F6', stopOpacity: 0.2 }} />
+              <stop offset="50%" style={{ stopColor: '#6366F1', stopOpacity: 0.3 }} />
+              <stop offset="100%" style={{ stopColor: '#3B82F6', stopOpacity: 0.2 }} />
+            </linearGradient>
+          </defs>
+          
+          {/* Vague 1 - Bleu animé */}
+          <motion.path
+            d="M0,30 C240,50 480,10 720,30 C960,50 1200,10 1440,30 L1440,100 L0,100 Z"
+            fill="url(#wave-gradient-1)"
+            animate={{
+              d: [
+                "M0,30 C240,50 480,10 720,30 C960,50 1200,10 1440,30 L1440,100 L0,100 Z",
+                "M0,50 C240,30 480,50 720,30 C960,10 1200,30 1440,50 L1440,100 L0,100 Z",
+                "M0,30 C240,50 480,10 720,30 C960,50 1200,10 1440,30 L1440,100 L0,100 Z"
+              ]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Vague 2 - Indigo animé */}
+          <motion.path
+            d="M0,50 C240,30 480,50 720,40 C960,30 1200,50 1440,40 L1440,100 L0,100 Z"
+            fill="#6366F1"
+            fillOpacity="0.3"
+            animate={{
+              d: [
+                "M0,50 C240,30 480,50 720,40 C960,30 1200,50 1440,40 L1440,100 L0,100 Z",
+                "M0,40 C240,50 480,30 720,50 C960,40 1200,30 1440,50 L1440,100 L0,100 Z",
+                "M0,50 C240,30 480,50 720,40 C960,30 1200,50 1440,40 L1440,100 L0,100 Z"
+              ]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1
+            }}
+          />
+          
+          {/* Vague 3 - Gris foncé (footer) */}
+          <path
+            d="M0,60 C240,70 480,50 720,60 C960,70 1200,50 1440,60 L1440,100 L0,100 Z"
+            fill="#111827"
+          />
+        </svg>
+      </div>
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Deuxième Chance - Test Psychotechnique */}
@@ -101,7 +160,7 @@ export default function Footer() {
               </div>
               <p className="text-gray-300 text-sm mb-4">Note moyenne basée sur <span className="font-semibold text-white">100+ avis Google</span></p>
               <a
-                href="https://www.google.com/search?q=test+psychotechnique+permis+clichy"
+                href="https://www.google.com/maps/search/?api=1&query=Test+Psychotechnique+Permis+82+Rue+Henri+Barbusse+92110+Clichy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-gray-900 rounded-lg transition-all hover:bg-gray-100 text-sm font-semibold shadow-lg"

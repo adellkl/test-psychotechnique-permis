@@ -264,6 +264,14 @@ export default function ModernHero() {
                 <span className="text-white text-sm font-medium">07 65 56 53 79</span>
               </a>
 
+              <a href="mailto:contact@test-psychotechnique-permis.com" className="flex items-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 transition-colors sm:col-span-2">
+                <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                <span className="text-white text-sm font-medium">contact@test-psychotechnique-permis.com</span>
+              </a>
+
               <div className="flex items-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full sm:col-span-2">
                 <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
@@ -292,6 +300,132 @@ export default function ModernHero() {
                 ease: "easeInOut"
               }}
             >
+              {/* Particules orbitales animées autour de l'iPhone */}
+              <motion.div
+                className="absolute -top-8 left-12 w-2.5 h-2.5 bg-blue-400 rounded-full shadow-lg shadow-blue-400/50"
+                animate={{
+                  x: [0, 30, 0, -30, 0],
+                  y: [0, -20, -40, -20, 0],
+                  scale: [1, 1.2, 1, 1.2, 1],
+                  opacity: [0.6, 0.9, 0.6, 0.9, 0.6]
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div
+                className="absolute top-10 -left-8 w-3 h-3 bg-purple-400 rounded-full shadow-lg shadow-purple-400/50"
+                animate={{
+                  x: [0, -25, -40, -25, 0],
+                  y: [0, 30, 0, -30, 0],
+                  scale: [1, 1.3, 1, 1.3, 1],
+                  opacity: [0.7, 1, 0.7, 1, 0.7]
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              />
+              <motion.div
+                className="absolute top-40 -left-10 w-2 h-2 bg-cyan-400 rounded-full shadow-lg shadow-cyan-400/50"
+                animate={{
+                  x: [0, -30, -50, -30, 0],
+                  y: [0, -25, 0, 25, 0],
+                  scale: [1, 1.4, 1, 1.4, 1],
+                  opacity: [0.5, 0.8, 0.5, 0.8, 0.5]
+                }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              />
+              <motion.div
+                className="absolute bottom-32 -left-6 w-2.5 h-2.5 bg-pink-400 rounded-full shadow-lg shadow-pink-400/50"
+                animate={{
+                  x: [0, -35, -45, -35, 0],
+                  y: [0, 20, 40, 20, 0],
+                  scale: [1, 1.2, 1, 1.2, 1],
+                  opacity: [0.6, 0.9, 0.6, 0.9, 0.6]
+                }}
+                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              />
+              <motion.div
+                className="absolute -bottom-10 left-24 w-3 h-3 bg-indigo-400 rounded-full shadow-lg shadow-indigo-400/50"
+                animate={{
+                  x: [0, 25, 45, 25, 0],
+                  y: [0, 30, 50, 30, 0],
+                  scale: [1, 1.3, 1, 1.3, 1],
+                  opacity: [0.7, 1, 0.7, 1, 0.7]
+                }}
+                transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+              />
+              
+              {/* Particules côté droit */}
+              <motion.div
+                className="absolute -top-6 right-16 w-2 h-2 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"
+                animate={{
+                  x: [0, 35, 50, 35, 0],
+                  y: [0, -25, -35, -25, 0],
+                  scale: [1, 1.3, 1, 1.3, 1],
+                  opacity: [0.6, 0.9, 0.6, 0.9, 0.6]
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+              />
+              <motion.div
+                className="absolute top-20 -right-8 w-2.5 h-2.5 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50"
+                animate={{
+                  x: [0, 40, 55, 40, 0],
+                  y: [0, 20, 0, -20, 0],
+                  scale: [1, 1.4, 1, 1.4, 1],
+                  opacity: [0.7, 1, 0.7, 1, 0.7]
+                }}
+                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
+              />
+              <motion.div
+                className="absolute top-52 -right-10 w-3 h-3 bg-rose-400 rounded-full shadow-lg shadow-rose-400/50"
+                animate={{
+                  x: [0, 45, 60, 45, 0],
+                  y: [0, -30, 0, 30, 0],
+                  scale: [1, 1.2, 1, 1.2, 1],
+                  opacity: [0.5, 0.8, 0.5, 0.8, 0.5]
+                }}
+                transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+              />
+              <motion.div
+                className="absolute bottom-40 -right-7 w-2 h-2 bg-violet-400 rounded-full shadow-lg shadow-violet-400/50"
+                animate={{
+                  x: [0, 38, 48, 38, 0],
+                  y: [0, 25, 40, 25, 0],
+                  scale: [1, 1.3, 1, 1.3, 1],
+                  opacity: [0.6, 0.9, 0.6, 0.9, 0.6]
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+              />
+              <motion.div
+                className="absolute -bottom-8 right-20 w-2.5 h-2.5 bg-orange-400 rounded-full shadow-lg shadow-orange-400/50"
+                animate={{
+                  x: [0, 30, 42, 30, 0],
+                  y: [0, 35, 48, 35, 0],
+                  scale: [1, 1.4, 1, 1.4, 1],
+                  opacity: [0.7, 1, 0.7, 1, 0.7]
+                }}
+                transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+              />
+              
+              {/* Particules en haut et en bas */}
+              <motion.div
+                className="absolute -top-10 left-1/2 w-2 h-2 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50"
+                animate={{
+                  x: [0, 20, 0, -20, 0],
+                  y: [0, -30, -45, -30, 0],
+                  scale: [1, 1.3, 1, 1.3, 1],
+                  opacity: [0.6, 0.9, 0.6, 0.9, 0.6]
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1.8 }}
+              />
+              <motion.div
+                className="absolute -bottom-12 left-1/2 w-3 h-3 bg-fuchsia-400 rounded-full shadow-lg shadow-fuchsia-400/50"
+                animate={{
+                  x: [0, -25, 0, 25, 0],
+                  y: [0, 35, 50, 35, 0],
+                  scale: [1, 1.4, 1, 1.4, 1],
+                  opacity: [0.7, 1, 0.7, 1, 0.7]
+                }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2.2 }}
+              />
+
               {/* iPhone Frame with realistic shadows */}
               <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 rounded-[55px] p-[3px] shadow-2xl">
                 {/* Side buttons */}

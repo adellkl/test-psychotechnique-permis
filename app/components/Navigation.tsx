@@ -372,7 +372,7 @@ export default function Navigation() {
                   <Link
                     href="/rendez-vous"
                     onClick={toggleMenu}
-                    className="flex items-center justify-center gap-2.5 w-full px-5 py-4 mt-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-500/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                    className="flex items-center justify-center gap-2.5 w-full px-5 py-4 mt-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-500/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path
