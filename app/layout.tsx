@@ -95,6 +95,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className="scroll-smooth">
       <head>
+        {/* Style pour masquer le layout sur page 404 */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            [data-404-page] ~ * { display: none !important; }
+            body:has([data-404-page]) > div:first-child > *:not([data-404-page]) { display: none !important; }
+          `
+        }} />
         {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{

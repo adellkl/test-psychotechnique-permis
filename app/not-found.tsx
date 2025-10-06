@@ -1,119 +1,80 @@
+'use client'
+
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 export default function NotFound() {
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1.5rem',
-      margin: 0,
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 9999
-    }}>
-      <div className="max-w-2xl mx-auto text-center">
-        {/* Error Icon */}
-        <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-8">
-          <svg className="w-16 h-16 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        </div>
+  useEffect(() => {
+    // Masquer tout le contenu du body sauf la page 404
+    document.body.style.overflow = 'hidden'
+    const style = document.createElement('style')
+    style.id = 'hide-layout-404'
+    style.textContent = `
+      body > div:not([data-404-page]) { display: none !important; }
+    `
+    document.head.appendChild(style)
+    
+    return () => {
+      document.body.style.overflow = 'auto'
+      const styleEl = document.getElementById('hide-layout-404')
+      if (styleEl) styleEl.remove()
+    }
+  }, [])
 
-        {/* Error Code */}
-        <h1 className="text-8xl font-bold text-gray-900 mb-4">404</h1>
-        
-        {/* Error Message */}
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">
-          Page non trouvée
+  return (
+    <div data-404-page className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center" style={{ zIndex: 9999 }}>
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      </div>
+
+      <div className="max-w-2xl mx-auto text-center relative z-10 px-6">
+        {/* 404 */}
+        <h1 className="text-9xl font-black mb-6">
+          <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            404
+          </span>
+        </h1>
+
+        {/* Titre */}
+        <h2 className="text-3xl font-bold text-white mb-4">
+          Oups ! Page introuvable
         </h2>
-        
-        <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-          Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
-          <br />
-          Retournez à l'accueil pour prendre rendez-vous pour votre test psychotechnique.
+
+        {/* Description */}
+        <p className="text-lg text-blue-100 mb-8">
+          La page que vous recherchez semble avoir disparu. Revenez à l'accueil ou prenez rendez-vous.
         </p>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link 
+        {/* Boutons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
             href="/"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center justify-center px-8 py-4 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xl transition-all duration-300 hover:scale-105"
           >
             Retour à l'accueil
           </Link>
-          
-          <Link 
+
+          <Link
             href="/prendre-rendez-vous"
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center justify-center px-8 py-4 font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl shadow-xl transition-all duration-300 hover:scale-105"
           >
             Prendre rendez-vous
           </Link>
         </div>
-
-        {/* Additional Help */}
-        <div className="mt-12 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Vous cherchez peut-être :
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <Link 
-              href="/invalidation-permis" 
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              Test après invalidation
-            </Link>
-            <Link 
-              href="/suspension-permis" 
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              Test après suspension
-            </Link>
-            <Link 
-              href="/annulation-permis" 
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              Test après annulation
-            </Link>
-            <Link 
-              href="/contact" 
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              Nous contacter
-            </Link>
-            <Link 
-              href="/a-propos" 
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              À propos
-            </Link>
-            <Link 
-              href="/mentions-legales" 
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              Mentions légales
-            </Link>
-          </div>
-        </div>
-
-        {/* Contact Info */}
-        <div className="mt-8 text-gray-600">
-          <p className="mb-2">
-            <strong>Besoin d'aide ?</strong> Contactez-nous directement :
-          </p>
-          <p className="text-lg font-semibold text-blue-600">
-            📞 07 65 56 53 79
-          </p>
-          <p className="text-sm">
-            Centre agréé préfecture - 82 Rue Henri Barbusse, 92110 Clichy
-          </p>
-        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes blob {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          25% { transform: translate(20px, -50px) scale(1.1); }
+          50% { transform: translate(-20px, 20px) scale(0.9); }
+          75% { transform: translate(50px, 50px) scale(1.05); }
+        }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+      `}</style>
     </div>
   )
 }
