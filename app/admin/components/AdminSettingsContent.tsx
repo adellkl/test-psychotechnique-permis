@@ -18,6 +18,12 @@ export default function AdminSettingsContent() {
     confirmPassword: ''
   })
 
+  const [showPasswords, setShowPasswords] = useState({
+    currentPasswordForChange: false,
+    newPassword: false,
+    confirmPassword: false
+  })
+
   useEffect(() => {
     if (adminData) {
       setFormData(prev => ({
@@ -35,6 +41,13 @@ export default function AdminSettingsContent() {
     })
     setError('')
     setSuccess('')
+  }
+
+  const togglePasswordVisibility = (field: keyof typeof showPasswords) => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }))
   }
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -272,17 +285,36 @@ export default function AdminSettingsContent() {
             <label htmlFor="currentPasswordForChange" className="block text-sm font-semibold text-gray-700">
               Mot de passe actuel
             </label>
-            <input
-              type="password"
-              id="currentPasswordForChange"
-              name="currentPassword"
-              required
-              autoComplete="current-password"
-              value={formData.currentPassword}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-gray-50 focus:bg-white"
-              placeholder="Votre mot de passe actuel"
-            />
+            <div className="relative">
+              <input
+                type={showPasswords.currentPasswordForChange ? "text" : "password"}
+                id="currentPasswordForChange"
+                name="currentPassword"
+                required
+                autoComplete="current-password"
+                value={formData.currentPassword}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-gray-50 focus:bg-white"
+                placeholder="Votre mot de passe actuel"
+              />
+              <button
+                type="button"
+                onClick={() => togglePasswordVisibility('currentPasswordForChange')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                title={showPasswords.currentPasswordForChange ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              >
+                {showPasswords.currentPasswordForChange ? (
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
@@ -290,34 +322,72 @@ export default function AdminSettingsContent() {
               <label htmlFor="newPassword" className="block text-sm font-semibold text-gray-700">
                 Nouveau mot de passe
               </label>
-              <input
-                type="password"
-                id="newPassword"
-                name="newPassword"
-                required
-                autoComplete="new-password"
-                value={formData.newPassword}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-gray-50 focus:bg-white"
-                placeholder="Min. 8 caractères"
-              />
+              <div className="relative">
+                <input
+                  type={showPasswords.newPassword ? "text" : "password"}
+                  id="newPassword"
+                  name="newPassword"
+                  required
+                  autoComplete="new-password"
+                  value={formData.newPassword}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-gray-50 focus:bg-white"
+                  placeholder="Min. 8 caractères"
+                />
+                <button
+                  type="button"
+                  onClick={() => togglePasswordVisibility('newPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  title={showPasswords.newPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                >
+                  {showPasswords.newPassword ? (
+                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className="space-y-2 lg:space-y-3">
               <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700">
                 Confirmer le mot de passe
               </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                required
-                autoComplete="new-password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-gray-50 focus:bg-white"
-                placeholder="Répétez le mot de passe"
-              />
+              <div className="relative">
+                <input
+                  type={showPasswords.confirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  required
+                  autoComplete="new-password"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-gray-50 focus:bg-white"
+                  placeholder="Répétez le mot de passe"
+                />
+                <button
+                  type="button"
+                  onClick={() => togglePasswordVisibility('confirmPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  title={showPasswords.confirmPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                >
+                  {showPasswords.confirmPassword ? (
+                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 

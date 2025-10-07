@@ -50,14 +50,15 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-                <div className="relative h-48 rounded-lg overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    alt="Centre de test psychotechnique moderne et accueillant à Clichy"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 800px"
-                    className="object-cover"
-                  />
+                <div className="relative h-48 rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+
+                  </div>
                   <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900">
                     📍 Clichy - Ligne 13
                   </div>
@@ -79,14 +80,15 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-                <div className="relative h-32 rounded-lg overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    alt="Paiement sécurisé et simplifié pour test psychotechnique"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 800px"
-                    className="object-cover"
-                  />
+                <div className="relative h-32 rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
+                      </svg>
+                    </div>
+                    <p className="text-emerald-800 font-semibold text-sm">Paiement sécurisé</p>
+                  </div>
                   <div className="absolute top-3 right-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                     90€
                   </div>
@@ -97,15 +99,13 @@ export default function HomePage() {
             {/* Deuxième chance gratuite avec image */}
             <div className="animate-slide-in-right">
               <div className="bg-gradient-to-br from-blue-50 to-emerald-50 p-8 rounded-2xl border border-blue-100 overflow-hidden relative">
-                {/* Image de fond subtile */}
-                <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
-                  <Image
-                    src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                    alt="Psychologue bienveillante - Deuxième chance"
-                    fill
-                    sizes="128px"
-                    className="object-cover rounded-full"
-                  />
+                {/* Image de fond subtile remplacée par une illustration */}
+                <div className="absolute top-0 right-0 w-32 h-32 opacity-20 flex items-center justify-center">
+                  <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-emerald-400 rounded-full flex items-center justify-center">
+                    <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
 
                 <div className="relative z-10">

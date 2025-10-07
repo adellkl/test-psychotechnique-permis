@@ -80,13 +80,13 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
       slotsByDate.get(dateKey)!.push(slot)
     })
     
-    // Only create calendar days for dates with slots
+    // Only create calendar days for dates with slots that are not in the past
     const days: CalendarDay[] = []
     slotsByDate.forEach((slots, dateStr) => {
       const day = new Date(dateStr)
       
-      // Only include if it's in current month or future
-      if ((day >= monthStart && day <= monthEnd) || day > monthEnd) {
+      // Only include if the date is today or in the future
+      if (!isBefore(day, new Date()) || isToday(day)) {
         days.push({
           date: day,
           slots: slots,

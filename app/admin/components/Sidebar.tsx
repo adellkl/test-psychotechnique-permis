@@ -20,7 +20,7 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
     }
     return false
   })
-  
+
   const isCollapsed = externalIsCollapsed !== undefined ? externalIsCollapsed : internalIsCollapsed
   const setIsCollapsed = (collapsed: boolean) => {
     if (externalSetIsCollapsed) {
@@ -104,11 +104,9 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 right-0 lg:left-0 lg:right-auto z-40 transform ${
-          isCollapsed ? 'translate-x-full lg:translate-x-0' : 'translate-x-0'
-        } lg:translate-x-0 transition-transform duration-300 ease-in-out ${
-          isCollapsed ? 'lg:w-20' : 'w-64'
-        } bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-white flex flex-col shadow-2xl`}
+        className={`fixed inset-y-0 right-0 lg:left-0 lg:right-auto z-40 transform ${isCollapsed ? 'translate-x-full lg:translate-x-0' : 'translate-x-0'
+          } lg:translate-x-0 transition-transform duration-300 ease-in-out ${isCollapsed ? 'lg:w-20' : 'w-64'
+          } bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-white flex flex-col shadow-2xl`}
       >
         {/* Header */}
         <div className="p-6 border-b border-blue-700 mt-16 lg:mt-0">
@@ -148,9 +146,8 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
                     setIsCollapsed(true)
                   }
                 }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-lg group ${
-                  activeSection === item.id ? 'bg-blue-700 shadow-lg' : ''
-                } ${isCollapsed ? 'justify-center' : ''}`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-lg group ${activeSection === item.id ? 'bg-blue-700 shadow-lg' : ''
+                  } ${isCollapsed ? 'justify-center' : ''}`}
                 title={isCollapsed ? item.label : ''}
               >
                 <span className="group-hover:scale-110 transition-transform">{item.icon}</span>
@@ -169,9 +166,8 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
                     setIsCollapsed(true)
                   }
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-lg group ${
-                  activeSection === item.id ? 'bg-blue-700 shadow-lg' : ''
-                } ${isCollapsed ? 'justify-center' : ''}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-lg group ${activeSection === item.id ? 'bg-blue-700 shadow-lg' : ''
+                  } ${isCollapsed ? 'justify-center' : ''}`}
                 title={isCollapsed ? item.label : ''}
               >
                 <span className="group-hover:scale-110 transition-transform">{item.icon}</span>
@@ -188,9 +184,8 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
         <div className="p-4 border-t border-blue-700">
           <button
             onClick={onLogout}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-all duration-200 hover:shadow-lg group ${
-              isCollapsed ? 'justify-center' : ''
-            }`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-all duration-200 hover:shadow-lg group ${isCollapsed ? 'justify-center' : ''
+              }`}
             title={isCollapsed ? 'Déconnexion' : ''}
           >
             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

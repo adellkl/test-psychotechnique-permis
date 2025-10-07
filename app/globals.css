@@ -566,3 +566,20 @@ body {
 .animate-float-particle-4 { animation: float-particle-4 6.5s ease-in-out infinite 0.5s; }
 .animate-light-ray-1 { animation: light-ray-1 4s ease-in-out infinite; }
 .animate-light-ray-2 { animation: light-ray-2 5s ease-in-out infinite 1s; }
+
+/* Animation de soulignement automatique pour les titres */
+@keyframes underline {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 100%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-underline {
+  animation: underline 2s ease-in-out;
+}

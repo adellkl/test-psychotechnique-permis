@@ -74,13 +74,11 @@ export default function AnnulationPermisPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-20 pt-40">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </div>
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Test Psychotechnique Annulation Permis - Infractions Graves
+            Test Psychotechnique Annulation Permis - <span className="relative group">
+              Infractions Graves
+              <span className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full animate-underline"></span>
+            </span>
           </h1>
           <p className="text-xl text-gray-700 leading-relaxed mb-8">
             Votre permis de conduire a été <strong>annulé définitivement</strong> ? 

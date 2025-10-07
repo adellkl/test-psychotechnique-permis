@@ -72,15 +72,13 @@ export default function SuspensionPermisPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 to-orange-100 py-20 pt-40">
+      <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-20 pt-40">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </div>
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Test Psychotechnique Suspension Permis - Alcool Vitesse Stupéfiants
+            Test Psychotechnique Suspension Permis - <span className="relative group">
+              Alcool Vitesse Stupéfiants
+              <span className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full animate-underline"></span>
+            </span>
           </h1>
           <p className="text-xl text-gray-700 leading-relaxed mb-8">
             Votre permis de conduire a été <strong>suspendu temporairement</strong> ?
@@ -88,7 +86,7 @@ export default function SuspensionPermisPage() {
           </p>
           <Link
             href="/prendre-rendez-vous"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-orange-600 text-white rounded-xl font-semibold text-lg hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
@@ -129,8 +127,8 @@ export default function SuspensionPermisPage() {
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-orange-600 font-bold">1</span>
+                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-gray-600 font-bold">1</span>
                   </div>
                   <div>
                     <p className="text-gray-700 leading-relaxed">
@@ -142,8 +140,8 @@ export default function SuspensionPermisPage() {
 
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-orange-600 font-bold">2</span>
+                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-gray-600 font-bold">2</span>
                   </div>
                   <div>
                     <p className="text-gray-700 leading-relaxed mb-3">
@@ -157,7 +155,7 @@ export default function SuspensionPermisPage() {
               </div>
             </div>
 
-            <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-lg mt-8">
+            <div className="bg-gray-50 border-l-4 border-gray-500 p-6 rounded-r-lg mt-8">
               <p className="text-gray-700 leading-relaxed">
                 <strong>Durée :</strong> La durée maximale de la suspension est de 6 mois. Elle peut, cependant, dans certains cas, être portée à 1 an.
               </p>
@@ -166,7 +164,7 @@ export default function SuspensionPermisPage() {
             <div className="mt-12 text-center">
               <Link
                 href="/prendre-rendez-vous"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-orange-600 text-white rounded-xl font-semibold text-lg hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />

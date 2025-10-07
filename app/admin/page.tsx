@@ -10,6 +10,8 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [availableAdmins, setAvailableAdmins] = useState<any[]>([])
+  const [rememberMe, setRememberMe] = useState(false)
+  const [savePassword, setSavePassword] = useState(false)
 
   // Récupérer la liste des admins au chargement
   useEffect(() => {
@@ -58,7 +60,18 @@ export default function AdminLogin() {
 
       // Stocker la session admin
       localStorage.setItem('admin_session', JSON.stringify(data.admin))
-      
+
+      // Sauvegarder les préférences de connexion
+      if (rememberMe) {
+        localStorage.setItem('admin_remember_me', 'true')
+        localStorage.setItem('admin_session_timestamp', Date.now().toString())
+      }
+
+      if (savePassword) {
+        localStorage.setItem('admin_saved_email', email.toLowerCase().trim())
+        localStorage.setItem('admin_saved_password', password)
+      }
+
       // Rediriger vers le dashboard
       window.location.href = '/admin/dashboard'
 
@@ -180,6 +193,36 @@ export default function AdminLogin() {
                     </svg>
                   )}
                 </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <input
+                  id="rememberMe"
+                  name="rememberMe"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors"
+                />
+                <label htmlFor="rememberMe" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Rester connecté
+                </label>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <input
+                  id="savePassword"
+                  name="savePassword"
+                  type="checkbox"
+                  checked={savePassword}
+                  onChange={(e) => setSavePassword(e.target.checked)}
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded transition-colors"
+                />
+                <label htmlFor="savePassword" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Se souvenir de mes identifiants
+                </label>
               </div>
             </div>
 

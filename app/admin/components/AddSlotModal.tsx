@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { validateSlotCreation } from '../../../lib/validation'
 
 interface AddSlotModalProps {
@@ -11,7 +11,26 @@ interface AddSlotModalProps {
   onAddSingle: () => void
   onAddMultiple: () => void
   onAddBulk?: (startDate: string, endDate: string, times: string[], workdaysOnly: boolean) => void
-  timeOptions: string[]
+}
+
+const generateTimeOptions = (intervalMinutes: number): string[] => {
+  const options: string[] = []
+  const startHour = 8 // 8h du matin
+  const endHour = 18 // 18h (6h du soir)
+  const totalMinutes = (endHour - startHour) * 60
+
+  if (intervalMinutes <= 0 || !Number.isFinite(intervalMinutes)) {
+    return []
+  }
+
+  for (let minutes = 0; minutes < totalMinutes; minutes += intervalMinutes) {
+    const hour = startHour + Math.floor(minutes / 60)
+    const minute = minutes % 60
+    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+    options.push(timeString)
+  }
+
+  return options
 }
 
 export default function AddSlotModal({
@@ -21,8 +40,7 @@ export default function AddSlotModal({
   setNewSlot,
   onAddSingle,
   onAddMultiple,
-  onAddBulk,
-  timeOptions
+  onAddBulk
 }: AddSlotModalProps) {
   const [errors, setErrors] = useState<{[key: string]: string}>({})
   const [mode, setMode] = useState<'single' | 'bulk'>('single')
@@ -30,8 +48,34 @@ export default function AddSlotModal({
     startDate: new Date().toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
     selectedTimes: [] as string[],
-    workdaysOnly: true
+    workdaysOnly: true,
+    intervalMinutes: 20
   })
+
+  // Générer les options d'horaires de manière optimisée
+  const timeOptions = useMemo(() =>
+    generateTimeOptions(bulkConfig.intervalMinutes),
+    [bulkConfig.intervalMinutes]
+  )
+
+  // Reset des erreurs quand on change de mode
+  useEffect(() => {
+    setErrors({})
+  }, [mode])
+
+  // Validation des données
+  const validateBulkConfig = () => {
+    if (!bulkConfig.startDate || !bulkConfig.endDate) {
+      return 'Veuillez sélectionner les dates de début et de fin'
+    }
+    if (bulkConfig.selectedTimes.length === 0) {
+      return 'Veuillez sélectionner au moins un horaire'
+    }
+    if (new Date(bulkConfig.startDate) > new Date(bulkConfig.endDate)) {
+      return 'La date de début doit être avant la date de fin'
+    }
+    return null
+  }
 
   const handleAddSingle = () => {
     setErrors({})
@@ -55,16 +99,9 @@ export default function AddSlotModal({
 
   const handleAddBulk = () => {
     setErrors({})
-    if (!bulkConfig.startDate || !bulkConfig.endDate) {
-      setErrors({ date: 'Veuillez sélectionner les dates de début et de fin' })
-      return
-    }
-    if (bulkConfig.selectedTimes.length === 0) {
-      setErrors({ time: 'Veuillez sélectionner au moins un horaire' })
-      return
-    }
-    if (new Date(bulkConfig.startDate) > new Date(bulkConfig.endDate)) {
-      setErrors({ date: 'La date de début doit être avant la date de fin' })
+    const validationError = validateBulkConfig()
+    if (validationError) {
+      setErrors({ date: validationError })
       return
     }
     if (onAddBulk) {
@@ -73,6 +110,8 @@ export default function AddSlotModal({
   }
 
   const toggleTime = (time: string) => {
+    if (!time || typeof time !== 'string') return
+
     setBulkConfig(prev => ({
       ...prev,
       selectedTimes: prev.selectedTimes.includes(time)
@@ -81,19 +120,35 @@ export default function AddSlotModal({
     }))
   }
 
-  const calculateTotalSlots = () => {
-    if (!bulkConfig.startDate || !bulkConfig.endDate || bulkConfig.selectedTimes.length === 0) return 0
-    
-    let count = 0
-    const start = new Date(bulkConfig.startDate)
-    const end = new Date(bulkConfig.endDate)
-    
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      if (bulkConfig.workdaysOnly && (d.getDay() === 0 || d.getDay() === 6)) continue
-      count += bulkConfig.selectedTimes.length
+  const toggleAllTimes = () => {
+    if (bulkConfig.selectedTimes.length === timeOptions.length) {
+      // Tout désélectionner
+      setBulkConfig(prev => ({ ...prev, selectedTimes: [] }))
+    } else {
+      // Tout sélectionner
+      setBulkConfig(prev => ({ ...prev, selectedTimes: [...timeOptions] }))
     }
-    
-    return count
+  }
+
+  const calculateTotalSlots = (): number => {
+    if (!bulkConfig.startDate || !bulkConfig.endDate || bulkConfig.selectedTimes.length === 0) return 0
+
+    try {
+      const start = new Date(bulkConfig.startDate)
+      const end = new Date(bulkConfig.endDate)
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0
+
+      let count = 0
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        if (bulkConfig.workdaysOnly && (d.getDay() === 0 || d.getDay() === 6)) continue
+        count += bulkConfig.selectedTimes.length
+      }
+
+      return count
+    } catch (error) {
+      return 0
+    }
   }
 
   if (!isOpen) return null
@@ -272,9 +327,22 @@ export default function AddSlotModal({
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Sélectionnez les horaires ({bulkConfig.selectedTimes.length} sélectionné{bulkConfig.selectedTimes.length > 1 ? 's' : ''})
-                </label>
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Sélectionnez les horaires ({bulkConfig.selectedTimes.length} sélectionné{bulkConfig.selectedTimes.length > 1 ? 's' : ''})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={toggleAllTimes}
+                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+                      bulkConfig.selectedTimes.length === timeOptions.length
+                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                        : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    }`}
+                  >
+                    {bulkConfig.selectedTimes.length === timeOptions.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                  </button>
+                </div>
                 <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 border-2 border-gray-200 rounded-xl">
                   {timeOptions.map(time => (
                     <button
@@ -307,6 +375,28 @@ export default function AddSlotModal({
                     Jours ouvrables uniquement (Lun-Ven)
                   </label>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <label className="text-sm font-medium text-blue-900 cursor-pointer">
+                    Intervalle entre créneaux
+                  </label>
+                </div>
+                <select
+                  value={bulkConfig.intervalMinutes}
+                  onChange={(e) => setBulkConfig({ ...bulkConfig, intervalMinutes: parseInt(e.target.value) })}
+                  className="px-3 py-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm font-medium"
+                >
+                  <option value={10}>10 minutes</option>
+                  <option value={15}>15 minutes</option>
+                  <option value={20}>20 minutes</option>
+                  <option value={30}>30 minutes</option>
+                  <option value={60}>1 heure</option>
+                </select>
               </div>
 
               {calculateTotalSlots() > 0 && (

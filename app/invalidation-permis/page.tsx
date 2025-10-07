@@ -72,15 +72,13 @@ export default function InvalidationPermisPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-red-50 to-red-100 py-20 pt-40">
+      <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-20 pt-40">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" />
-            </svg>
-          </div>
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Test Psychotechnique Invalidation Permis - Solde Nul Points
+            Test Psychotechnique Invalidation Permis - <span className="relative">
+              Solde Nul de Points
+              <span className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-red-400 to-red-600 rounded-full animate-underline"></span>
+            </span>
           </h1>
           <p className="text-xl text-gray-700 leading-relaxed mb-8">
             Votre permis de conduire a été <strong>invalidé pour solde nul de points</strong> ?
@@ -88,7 +86,7 @@ export default function InvalidationPermisPage() {
           </p>
           <Link
             href="/prendre-rendez-vous"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded-xl font-semibold text-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
