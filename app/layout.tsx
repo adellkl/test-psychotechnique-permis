@@ -53,11 +53,11 @@ export const metadata: Metadata = {
     description: "Centre agréé pour test psychotechnique du permis de conduire à Clichy. Psychologue certifiée ADELI. Invalidation, suspension, annulation. 2ème chance GRATUITE. 📍 82 Rue Henri Barbusse. 📞 07 65 56 53 79",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/images/logo site .png",
         width: 1200,
         height: 630,
         alt: "Test Psychotechnique Permis - Centre Agréé Préfecture Clichy",
-        type: "image/jpeg",
+        type: "image/png",
       },
     ],
     phoneNumbers: ["+33765565379"],
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     title: "👨‍⚕️ Test Psychotechnique Permis | Centre Agréé Clichy",
     description: "Centre agréé préfecture. Psychologue ADELI. Invalidation/Suspension/Annulation permis. 2ème chance GRATUITE. RDV en ligne. 📍 Clichy (92)",
     images: {
-      url: "/og-image.jpg",
+      url: "/images/logo site .png",
       alt: "Test Psychotechnique Permis Clichy",
     },
   },
