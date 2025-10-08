@@ -1,4 +1,3 @@
-import FAQ from '../components/FAQ'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -176,8 +175,6 @@ export default function AgrementPrefectoralPage() {
           </div>
         </div>
       </section>
-      
-      <FAQ />
     </>
   )
 }

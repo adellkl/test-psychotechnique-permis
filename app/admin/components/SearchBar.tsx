@@ -72,10 +72,10 @@ export default function SearchBar({ onSearch, onReset }: SearchBarProps) {
           className="ml-auto text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
         >
           {isExpanded ? 'Réduire' : 'Options avancées'}
-          <svg 
+          <svg
             className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-            fill="none" 
-            stroke="currentColor" 
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -96,7 +96,7 @@ export default function SearchBar({ onSearch, onReset }: SearchBarProps) {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        
+
         {/* Ligne avec select et boutons - responsive */}
         <div className="flex gap-2">
           <select
