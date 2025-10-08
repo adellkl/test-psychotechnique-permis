@@ -7,7 +7,7 @@ const outlookTransporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.OUTLOOK_EMAIL || 'sebtifatiha@live.fr',
+    user: process.env.OUTLOOK_EMAIL || 'f.sebti@outlook.com',
     pass: process.env.OUTLOOK_APP_PASSWORD || 'klozfurpuolscefm'
   },
   tls: {
@@ -29,6 +29,13 @@ async function sendEmailWithSMTP(emailData: any) {
       subject: emailData.subject,
       html: emailData.html,
       text: emailData.text,
+      headers: {
+        'X-Mailer': 'Permis Expert Booking System',
+        'X-Priority': '3',
+        'Importance': 'Normal',
+        'Reply-To': process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
+        'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'f.sebti@outlook.com'}?subject=unsubscribe>`
+      }
     })
 
     console.log(`✅ Email envoyé via SMTP: ${info.messageId}`)
@@ -55,6 +62,15 @@ async function sendEmailWithElasticEmail(emailData: {
     formData.append('subject', emailData.subject)
     formData.append('bodyHtml', emailData.html)
     formData.append('bodyText', emailData.text)
+    
+    // Headers anti-spam
+    formData.append('replyTo', process.env.ADMIN_EMAIL || 'f.sebti@outlook.com')
+    formData.append('headers', JSON.stringify({
+      'X-Mailer': 'Permis Expert Booking System',
+      'X-Priority': '3',
+      'Importance': 'Normal',
+      'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'f.sebti@outlook.com'}?subject=unsubscribe>`
+    }))
 
     const response = await fetch('https://api.elasticemail.com/v2/email/send', {
       method: 'POST',
@@ -158,7 +174,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
     const subject = replaceTemplateVariables(template.subject, variables)
 
     const info = await sendEmailWithElasticEmail({
-      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
+      from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
       to: appointmentData.email,
       subject,
       html: htmlContent,
@@ -178,15 +194,13 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
   first_name: string
   last_name: string
   email: string
-  phone: string
+  phone?: string
   appointment_date: string
   appointment_time: string
-  reason: string
 }) {
   try {
-    const template = await getEmailTemplate('appointment_notification_admin')
+    console.log(`📧 Sending admin notification for new appointment`)
 
-    // Format date
     const formattedDate = new Date(appointmentData.appointment_date).toLocaleDateString('fr-FR', {
       weekday: 'long',
       year: 'numeric',
@@ -194,33 +208,95 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
       day: 'numeric'
     })
 
-    const variables = {
-      first_name: appointmentData.first_name,
-      last_name: appointmentData.last_name,
-      email: appointmentData.email,
-      phone: appointmentData.phone,
-      appointment_date: formattedDate,
-      appointment_time: appointmentData.appointment_time,
-      reason: appointmentData.reason,
-      dashboard_url: 'https://www.test-psychotechnique-permis.com/admin/dashboard'
-    }
-
-    const htmlContent = replaceTemplateVariables(template.html_content, variables)
-    const textContent = replaceTemplateVariables(template.text_content, variables)
-    const subject = replaceTemplateVariables(template.subject, variables)
-
-    // Envoyer aux deux adresses admin
-    const adminEmails = 'adelloukal2@gmail.com,sebtifatiha@live.fr'
+    const subject = `🔔 Nouveau rendez-vous - ${appointmentData.first_name} ${appointmentData.last_name}`
     
+    const html = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau rendez-vous</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px;">🔔 Nouveau Rendez-vous</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px;">
+                            <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px;">Détails du rendez-vous</h2>
+                            
+                            <table width="100%" cellpadding="10" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; margin-bottom: 20px;">
+                                <tr>
+                                    <td style="color: #374151; font-weight: 600;">👤 Client</td>
+                                    <td style="color: #1f2937; text-align: right;">${appointmentData.first_name} ${appointmentData.last_name}</td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">📧 Email</td>
+                                    <td style="color: #1f2937; text-align: right;"><a href="mailto:${appointmentData.email}" style="color: #2563eb; text-decoration: none;">${appointmentData.email}</a></td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">📱 Téléphone</td>
+                                    <td style="color: #1f2937; text-align: right;"><a href="tel:${appointmentData.phone}" style="color: #2563eb; text-decoration: none;">${appointmentData.phone || 'Non renseigné'}</a></td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">📅 Date</td>
+                                    <td style="color: #1f2937; text-align: right; font-weight: 700;">${formattedDate}</td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">⏰ Heure</td>
+                                    <td style="color: #1f2937; text-align: right; font-weight: 700; font-size: 18px;">${appointmentData.appointment_time}</td>
+                                </tr>
+                            </table>
+                            
+                            <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-top: 20px;">
+                                <p style="margin: 0; color: #1e40af; font-size: 14px;">
+                                    <strong>💡 Action requise :</strong> Vérifiez le dashboard admin pour confirmer ou gérer ce rendez-vous.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <a href="https://test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600;">
+                                Voir le Dashboard Admin
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`
+
+    const text = `
+🔔 NOUVEAU RENDEZ-VOUS
+
+Client: ${appointmentData.first_name} ${appointmentData.last_name}
+Email: ${appointmentData.email}
+Téléphone: ${appointmentData.phone || 'Non renseigné'}
+Date: ${formattedDate}
+Heure: ${appointmentData.appointment_time}
+
+Connectez-vous au dashboard admin pour gérer ce rendez-vous.
+`
+
     const info = await sendEmailWithElasticEmail({
-      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
-      to: adminEmails,
+      from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
+      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
       subject,
-      html: htmlContent,
-      text: textContent,
+      html,
+      text,
     })
 
-    console.log('✅ Notification emails sent to admins:', adminEmails, 'ID:', info.messageId)
+    console.log('✅ Admin notification sent to:', process.env.ADMIN_EMAIL || 'f.sebti@outlook.com', 'ID:', info.messageId)
     return info
   } catch (error) {
     console.error('❌ Error sending admin notification:', error)
@@ -262,7 +338,7 @@ export async function sendAppointmentReminder(appointmentData: {
     const subject = replaceTemplateVariables(template.subject, variables)
 
     const info = await sendEmailWithElasticEmail({
-      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
+      from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
       to: appointmentData.email,
       subject,
       html: htmlContent,
@@ -311,7 +387,7 @@ export async function sendAppointmentCancellation(appointmentData: {
     const subject = replaceTemplateVariables(template.subject, variables)
 
     const info = await sendEmailWithElasticEmail({
-      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
+      from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
       to: appointmentData.email,
       subject,
       html: htmlContent,
@@ -330,8 +406,8 @@ export async function sendAppointmentCancellation(appointmentData: {
 export async function testEmailConfiguration() {
   try {
     const info = await sendEmailWithElasticEmail({
-      from: process.env.FROM_EMAIL || 'adelloukal2@gmail.com',
-      to: process.env.ADMIN_EMAIL || 'sebtifatiha@live.fr',
+      from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
+      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
       subject: 'Test Email Configuration - Permis Expert',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

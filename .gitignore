@@ -82,26 +82,9 @@ setup-admin.js
 fix-admin-*.js
 create-admin-*.js
 
-# SQL debug files
-*FIX*.sql
-*fix*.sql
-supabase-setup*.sql
-temp_*.sql
-add-password-column.sql
+# SQL files
+*.sql
 
-# Documentation debug
-OPTIMISATION_*.md
-SUPABASE_*.md
-CONFIGURATION_*.md
-CORRECTION_*.md
-FEATURES_*.md
-GUIDE_*.md
-MIGRATION_*.md
-OBTENIR_*.md
-OVH_*.md
-PRODUCTION_*.md
-RESEND_*.md
-SOLUTION_*.md
-VERCEL_*.md
-DNS_*.md
-DEPLOYMENT.md
+# Markdown documentation files
+*.md
+!README.md

@@ -87,7 +87,7 @@ export default function MentionsLegalesPage() {
                   <p className="mb-2"><strong>Code APE :</strong> 8690F Activité de santé humaine</p>
                   <p className="mb-2"><strong>Numéro ADELI :</strong> 929334555</p>
                   <p className="mb-2"><strong>Téléphone :</strong> 07 65 56 53 79</p>
-                  <p className="mb-2"><strong>Email :</strong> sebtifatiha@live.fr</p>
+                  <p className="mb-2"><strong>Email :</strong> f.sebti@outlook.com</p>
                 </div>
               </div>
               <div className="mt-4 p-4 bg-blue-100 rounded">
@@ -193,7 +193,7 @@ export default function MentionsLegalesPage() {
                 <div className="bg-white rounded-lg p-4 shadow-sm">
                   <h4 className="font-semibold text-gray-900 mb-2">Contact</h4>
                   <p><strong>Téléphone :</strong> 07 65 56 53 79</p>
-                  <p><strong>Email :</strong> sebtifatiha@live.fr</p>
+                  <p><strong>Email :</strong> f.sebti@outlook.com</p>
                   <p><strong>Contact web :</strong> contact@test-psychotechnique-permis.com</p>
                   <p><strong>ADELI :</strong> 929334555</p>
                 </div>

@@ -67,7 +67,7 @@ export default function AgrementPrefectoralPage() {
               </p>
               
               <a 
-                href="https://test-psychotechnique-permis.com/wp-content/uploads/2023/06/Recepisse-SEBTI-2023.pdf"
+                href="/Récépissé SEBTI .pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 text-white rounded-xl font-semibold text-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -163,7 +163,7 @@ export default function AgrementPrefectoralPage() {
                 07 65 56 53 79
               </a>
               <a 
-                href="mailto:sebtifatiha@live.fr"
+                href="mailto:f.sebti@outlook.com"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

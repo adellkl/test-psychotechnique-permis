@@ -80,25 +80,25 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation emails
     try {
-      await Promise.all([
-        sendAppointmentConfirmation({
-          first_name,
-          last_name,
-          email,
-          phone,
-          appointment_date,
-          appointment_time
-        }),
-        sendAppointmentNotificationToAdmin({
-          first_name,
-          last_name,
-          email,
-          phone,
-          appointment_date,
-          appointment_time,
-          reason
-        })
-      ])
+      // Email au client
+      await sendAppointmentConfirmation({
+        first_name,
+        last_name,
+        email,
+        phone,
+        appointment_date,
+        appointment_time
+      })
+
+      // Email à l'admin (f.sebti@outlook.com)
+      await sendAppointmentNotificationToAdmin({
+        first_name,
+        last_name,
+        email,
+        phone,
+        appointment_date,
+        appointment_time
+      })
     } catch (emailError) {
       console.error('Error sending emails:', emailError)
       // Don't fail the appointment creation if emails fail

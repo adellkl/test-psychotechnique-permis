@@ -37,7 +37,8 @@ function TimeSlotContent() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddForm, setShowAddForm] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const [notification, setNotification] = useState<{type: 'success' | 'error', message: string} | null>(null)
+  // Notifications UI removed
+  const [notification, setNotification] = useState<null | { type: 'success' | 'error', message: string }>(null)
   const [activeSection, setActiveSection] = useState('slots')
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
@@ -73,7 +74,7 @@ function TimeSlotContent() {
     }
     const adminData = JSON.parse(adminSession)
     setAdmin(adminData)
-    
+
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed slots management')
   }, [])
 
@@ -131,8 +132,6 @@ function TimeSlotContent() {
       setTimeSlots(enrichedSlots)
     } catch (error) {
       console.error('Error fetching time slots:', error)
-      setNotification({type: 'error', message: 'Erreur lors du chargement des créneaux'})
-      setTimeout(() => setNotification(null), 3000)
     } finally {
       setLoading(false)
     }
@@ -154,41 +153,37 @@ function TimeSlotContent() {
         }])
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
         `Created slot for ${newSlot.date} at ${newSlot.time}`
       )
-      
+
       setShowAddForm(false)
       setNewSlot({
         date: format(new Date(), 'yyyy-MM-dd'),
         time: '09:00'
       })
       fetchTimeSlots()
-      setNotification({type: 'success', message: 'Créneau ajouté avec succès'})
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error adding time slot:', error)
-      setNotification({type: 'error', message: 'Erreur lors de l\'ajout du créneau'})
-      setTimeout(() => setNotification(null), 3000)
     }
   }
 
   const addMultipleSlots = async () => {
     const slotsToAdd = []
     const startDate = new Date(newSlot.date)
-    
+
     for (let i = 0; i < 7; i++) {
       const currentDate = addDays(startDate, i)
       const dateStr = format(currentDate, 'yyyy-MM-dd')
-      
+
       if (currentDate.getDay() === 0 || currentDate.getDay() === 6) continue
-      
+
       const [hours, minutes] = newSlot.time.split(':').map(Number)
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-      
+
       slotsToAdd.push({
         date: dateStr,
         start_time: newSlot.time,
@@ -203,41 +198,37 @@ function TimeSlotContent() {
         .insert(slotsToAdd)
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
         `Created ${slotsToAdd.length} slots starting from ${newSlot.date}`
       )
-      
+
       setShowAddForm(false)
       fetchTimeSlots()
-      setNotification({type: 'success', message: `${slotsToAdd.length} créneaux ajoutés avec succès`})
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error adding multiple slots:', error)
-      setNotification({type: 'error', message: 'Erreur lors de l\'ajout des créneaux'})
-      setTimeout(() => setNotification(null), 3000)
     }
   }
 
   const addBulkSlots = async (startDate: string, endDate: string, times: string[], workdaysOnly: boolean) => {
-    const slotsToAdd: Array<{date: string, start_time: string, end_time: string, is_available: boolean}> = []
+    const slotsToAdd: Array<{ date: string, start_time: string, end_time: string, is_available: boolean }> = []
     const start = new Date(startDate)
     const end = new Date(endDate)
-    
+
     // Iterate through all dates in the range
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       // Skip weekends if workdaysOnly is true
       if (workdaysOnly && (d.getDay() === 0 || d.getDay() === 6)) continue
-      
+
       const dateStr = format(d, 'yyyy-MM-dd')
-      
+
       // Add a slot for each selected time
       times.forEach(time => {
         const [hours, minutes] = time.split(':').map(Number)
         const endHours = hours + 2
         const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-        
+
         slotsToAdd.push({
           date: dateStr,
           start_time: time,
@@ -253,19 +244,19 @@ function TimeSlotContent() {
         .insert(slotsToAdd)
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
         `Bulk created ${slotsToAdd.length} slots from ${startDate} to ${endDate}`
       )
-      
+
       setShowAddForm(false)
       fetchTimeSlots()
-      setNotification({type: 'success', message: `${slotsToAdd.length} créneaux créés avec succès!`})
+      setNotification({ type: 'success', message: `${slotsToAdd.length} créneaux créés avec succès!` })
       setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error adding bulk slots:', error)
-      setNotification({type: 'error', message: 'Erreur lors de la création en masse'})
+      setNotification({ type: 'error', message: 'Erreur lors de la création en masse' })
       setTimeout(() => setNotification(null), 3000)
     }
   }
@@ -278,20 +269,16 @@ function TimeSlotContent() {
         .eq('id', id)
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.DELETE_SLOT,
         `Deleted slot with ID: ${id}`
       )
-      
+
       setDeleteConfirmId(null)
       fetchTimeSlots()
-      setNotification({type: 'success', message: 'Créneau supprimé avec succès'})
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error deleting time slot:', error)
-      setNotification({type: 'error', message: 'Erreur lors de la suppression'})
-      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -303,19 +290,15 @@ function TimeSlotContent() {
         .eq('id', id)
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.UPDATE_SLOT,
         `Updated slot ${id} availability to ${!currentStatus}`
       )
-      
+
       fetchTimeSlots()
-      setNotification({type: 'success', message: 'Disponibilité mise à jour'})
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error updating availability:', error)
-      setNotification({type: 'error', message: 'Erreur lors de la mise à jour'})
-      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -333,7 +316,7 @@ function TimeSlotContent() {
 
   const getFilteredSlots = () => {
     let filtered = timeSlots
-    
+
     if (filterStatus === 'available') {
       filtered = timeSlots.filter(s => s.is_available && !s.is_booked)
     } else if (filterStatus === 'booked') {
@@ -341,7 +324,7 @@ function TimeSlotContent() {
     } else if (filterStatus === 'disabled') {
       filtered = timeSlots.filter(s => !s.is_available && !s.is_booked)
     }
-    
+
     return filtered
   }
 
@@ -365,7 +348,7 @@ function TimeSlotContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      <Sidebar 
+      <Sidebar
         activeSection={activeSection}
         onSectionChange={(section) => {
           // Navigation vers le dashboard
@@ -383,9 +366,8 @@ function TimeSlotContent() {
         }}
       />
 
-      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-        sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
-      }`}>
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+        }`}>
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
           <div className="px-4 lg:px-6 py-4">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -412,11 +394,10 @@ function TimeSlotContent() {
                 <div className="hidden sm:flex bg-gray-100 rounded-xl p-1">
                   <button
                     onClick={() => setViewMode('week')}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      viewMode === 'week' 
-                        ? 'bg-white text-blue-600 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'week'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                      }`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -424,11 +405,10 @@ function TimeSlotContent() {
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      viewMode === 'list' 
-                        ? 'bg-white text-blue-600 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'list'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                      }`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -513,14 +493,14 @@ function TimeSlotContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              
+
               <button
                 onClick={() => setSelectedDate(new Date())}
                 className="px-6 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-900 font-semibold rounded-xl hover:from-blue-200 hover:to-purple-200 transition-all"
               >
                 Aujourd'hui
               </button>
-              
+
               <button
                 onClick={() => setSelectedDate(addDays(selectedDate, 7))}
                 className="p-3 text-gray-600 hover:text-gray-900 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all"
@@ -590,11 +570,10 @@ function TimeSlotContent() {
                             {!slot.is_booked && (
                               <button
                                 onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                                  slot.is_available
-                                    ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                                    : 'bg-green-100 text-green-800 hover:bg-green-200'
-                                }`}
+                                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${slot.is_available
+                                  ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                  : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                  }`}
                               >
                                 {slot.is_available ? 'Désactiver' : 'Activer'}
                               </button>
@@ -669,11 +648,10 @@ function TimeSlotContent() {
                       {!slot.is_booked && (
                         <button
                           onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                            slot.is_available
-                              ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                              : 'bg-green-500 text-white hover:bg-green-600'
-                          }`}
+                          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${slot.is_available
+                            ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                            }`}
                         >
                           {slot.is_available ? 'Désactiver' : 'Activer'}
                         </button>
@@ -722,13 +700,13 @@ function TimeSlotContent() {
                 <p className="text-sm text-gray-600">Êtes-vous sûr de vouloir supprimer ce créneau ?</p>
               </div>
             </div>
-            
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
               <p className="text-sm text-yellow-800">
                 <strong>Attention :</strong> Cette action est irréversible.
               </p>
             </div>
-            
+
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteConfirmId(null)}
@@ -762,7 +740,7 @@ function TimeSlotContent() {
                 <p className="text-sm text-gray-600">Êtes-vous sûr de vouloir vous déconnecter ?</p>
               </div>
             </div>
-            
+
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
@@ -782,51 +760,8 @@ function TimeSlotContent() {
       )}
 
       {notification && (
-        <div 
-          className={`fixed top-6 right-6 min-w-[320px] max-w-md rounded-xl shadow-2xl backdrop-blur-md border transition-all duration-500 transform z-[9998] ${
-            notification.type === 'success' 
-              ? 'bg-gradient-to-r from-green-50/95 to-emerald-50/95 border-green-300/50 text-green-900' 
-              : 'bg-gradient-to-r from-red-50/95 to-rose-50/95 border-red-300/50 text-red-900'
-          } animate-in slide-in-from-right-5 fade-in-0`}
-          style={{ zIndex: 2147483647 }}
-        >
-          <div className="p-4">
-            <div className="flex items-start gap-3">
-              <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                notification.type === 'success' 
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
-                  : 'bg-gradient-to-r from-red-500 to-rose-500'
-              }`}>
-                {notification.type === 'success' ? (
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold mb-1">
-                  {notification.type === 'success' ? 'Succès' : 'Erreur'}
-                </p>
-                <p className="text-sm opacity-90">{notification.message}</p>
-              </div>
-              <button 
-                onClick={() => setNotification(null)}
-                className={`flex-shrink-0 p-1 rounded-lg transition-all duration-200 ${
-                  notification.type === 'success' 
-                    ? 'hover:bg-green-200/50 text-green-700' 
-                    : 'hover:bg-red-200/50 text-red-700'
-                }`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
+        <div className={`fixed bottom-6 right-6 z-[10000] px-4 py-3 rounded-xl shadow-lg text-white ${notification.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+          {notification.message}
         </div>
       )}
     </div>

@@ -12,6 +12,7 @@ import StatisticsCharts from '../components/StatisticsCharts'
 import AdminSettingsContent from '../components/AdminSettingsContent'
 import SearchBar, { SearchFilters } from '../components/SearchBar'
 import ExportStatisticsButton from '../components/ExportStatisticsButton'
+import NotificationsPanel from '../components/NotificationsPanel'
 
 export default function AdminDashboard() {
   return (
@@ -28,7 +29,7 @@ function DashboardContent() {
   const [admin, setAdmin] = useState<any>(null)
   const [activeSection, setActiveSection] = useState('appointments')
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+  // Notifications UI removed
   // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -103,12 +104,12 @@ function DashboardContent() {
       const aptDate = apt.appointment_date
       const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
       const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
-      
+
       if (!fromMatch || !toMatch) return false
 
       // Filtrage par terme de recherche
       const fullName = `${apt.first_name} ${apt.last_name}`.toLowerCase()
-      
+
       switch (searchFilters.searchField) {
         case 'name':
           return fullName.includes(term)
@@ -151,12 +152,8 @@ function DashboardContent() {
 
       if (error) throw error
       await fetchAppointments()
-      setNotification({ type: 'success', message: 'Statut mis à jour avec succès' })
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error updating appointment:', error)
-      setNotification({ type: 'error', message: 'Erreur lors de la mise à jour' })
-      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -170,12 +167,8 @@ function DashboardContent() {
       if (error) throw error
 
       await fetchAppointments()
-      setNotification({ type: 'success', message: 'Rendez-vous supprimé avec succès' })
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error deleting appointment:', error)
-      setNotification({ type: 'error', message: 'Erreur lors de la suppression du rendez-vous' })
-      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -189,12 +182,8 @@ function DashboardContent() {
       if (error) throw error
 
       await fetchAppointments()
-      setNotification({ type: 'success', message: `${ids.length} rendez-vous supprimés avec succès` })
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error deleting appointments:', error)
-      setNotification({ type: 'error', message: 'Erreur lors de la suppression des rendez-vous' })
-      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -257,9 +246,12 @@ function DashboardContent() {
                   Bienvenue, {admin?.full_name}
                 </p>
               </div>
-              {activeSection === 'statistics' && (
-                <ExportStatisticsButton appointments={appointments} />
-              )}
+              <div className="flex items-center gap-3">
+                <NotificationsPanel />
+                {activeSection === 'statistics' && (
+                  <ExportStatisticsButton appointments={appointments} />
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -323,11 +315,11 @@ function DashboardContent() {
           {/* Appointments Section */}
           {activeSection === 'appointments' && (
             <div className="space-y-6">
-              <SearchBar 
+              <SearchBar
                 onSearch={handleSearch}
                 onReset={handleResetSearch}
               />
-              
+
               {/* Résultats de recherche */}
               {searchFilters && (
                 <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
@@ -398,52 +390,7 @@ function DashboardContent() {
         </div>
       )}
 
-      {/* Notification Toast */}
-      {notification && (
-        <div
-          className={`fixed top-6 right-6 min-w-[320px] max-w-md rounded-xl shadow-2xl backdrop-blur-md border transition-all duration-500 transform ${notification.type === 'success'
-              ? 'bg-gradient-to-r from-green-50/95 to-emerald-50/95 border-green-300/50 text-green-900'
-              : 'bg-gradient-to-r from-red-50/95 to-rose-50/95 border-red-300/50 text-red-900'
-            } animate-in slide-in-from-right-5 fade-in-0`}
-          style={{ zIndex: 9998 }}
-        >
-          <div className="p-4">
-            <div className="flex items-start gap-3">
-              <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${notification.type === 'success'
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                  : 'bg-gradient-to-r from-red-500 to-rose-500'
-                }`}>
-                {notification.type === 'success' ? (
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold mb-1">
-                  {notification.type === 'success' ? 'Succès' : 'Erreur'}
-                </p>
-                <p className="text-sm opacity-90">{notification.message}</p>
-              </div>
-              <button
-                onClick={() => setNotification(null)}
-                className={`flex-shrink-0 p-1 rounded-lg transition-all duration-200 ${notification.type === 'success'
-                    ? 'hover:bg-green-200/50 text-green-700'
-                    : 'hover:bg-red-200/50 text-red-700'
-                  }`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Notifications UI removed */}
     </div>
   )
 }

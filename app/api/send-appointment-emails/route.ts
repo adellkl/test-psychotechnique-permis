@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendAppointmentConfirmation, sendAppointmentNotificationToAdmin } from '../../../lib/emailService'
+import { sendAppointmentConfirmation } from '../../../lib/emailService'
 import { isValidEmail, isValidPhone, isValidName, sanitizeString } from '../../../lib/validation'
 
 export async function POST(request: NextRequest) {
@@ -49,15 +49,10 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Client confirmation email sent to:', sanitizedData.email)
 
-    // Send notification email to admin
-    const adminEmailResult = await sendAppointmentNotificationToAdmin(sanitizedData)
-
-    console.log('✅ Admin notification email sent')
-
     return NextResponse.json({
       success: true,
       client_email_id: clientEmailResult?.messageId,
-      admin_email_id: adminEmailResult?.messageId
+      admin_email_id: undefined
     })
   } catch (error) {
     console.error('❌ Error sending emails:', error)
