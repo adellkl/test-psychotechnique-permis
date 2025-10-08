@@ -8,7 +8,7 @@ async function createTestAppointment() {
     email: 'bijey74244@fintehs.com',
     phone: '06 12 34 56 78',
     appointment_date: '2025-10-08',
-    appointment_time: '12:00',
+    appointment_time: '12:30',
     test_type: 'Test psychotechnique standard',
     reason: 'Invalidation permis',
     is_second_chance: false,

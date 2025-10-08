@@ -47,7 +47,7 @@ async function sendEmailWithSMTP(emailData: any) {
 }
 
 // Configuration Elastic Email API (solution fonctionnelle)
-async function sendEmailWithElasticEmail(emailData: {
+export async function sendEmailWithElasticEmail(emailData: {
   from: string
   to: string
   subject: string
@@ -55,6 +55,13 @@ async function sendEmailWithElasticEmail(emailData: {
   text: string
 }) {
   try {
+    console.log(`🔧 [ELASTIC] Configuration:`, {
+      from: emailData.from,
+      to: emailData.to,
+      subject: emailData.subject.substring(0, 50) + '...',
+      apiKey: process.env.ELASTIC_EMAIL_API_KEY ? 'Définie (' + process.env.ELASTIC_EMAIL_API_KEY.substring(0, 10) + '...)' : 'NON DÉFINIE'
+    })
+
     const formData = new FormData()
     formData.append('apikey', process.env.ELASTIC_EMAIL_API_KEY || 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987')
     formData.append('from', emailData.from)
@@ -72,27 +79,34 @@ async function sendEmailWithElasticEmail(emailData: {
       'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com'}?subject=unsubscribe>`
     }))
 
+    console.log(`🌐 [ELASTIC] Appel API...`)
     const response = await fetch('https://api.elasticemail.com/v2/email/send', {
       method: 'POST',
       body: formData
     })
 
     const result = await response.text()
+    console.log(`📥 [ELASTIC] Réponse HTTP ${response.status}:`, result.substring(0, 200))
     
     if (!response.ok) {
-      throw new Error(`Elastic Email API error: ${result}`)
+      throw new Error(`Elastic Email API HTTP ${response.status}: ${result}`)
     }
 
     // Parse response (format: transaction-id or error message)
     const data = JSON.parse(result)
     if (data.success === false) {
-      throw new Error(data.error || 'Unknown Elastic Email error')
+      throw new Error(`Elastic Email error: ${data.error || 'Unknown error'}`)
     }
 
-    console.log('✅ Email sent successfully via Elastic Email, ID:', data.data?.messageid || result)
+    console.log('✅ [ELASTIC] Email envoyé, ID:', data.data?.messageid || result)
     return { messageId: data.data?.messageid || result }
   } catch (error) {
-    console.error('❌ Elastic Email sending failed:', error)
+    console.error('❌ [ELASTIC] ERREUR COMPLÈTE:', error)
+    console.error('❌ [ELASTIC] Type:', error instanceof Error ? error.constructor.name : typeof error)
+    console.error('❌ [ELASTIC] Message:', error instanceof Error ? error.message : String(error))
+    if (error instanceof Error && error.stack) {
+      console.error('❌ [ELASTIC] Stack:', error.stack)
+    }
     throw error
   }
 }
@@ -143,9 +157,10 @@ export async function sendAppointmentConfirmation(appointmentData: {
   appointment_time: string
 }) {
   try {
-    console.log(`📧 Sending confirmation email to: ${appointmentData.email}`)
+    console.log(`📧 [CLIENT] Récupération du template...`)
 
     const template = await getEmailTemplate('appointment_confirmation_client')
+    console.log(`✅ [CLIENT] Template récupéré: ${template.template_name}`)
 
     // Format date and time
     const formattedDate = new Date(appointmentData.appointment_date).toLocaleDateString('fr-FR', {
@@ -169,10 +184,12 @@ export async function sendAppointmentConfirmation(appointmentData: {
       website: 'https://test-psychotechnique-permis.com'
     }
 
+    console.log(`📝 [CLIENT] Remplacement des variables...`)
     const htmlContent = replaceTemplateVariables(template.html_content, variables)
     const textContent = replaceTemplateVariables(template.text_content, variables)
     const subject = replaceTemplateVariables(template.subject, variables)
 
+    console.log(`📤 [CLIENT] Envoi via Elastic Email à: ${appointmentData.email}`)
     const info = await sendEmailWithElasticEmail({
       from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
       to: appointmentData.email,
@@ -181,10 +198,12 @@ export async function sendAppointmentConfirmation(appointmentData: {
       text: textContent,
     })
 
-    console.log('✅ Confirmation email sent to client:', appointmentData.email, 'ID:', info.messageId)
+    console.log('✅ [CLIENT] Email envoyé avec succès, ID:', info.messageId)
     return info
   } catch (error) {
-    console.error('❌ Error sending confirmation email:', error)
+    console.error('❌ [CLIENT] ERREUR:', error)
+    console.error('❌ [CLIENT] Type:', error instanceof Error ? error.constructor.name : typeof error)
+    console.error('❌ [CLIENT] Message:', error instanceof Error ? error.message : String(error))
     throw error
   }
 }
@@ -199,7 +218,8 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
   appointment_time: string
 }) {
   try {
-    console.log(`📧 Sending admin notification for new appointment`)
+    console.log(`📧 [ADMIN] Préparation notification admin...`)
+    console.log(`📧 [ADMIN] Email admin configuré:`, process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com')
 
     const formattedDate = new Date(appointmentData.appointment_date).toLocaleDateString('fr-FR', {
       weekday: 'long',
@@ -288,6 +308,7 @@ Heure: ${appointmentData.appointment_time}
 Connectez-vous au dashboard admin pour gérer ce rendez-vous.
 `
 
+    console.log(`📤 [ADMIN] Envoi via Elastic Email...`)
     const info = await sendEmailWithElasticEmail({
       from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
       to: process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
@@ -296,10 +317,12 @@ Connectez-vous au dashboard admin pour gérer ce rendez-vous.
       text,
     })
 
-    console.log('✅ Admin notification sent to:', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com', 'ID:', info.messageId)
+    console.log('✅ [ADMIN] Email envoyé avec succès à:', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com', 'ID:', info.messageId)
     return info
   } catch (error) {
-    console.error('❌ Error sending admin notification:', error)
+    console.error('❌ [ADMIN] ERREUR:', error)
+    console.error('❌ [ADMIN] Type:', error instanceof Error ? error.constructor.name : typeof error)
+    console.error('❌ [ADMIN] Message:', error instanceof Error ? error.message : String(error))
     throw error
   }
 }

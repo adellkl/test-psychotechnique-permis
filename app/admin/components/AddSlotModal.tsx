@@ -16,7 +16,7 @@ interface AddSlotModalProps {
 const generateTimeOptions = (intervalMinutes: number): string[] => {
   const options: string[] = []
   const startHour = 8 // 8h du matin
-  const endHour = 18 // 18h (6h du soir)
+  const endHour = 19 // 19h (7h du soir)
   const totalMinutes = (endHour - startHour) * 60
 
   if (intervalMinutes <= 0 || !Number.isFinite(intervalMinutes)) {

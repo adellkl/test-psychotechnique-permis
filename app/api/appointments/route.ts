@@ -79,12 +79,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Send confirmation emails
+    console.log('📧 Envoi des emails de confirmation...')
+    console.log('📧 Configuration:', {
+      ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+      FROM_EMAIL: process.env.FROM_EMAIL,
+      ELASTIC_EMAIL_API_KEY: process.env.ELASTIC_EMAIL_API_KEY ? 'Définie' : 'Non définie'
+    })
+    
     try {
-      console.log('📧 Envoi des emails de confirmation...')
-      
       // Email au client
       console.log('📤 Envoi email client à:', email)
-      await sendAppointmentConfirmation({
+      const clientResult = await sendAppointmentConfirmation({
         first_name,
         last_name,
         email,
@@ -92,11 +97,16 @@ export async function POST(request: NextRequest) {
         appointment_date,
         appointment_time
       })
-      console.log('✅ Email client envoyé avec succès')
+      console.log('✅ Email client envoyé avec succès, ID:', clientResult?.messageId)
+    } catch (clientError) {
+      console.error('❌ ERREUR EMAIL CLIENT:', clientError)
+      console.error('❌ Stack:', clientError instanceof Error ? clientError.stack : 'No stack')
+    }
 
+    try {
       // Email à l'admin
       console.log('📤 Envoi email admin à:', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com')
-      await sendAppointmentNotificationToAdmin({
+      const adminResult = await sendAppointmentNotificationToAdmin({
         first_name,
         last_name,
         email,
@@ -104,11 +114,10 @@ export async function POST(request: NextRequest) {
         appointment_date,
         appointment_time
       })
-      console.log('✅ Email admin envoyé avec succès')
-    } catch (emailError) {
-      console.error('❌ Error sending emails:', emailError)
-      console.error('❌ Email error details:', JSON.stringify(emailError, null, 2))
-      // Don't fail the appointment creation if emails fail
+      console.log('✅ Email admin envoyé avec succès, ID:', adminResult?.messageId)
+    } catch (adminError) {
+      console.error('❌ ERREUR EMAIL ADMIN:', adminError)
+      console.error('❌ Stack:', adminError instanceof Error ? adminError.stack : 'No stack')
     }
 
     return NextResponse.json({ 
