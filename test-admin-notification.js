@@ -8,7 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 // Configuration Elastic Email
 const ELASTIC_API_KEY = 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987'
 const FROM_EMAIL = 'contact@test-psychotechnique-permis.com'
-const ADMIN_EMAIL = 'f.sebti@outlook.com'
+const ADMIN_EMAIL = 'sebtifatiha170617@gmail.com'
 
 async function sendAdminNotification(appointmentData) {
   const formattedDate = new Date(appointmentData.appointment_date).toLocaleDateString('fr-FR', {

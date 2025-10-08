@@ -80,7 +80,10 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation emails
     try {
+      console.log('📧 Envoi des emails de confirmation...')
+      
       // Email au client
+      console.log('📤 Envoi email client à:', email)
       await sendAppointmentConfirmation({
         first_name,
         last_name,
@@ -89,8 +92,10 @@ export async function POST(request: NextRequest) {
         appointment_date,
         appointment_time
       })
+      console.log('✅ Email client envoyé avec succès')
 
-      // Email à l'admin (f.sebti@outlook.com)
+      // Email à l'admin
+      console.log('📤 Envoi email admin à:', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com')
       await sendAppointmentNotificationToAdmin({
         first_name,
         last_name,
@@ -99,8 +104,10 @@ export async function POST(request: NextRequest) {
         appointment_date,
         appointment_time
       })
+      console.log('✅ Email admin envoyé avec succès')
     } catch (emailError) {
-      console.error('Error sending emails:', emailError)
+      console.error('❌ Error sending emails:', emailError)
+      console.error('❌ Email error details:', JSON.stringify(emailError, null, 2))
       // Don't fail the appointment creation if emails fail
     }
 

@@ -70,7 +70,7 @@ async function sendCorrectedTestEmail() {
                 <li>Arrivez 15 minutes avant l'heure</li>
                 <li>Munissez-vous d'une pièce d'identité valide</li>
                 <li>Apportez vos lunettes si vous en portez</li>
-                <li>Paiement sur place uniquement</li>
+                <li>Paiement en espèces</li>
             </ul>
         </div>
 
@@ -104,7 +104,7 @@ Tarif : 90€
 - Arrivez 15 minutes avant l'heure
 - Munissez-vous d'une pièce d'identité valide
 - Apportez vos lunettes si vous en portez
-- Paiement sur place uniquement
+- Paiement en espèces
 
 Contact : 07 65 56 53 79
 Site web : https://test-psychotechnique-permis.com

@@ -1,9 +1,9 @@
 // Test du nouveau template email client
-// Envoi d'un email à adelloukal2@gmail.com pour voir le nouveau design
+// Envoi d'un email à l'admin pour voir le nouveau design
 
 const ELASTIC_EMAIL_API_KEY = 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987';
 const FROM_EMAIL = 'contact@test-psychotechnique-permis.com';
-const TO_EMAIL = 'adelloukal2@gmail.com';
+const TO_EMAIL = 'sebtifatiha170617@gmail.com';
 
 async function sendTestEmail() {
   console.log('🚀 Envoi d\'un email de test du nouveau template...');
@@ -71,7 +71,7 @@ async function sendTestEmail() {
                 <li>Arrivez 15 minutes avant l'heure</li>
                 <li>Munissez-vous d'une pièce d'identité valide</li>
                 <li>Apportez vos lunettes si vous en portez</li>
-                <li>Paiement sur place uniquement</li>
+                <li>Paiement en espèces</li>
             </ul>
         </div>
 
@@ -105,7 +105,7 @@ Tarif : 90€
 - Arrivez 15 minutes avant l'heure
 - Munissez-vous d'une pièce d'identité valide
 - Apportez vos lunettes si vous en portez
-- Paiement sur place uniquement
+- Paiement en espèces
 
 Contact : 07 65 56 53 79
 Site web : https://test-psychotechnique-permis.com
@@ -135,7 +135,7 @@ L'équipe Permis Expert
       console.log('✅ Email de test envoyé avec succès !');
       console.log('📬 Transaction ID:', result.data?.transactionid || 'N/A');
       console.log('📬 Message ID:', result.data?.messageid || 'N/A');
-      console.log('\n🎉 Vérifiez votre boîte email adelloukal2@gmail.com');
+      console.log('\n🎉 Vérifiez votre boîte email sebtifatiha170617@gmail.com');
       console.log('📧 Le nouveau template avec le tarif 90€ devrait apparaître !');
     } else {
       throw new Error(`Échec de l'envoi: ${result.error || 'Erreur inconnue'}`);

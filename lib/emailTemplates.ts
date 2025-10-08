@@ -145,7 +145,7 @@ export const defaultEmailTemplates = [
                                             <li style="margin-bottom: 8px;"><strong>Arrivez 15 minutes avant</strong> l'heure de votre rendez-vous</li>
                                             <li style="margin-bottom: 8px;"><strong>Pièce d'identité valide</strong> obligatoire (CNI, passeport ou titre de séjour)</li>
                                             <li style="margin-bottom: 8px;"><strong>Lunettes ou lentilles</strong> si vous en portez habituellement</li>
-                                            <li style="margin-bottom: 8px;"><strong>Paiement sur place</strong> : espèces, carte bancaire ou chèque</li>
+                                            <li style="margin-bottom: 8px;"><strong>Paiement en espèces</strong></li>
                                             <li><strong>Durée du test</strong> : environ 45 minutes</li>
                                         </ul>
                                     </td>
@@ -214,7 +214,7 @@ Nous avons le plaisir de confirmer votre rendez-vous pour le test psychotechniqu
 • Arrivez 15 minutes avant l'heure de votre rendez-vous
 • Pièce d'identité valide obligatoire (CNI, passeport ou titre de séjour)
 • Lunettes ou lentilles si vous en portez habituellement
-• Paiement sur place : espèces, carte bancaire ou chèque
+• Paiement en espèces
 • Durée du test : environ 45 minutes
 
 🚇 ACCÈS ET CONTACT

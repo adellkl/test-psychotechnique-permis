@@ -1,5 +1,5 @@
-// Test d'envoi d'email à la nouvelle adresse admin
-// Pour vérifier que les emails sont bien envoyés à f.sebti@outlook.com
+// Test d'envoi d'email à l'adresse admin
+// Pour vérifier que les emails sont bien envoyés à sebtifatiha170617@gmail.com
 
 const nodemailer = require('nodemailer');
 
@@ -20,14 +20,14 @@ const outlookTransporter = nodemailer.createTransport({
 });
 
 async function testAdminEmail() {
-  console.log('🚀 Test d\'envoi d\'email à la nouvelle adresse admin...');
-  console.log(`📧 De: ${process.env.OUTLOOK_EMAIL || 'sebtifatiha@live.fr'}`);
-  console.log(`📧 À: f.sebti@outlook.com`);
+  console.log('🚀 Test d\'envoi d\'email à l\'adresse admin...');
+  console.log(`📧 De: contact@test-psychotechnique-permis.com`);
+  console.log(`📧 À: sebtifatiha170617@gmail.com`);
 
   try {
     const info = await outlookTransporter.sendMail({
-      from: process.env.OUTLOOK_EMAIL || 'sebtifatiha@live.fr',
-      to: 'f.sebti@outlook.com',
+      from: 'contact@test-psychotechnique-permis.com',
+      to: 'sebtifatiha170617@gmail.com',
       subject: 'Test Email - Nouvelle adresse admin',
       html: `
         <html>
@@ -39,13 +39,12 @@ async function testAdminEmail() {
               <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">Informations de test :</h3>
                 <ul>
-                  <li><strong>Ancienne adresse :</strong> adelloukal2@gmail.com</li>
-                  <li><strong>Nouvelle adresse :</strong> f.sebti@outlook.com</li>
+                  <li><strong>Adresse admin :</strong> sebtifatiha170617@gmail.com</li>
                   <li><strong>Date du test :</strong> ${new Date().toLocaleString('fr-FR')}</li>
-                  <li><strong>Service :</strong> Outlook SMTP</li>
+                  <li><strong>Service :</strong> Elastic Email API</li>
                 </ul>
               </div>
-              <p>Si vous recevez cet email sur <strong>f.sebti@outlook.com</strong>, cela signifie que la configuration est <strong style="color: #10b981;">opérationnelle</strong> ! ✅</p>
+              <p>Si vous recevez cet email sur <strong>sebtifatiha170617@gmail.com</strong>, cela signifie que la configuration est <strong style="color: #10b981;">opérationnelle</strong> ! ✅</p>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="https://www.test-psychotechnique-permis.com/" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Visiter notre site web</a>
               </div>
@@ -60,12 +59,12 @@ async function testAdminEmail() {
           </body>
         </html>
       `,
-      text: 'Test email pour vérifier que les emails sont bien envoyés à la nouvelle adresse admin f.sebti@outlook.com'
+      text: 'Test email pour vérifier que les emails sont bien envoyés à l\'adresse admin sebtifatiha170617@gmail.com'
     });
 
     console.log('✅ Email de test envoyé avec succès !');
     console.log('📬 Message ID:', info.messageId);
-    console.log('\n🎉 Vérifiez la boîte email f.sebti@outlook.com');
+    console.log('\n🎉 Vérifiez la boîte email sebtifatiha170617@gmail.com');
 
   } catch (error) {
     console.error('❌ Erreur lors de l\'envoi de l\'email de test:');

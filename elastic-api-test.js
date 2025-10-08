@@ -13,8 +13,8 @@ async function testElasticEmailAPI() {
     
     const formData = new FormData()
     formData.append('apikey', ELASTIC_EMAIL_API_KEY)
-    formData.append('from', 'adelloukal2@gmail.com')
-    formData.append('to', 'adelloukal2@gmail.com')
+    formData.append('from', 'contact@test-psychotechnique-permis.com')
+    formData.append('to', 'sebtifatiha170617@gmail.com')
     formData.append('subject', 'Test API Elastic Email - Permis Expert')
     formData.append('bodyHtml', `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

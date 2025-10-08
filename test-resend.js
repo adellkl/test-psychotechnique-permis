@@ -11,7 +11,7 @@ async function testEmail() {
     
     const { data, error } = await resend.emails.send({
       from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
-      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
+      to: process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
       subject: 'Test Email - Permis Expert',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

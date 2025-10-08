@@ -7,8 +7,8 @@ const outlookTransporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.OUTLOOK_EMAIL || 'f.sebti@outlook.com',
-    pass: process.env.OUTLOOK_APP_PASSWORD || 'klozfurpuolscefm'
+    user: process.env.OUTLOOK_EMAIL || 'contact@test-psychotechnique-permis.com',
+    pass: process.env.OUTLOOK_APP_PASSWORD || ''
   },
   tls: {
     ciphers: 'SSLv3',
@@ -33,8 +33,8 @@ async function sendEmailWithSMTP(emailData: any) {
         'X-Mailer': 'Permis Expert Booking System',
         'X-Priority': '3',
         'Importance': 'Normal',
-        'Reply-To': process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
-        'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'f.sebti@outlook.com'}?subject=unsubscribe>`
+        'Reply-To': process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
+        'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com'}?subject=unsubscribe>`
       }
     })
 
@@ -64,12 +64,12 @@ async function sendEmailWithElasticEmail(emailData: {
     formData.append('bodyText', emailData.text)
     
     // Headers anti-spam
-    formData.append('replyTo', process.env.ADMIN_EMAIL || 'f.sebti@outlook.com')
+    formData.append('replyTo', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com')
     formData.append('headers', JSON.stringify({
       'X-Mailer': 'Permis Expert Booking System',
       'X-Priority': '3',
       'Importance': 'Normal',
-      'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'f.sebti@outlook.com'}?subject=unsubscribe>`
+      'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com'}?subject=unsubscribe>`
     }))
 
     const response = await fetch('https://api.elasticemail.com/v2/email/send', {
@@ -290,13 +290,13 @@ Connectez-vous au dashboard admin pour gérer ce rendez-vous.
 
     const info = await sendEmailWithElasticEmail({
       from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
-      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
+      to: process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
       subject,
       html,
       text,
     })
 
-    console.log('✅ Admin notification sent to:', process.env.ADMIN_EMAIL || 'f.sebti@outlook.com', 'ID:', info.messageId)
+    console.log('✅ Admin notification sent to:', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com', 'ID:', info.messageId)
     return info
   } catch (error) {
     console.error('❌ Error sending admin notification:', error)
@@ -407,7 +407,7 @@ export async function testEmailConfiguration() {
   try {
     const info = await sendEmailWithElasticEmail({
       from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
-      to: process.env.ADMIN_EMAIL || 'f.sebti@outlook.com',
+      to: process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
       subject: 'Test Email Configuration - Permis Expert',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

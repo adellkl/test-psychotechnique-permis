@@ -3,7 +3,7 @@
 
 const ELASTIC_EMAIL_API_KEY = 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987';
 const FROM_EMAIL = 'contact@test-psychotechnique-permis.com';
-const TO_EMAIL = 'rexo0586@gmail.com';
+const TO_EMAIL = 'sebtifatiha170617@gmail.com';
 
 async function sendTestEmail() {
   console.log('🚀 Envoi d\'un email de test...');
@@ -72,7 +72,7 @@ async function sendTestEmail() {
       console.log('✅ Email envoyé avec succès !');
       console.log('📬 Transaction ID:', result.data?.transactionid || 'N/A');
       console.log('📬 Message ID:', result.data?.messageid || 'N/A');
-      console.log('\n🎉 Vérifiez la boîte email rexo0586@gmail.com');
+      console.log('\n🎉 Vérifiez la boîte email sebtifatiha170617@gmail.com');
     } else {
       throw new Error(`Échec de l'envoi: ${result.error || 'Erreur inconnue'}`);
     }

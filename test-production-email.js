@@ -5,8 +5,8 @@ async function testProductionEmail() {
     
     const formData = new FormData();
     formData.append('apikey', 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987');
-    formData.append('from', 'adelloukal2@gmail.com');
-    formData.append('to', 'sebtifatiha@live.fr');
+    formData.append('from', 'contact@test-psychotechnique-permis.com');
+    formData.append('to', 'sebtifatiha170617@gmail.com');
     formData.append('subject', 'Test Production - Elastic Email');
     formData.append('bodyHtml', '<h1>Test depuis la production</h1><p>Si vous recevez cet email, l\'API Elastic Email fonctionne depuis votre serveur de production.</p>');
     formData.append('bodyText', 'Test depuis la production - API Elastic Email fonctionnelle');

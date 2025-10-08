@@ -9,7 +9,7 @@ async function testLoginAPI() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: 'sebtifatiha@live.fr',
+        email: 'sebtifatiha170617@gmail.com',
         password: 'Admin123!'
       })
     })
