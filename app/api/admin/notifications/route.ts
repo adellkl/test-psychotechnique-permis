@@ -101,4 +101,29 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
+// DELETE - Supprimer des notifications
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { ids } = body as { ids: string[] }
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: 'ids est requis et doit contenir au moins un id' }, { status: 400 })
+    }
+
+    const { error } = await supabaseServer
+      .from('notifications')
+      .delete()
+      .in('id', ids)
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ deleted: ids.length, success: true })
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 
