@@ -5,14 +5,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date().toISOString()
 
   return [
-    // Page d'accueil - Priorité maximale
     {
       url: baseUrl,
       lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 1.0,
     },
-    // Pages de réservation - Très important
     {
       url: `${baseUrl}/prendre-rendez-vous`,
       lastModified: currentDate,
@@ -25,7 +23,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 0.95,
     },
-    // Pages principales - Invalidation/Suspension/Annulation
     {
       url: `${baseUrl}/invalidation-permis`,
       lastModified: currentDate,
@@ -44,7 +41,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    // Pages informatives
     {
       url: `${baseUrl}/a-propos`,
       lastModified: currentDate,
@@ -63,7 +59,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.6,
     },
-    // Pages légales
     {
       url: `${baseUrl}/mentions-legales`,
       lastModified: currentDate,

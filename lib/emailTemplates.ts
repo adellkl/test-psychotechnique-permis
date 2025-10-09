@@ -1,4 +1,3 @@
-// Default email templates for the system
 export const defaultEmailTemplates = [
   {
     template_name: 'appointment_confirmation_client',
@@ -298,9 +297,8 @@ Test Psychotechnique du Permis de Conduire - Clichy
 `
   },
   
-  // Admin notification template removed
-  
   {
+
     template_name: 'appointment_reminder_client',
     subject: 'Rappel : Votre rendez-vous demain - {{first_name}} {{last_name}}',
     html_content: `
@@ -444,7 +442,6 @@ L'équipe Permis Expert
   }
 ]
 
-// Function to initialize email templates in database
 export async function initializeEmailTemplates() {
   const { supabase } = await import('./supabase')
   

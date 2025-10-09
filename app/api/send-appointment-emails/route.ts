@@ -8,22 +8,22 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!appointmentData.first_name || !appointmentData.last_name || !appointmentData.email) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      return NextResponse.json({ error: 'Missing required fields', appointmentData }, { status: 400, })
     }
 
     // Validate email format
     if (!isValidEmail(appointmentData.email)) {
-      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid email format', appointmentData }, { status: 400, })
     }
 
     // Validate phone if provided
     if (appointmentData.phone && !isValidPhone(appointmentData.phone)) {
-      return NextResponse.json({ error: 'Invalid phone format' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid phone format', appointmentData }, { status: 400, })
     }
 
     // Validate names
     if (!isValidName(appointmentData.first_name) || !isValidName(appointmentData.last_name)) {
-      return NextResponse.json({ error: 'Invalid name format' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid name format', appointmentData }, { status: 400, })
     }
 
     // Sanitize all string inputs
@@ -46,34 +46,35 @@ export async function POST(request: NextRequest) {
       time: sanitizedData.appointment_time
     })
 
-    let clientEmailResult
-    let adminEmailResult
+    // Send both emails in parallel for instant delivery
+    const [clientEmailResult, adminEmailResult] = await Promise.allSettled([
+      sendAppointmentConfirmation(sanitizedData),
+      sendAppointmentNotificationToAdmin(sanitizedData)
+    ])
 
-    // Send confirmation email to client
-    try {
-      clientEmailResult = await sendAppointmentConfirmation(sanitizedData)
+    // Log results
+    if (clientEmailResult.status === 'fulfilled') {
       console.log('✅ Client confirmation email sent to:', sanitizedData.email)
-    } catch (clientError) {
-      console.error('❌ Client email failed:', clientError)
+    } else {
+      console.error('❌ Client email failed:', clientEmailResult.reason)
     }
 
-    // Send notification email to admin
-    try {
-      adminEmailResult = await sendAppointmentNotificationToAdmin(sanitizedData)
+    if (adminEmailResult.status === 'fulfilled') {
       console.log('✅ Admin notification email sent to:', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com')
-    } catch (adminError) {
-      console.error('❌ Admin email failed:', adminError)
+    } else {
+      console.error('❌ Admin email failed:', adminEmailResult.reason)
     }
 
     return NextResponse.json({
       success: true,
-      client_email_id: clientEmailResult?.messageId,
-      admin_email_id: adminEmailResult?.messageId
+      client_email_id: clientEmailResult.status === 'fulfilled' ? clientEmailResult.value?.messageId : null,
+      admin_email_id: adminEmailResult.status === 'fulfilled' ? adminEmailResult.value?.messageId : null,
+      appointmentData
     })
   } catch (error) {
     console.error('❌ Error sending emails:', error)
     return NextResponse.json(
-      { error: 'Failed to send emails', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to send emails', details: error instanceof Error ? error.message : 'Unknown error', appointmentData: await request.json() },
       { status: 500 }
     )
   }

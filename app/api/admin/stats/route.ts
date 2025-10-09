@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../../lib/supabase'
 
-// GET - Fetch dashboard statistics
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -11,7 +10,6 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - parseInt(period))
     const startDateStr = startDate.toISOString().split('T')[0]
 
-    // Get appointment statistics
     const { data: appointments, error: appointmentsError } = await supabase
       .from('appointments')
       .select('status, appointment_date, created_at')
@@ -21,7 +19,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: appointmentsError.message }, { status: 500 })
     }
 
-    // Get available slots count
     const { data: slots, error: slotsError } = await supabase
       .from('available_slots')
       .select('is_available, date')
@@ -31,7 +28,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: slotsError.message }, { status: 500 })
     }
 
-    // Calculate statistics
     const totalAppointments = appointments?.length || 0
     const confirmedAppointments = appointments?.filter(a => a.status === 'confirmed').length || 0
     const completedAppointments = appointments?.filter(a => a.status === 'completed').length || 0

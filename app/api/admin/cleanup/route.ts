@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../../lib/supabase'
 import { logAdminActivity, AdminLogger } from '../../../../lib/adminLogger'
 
-// DELETE - Clean up selected appointments or bulk cleanup
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json()
@@ -10,9 +9,7 @@ export async function DELETE(request: NextRequest) {
     
     let appointmentsToDelete: any[] = []
     
-    // Check if it's bulk cleanup or specific IDs
     if (appointmentIds && Array.isArray(appointmentIds) && appointmentIds.length > 0) {
-      // Specific appointments cleanup
       const { data, error: selectError } = await supabase
         .from('appointments')
         .select('id, first_name, last_name, appointment_date, status')
@@ -25,7 +22,6 @@ export async function DELETE(request: NextRequest) {
 
       appointmentsToDelete = data || []
     } else if (status && olderThan) {
-      // Bulk cleanup by criteria
       if (!['completed', 'cancelled'].includes(status)) {
         return NextResponse.json({ 
           error: 'Status parameter must be "completed" or "cancelled"' 
@@ -39,7 +35,6 @@ export async function DELETE(request: NextRequest) {
         }, { status: 400 })
       }
 
-      // Calculate cutoff date
       const cutoffDate = new Date()
       cutoffDate.setDate(cutoffDate.getDate() - days)
       const cutoffDateString = cutoffDate.toISOString().split('T')[0]
@@ -71,17 +66,8 @@ export async function DELETE(request: NextRequest) {
       })
     }
 
-    // Extract IDs for deletion
     const idsToDelete = appointmentsToDelete.map(apt => apt.id)
 
-    // Note: No notifications table exists in current schema
-    // If notifications are added later, uncomment the following:
-    // const { error: notificationDeleteError } = await supabase
-    //   .from('notifications')
-    //   .delete()
-    //   .in('appointment_id', idsToDelete)
-
-    // Delete the appointments
     const { error: deleteError } = await supabase
       .from('appointments')
       .delete()
@@ -92,7 +78,6 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: deleteError.message }, { status: 500 })
     }
 
-    // Log the cleanup activity (with error handling)
     try {
       const appointmentNames = appointmentsToDelete.map(apt => `${apt.first_name} ${apt.last_name}`).join(', ')
       await logAdminActivity(
@@ -115,7 +100,6 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-// GET - Preview appointments that would be deleted
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

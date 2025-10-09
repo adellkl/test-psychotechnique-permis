@@ -1,55 +1,7 @@
-import nodemailer from 'nodemailer'
 import { supabase } from './supabase'
 
-// Elastic Email API configuration
 const ELASTIC_EMAIL_API_KEY = process.env.ELASTIC_EMAIL_API_KEY
 
-// Configuration SMTP Outlook
-const outlookTransporter = nodemailer.createTransport({
-  host: 'smtp-mail.outlook.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.OUTLOOK_EMAIL || 'contact@test-psychotechnique-permis.com',
-    pass: process.env.OUTLOOK_APP_PASSWORD || ''
-  },
-  tls: {
-    ciphers: 'SSLv3',
-    rejectUnauthorized: false
-  },
-  requireTLS: true
-})
-
-// Send email using SMTP (Outlook/Gmail)
-async function sendEmailWithSMTP(emailData: any) {
-  // Utiliser Outlook SMTP
-  const transporter = outlookTransporter
-
-  try {
-    const info = await transporter.sendMail({
-      from: emailData.from,
-      to: emailData.to,
-      subject: emailData.subject,
-      html: emailData.html,
-      text: emailData.text,
-      headers: {
-        'X-Mailer': 'Permis Expert Booking System',
-        'X-Priority': '3',
-        'Importance': 'Normal',
-        'Reply-To': process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
-        'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com'}?subject=unsubscribe>`
-      }
-    })
-
-    console.log(`✅ Email envoyé via SMTP: ${info.messageId}`)
-    return { messageId: info.messageId }
-  } catch (error) {
-    console.error('❌ Erreur SMTP:', error)
-    throw error
-  }
-}
-
-// Configuration Elastic Email API (solution fonctionnelle)
 export async function sendEmailWithElasticEmail(emailData: {
   from: string
   to: string
@@ -58,67 +10,43 @@ export async function sendEmailWithElasticEmail(emailData: {
   text: string
 }) {
   try {
-    console.log(`🔧 [ELASTIC] Configuration:`, {
-      from: emailData.from,
-      to: emailData.to,
-      subject: emailData.subject.substring(0, 50) + '...',
-      apiKey: ELASTIC_EMAIL_API_KEY ? 'Définie (' + ELASTIC_EMAIL_API_KEY.substring(0, 10) + '...)' : 'NON DÉFINIE'
-    })
-
     if (!ELASTIC_EMAIL_API_KEY) {
-      throw new Error('ELASTIC_EMAIL_API_KEY non définie dans les variables d\'environnement')
+      throw new Error('ELASTIC_EMAIL_API_KEY non définie')
     }
 
-    const formData = new FormData()
+    const formData = new URLSearchParams()
     formData.append('apikey', ELASTIC_EMAIL_API_KEY)
     formData.append('from', emailData.from)
     formData.append('to', emailData.to)
     formData.append('subject', emailData.subject)
     formData.append('bodyHtml', emailData.html)
     formData.append('bodyText', emailData.text)
-
-    // Headers anti-spam
     formData.append('replyTo', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com')
-    formData.append('headers', JSON.stringify({
-      'X-Mailer': 'Permis Expert Booking System',
-      'X-Priority': '3',
-      'Importance': 'Normal',
-      'List-Unsubscribe': `<mailto:${process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com'}?subject=unsubscribe>`
-    }))
 
-    console.log(`🌐 [ELASTIC] Appel API...`)
     const response = await fetch('https://api.elasticemail.com/v2/email/send', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData
     })
 
     const result = await response.text()
-    console.log(`📥 [ELASTIC] Réponse HTTP ${response.status}:`, result.substring(0, 200))
 
     if (!response.ok) {
-      throw new Error(`Elastic Email API HTTP ${response.status}: ${result}`)
+      throw new Error(`Elastic Email API error: ${result}`)
     }
 
-    // Parse response (format: transaction-id or error message)
     const data = JSON.parse(result)
     if (data.success === false) {
       throw new Error(`Elastic Email error: ${data.error || 'Unknown error'}`)
     }
 
-    console.log('✅ [ELASTIC] Email envoyé, ID:', data.data?.messageid || result)
     return { messageId: data.data?.messageid || result }
   } catch (error) {
-    console.error('❌ [ELASTIC] ERREUR COMPLÈTE:', error)
-    console.error('❌ [ELASTIC] Type:', error instanceof Error ? error.constructor.name : typeof error)
-    console.error('❌ [ELASTIC] Message:', error instanceof Error ? error.message : String(error))
-    if (error instanceof Error && error.stack) {
-      console.error('❌ [ELASTIC] Stack:', error.stack)
-    }
+    console.error('❌ [ELASTIC] Erreur:', error)
     throw error
   }
 }
 
-// Email template interface
 interface EmailTemplate {
   id: string
   template_name: string
@@ -129,7 +57,6 @@ interface EmailTemplate {
   updated_at: string
 }
 
-// Replace template variables
 function replaceTemplateVariables(template: string, variables: Record<string, string>): string {
   let result = template
   Object.entries(variables).forEach(([key, value]) => {
@@ -139,7 +66,6 @@ function replaceTemplateVariables(template: string, variables: Record<string, st
   return result
 }
 
-// Get email template from database
 async function getEmailTemplate(templateName: string): Promise<EmailTemplate> {
   const { data: template, error } = await supabase
     .from('email_templates')
@@ -154,7 +80,6 @@ async function getEmailTemplate(templateName: string): Promise<EmailTemplate> {
   return template
 }
 
-// Send appointment confirmation to client
 export async function sendAppointmentConfirmation(appointmentData: {
   first_name: string
   last_name: string
@@ -171,7 +96,6 @@ export async function sendAppointmentConfirmation(appointmentData: {
     const template = await getEmailTemplate('appointment_confirmation_client')
     console.log(`✅ [CLIENT] Template récupéré: ${template.template_name}`)
 
-    // Format date and time
     const formattedDate = new Date(appointmentData.appointment_date).toLocaleDateString('fr-FR', {
       weekday: 'long',
       year: 'numeric',
@@ -179,7 +103,6 @@ export async function sendAppointmentConfirmation(appointmentData: {
       day: 'numeric'
     })
 
-    // Générer le token de confirmation sécurisé
     const crypto = require('crypto')
     const confirmationToken = crypto
       .createHash('sha256')
@@ -226,7 +149,6 @@ export async function sendAppointmentConfirmation(appointmentData: {
   }
 }
 
-// Send appointment notification to admin
 export async function sendAppointmentNotificationToAdmin(appointmentData: {
   first_name: string
   last_name: string
@@ -345,7 +267,6 @@ Connectez-vous au dashboard admin pour gérer ce rendez-vous.
   }
 }
 
-// Send appointment reminder (24h before)
 export async function sendAppointmentReminder(appointmentData: {
   first_name: string
   last_name: string
@@ -394,7 +315,6 @@ export async function sendAppointmentReminder(appointmentData: {
   }
 }
 
-// Send cancellation notification
 export async function sendAppointmentCancellation(appointmentData: {
   first_name: string
   last_name: string
@@ -443,7 +363,6 @@ export async function sendAppointmentCancellation(appointmentData: {
   }
 }
 
-// Test email configuration
 export async function testEmailConfiguration() {
   try {
     const info = await sendEmailWithElasticEmail({

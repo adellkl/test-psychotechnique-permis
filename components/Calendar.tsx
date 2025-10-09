@@ -27,7 +27,6 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
   const [viewMode, setViewMode] = useState<'week' | 'month'>('month')
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set())
 
-  // Fetch available slots
   useEffect(() => {
     fetchAvailableSlots()
   }, [currentDate, viewMode])
@@ -53,7 +52,6 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     }
   }
 
-  // Check if slot is available and not booked
   const isSlotAvailable = async (date: string, time: string) => {
     const { data } = await supabase
       .from('appointments')
@@ -65,12 +63,10 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     return !data || data.length === 0
   }
 
-  // Generate calendar days - only show days with available slots
   const generateCalendarDays = (): CalendarDay[] => {
     const monthStart = startOfMonth(currentDate)
     const monthEnd = endOfMonth(currentDate)
     
-    // Group slots by date
     const slotsByDate = new Map<string, AvailableSlot[]>()
     availableSlots.forEach(slot => {
       const dateKey = slot.date
@@ -80,12 +76,10 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
       slotsByDate.get(dateKey)!.push(slot)
     })
     
-    // Only create calendar days for dates with slots that are not in the past
     const days: CalendarDay[] = []
     slotsByDate.forEach((slots, dateStr) => {
       const day = new Date(dateStr)
       
-      // Only include if the date is today or in the future
       if (!isBefore(day, new Date()) || isToday(day)) {
         days.push({
           date: day,
@@ -96,7 +90,6 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
       }
     })
     
-    // Sort by date
     return days.sort((a, b) => a.date.getTime() - b.date.getTime())
   }
 

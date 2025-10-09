@@ -27,8 +27,6 @@ export default function RendezVous() {
   const continueButtonRef = useRef<HTMLButtonElement>(null)
   const personalInfoRef = useRef<HTMLDivElement>(null)
 
-  // Scroll automatique désactivé - l'utilisateur scroll manuellement
-
   const handleSlotSelect = (date: string, time: string) => {
     setSelectedDate(date)
     setSelectedTime(time)
@@ -50,14 +48,12 @@ export default function RendezVous() {
     console.log(' Form submitted')
     setErrors({})
 
-    // Rate limiting check (5 attempts per minute)
     if (!checkRateLimit('appointment_submit', 5, 60000)) {
       console.error(' Rate limit exceeded')
       setErrors({ general: 'Trop de tentatives. Veuillez patienter une minute.' })
       return
     }
 
-    // Validate form data
     console.log(' Validating form data:', { formData, selectedDate, selectedTime })
     const validation = validateAppointmentForm({
       firstName: formData.firstName,
@@ -84,9 +80,7 @@ export default function RendezVous() {
     setLoading(true)
 
     try {
-      // Sanitize all inputs
       const sanitizedData = sanitizeFormData(formData)
-      // Create appointment
       const { data, error } = await supabase
         .from('appointments')
         .insert([
@@ -110,12 +104,10 @@ export default function RendezVous() {
 
       const appointment = data?.[0]
 
-      // Immediately show success and move to confirmation step
       setSuccess(true)
       setStep(3)
       scrollToTop()
 
-      // Send confirmation emails in background (non-blocking)
       fetch('/api/send-appointment-emails', {
         method: 'POST',
         headers: {
@@ -143,7 +135,6 @@ export default function RendezVous() {
         }
       }).catch((emailError) => {
         console.warn('Email sending error:', emailError)
-        // Continue anyway - appointment is created
       })
     } catch (error: any) {
       console.error(' Appointment creation error:', error)
@@ -256,7 +247,6 @@ export default function RendezVous() {
                       ref={continueButtonRef}
                       onClick={() => {
                         setStep(2)
-                        // Scroll doux vers la section infos personnelles
                         setTimeout(() => {
                           if (personalInfoRef.current) {
                             const elementPosition = personalInfoRef.current.getBoundingClientRect().top + window.pageYOffset

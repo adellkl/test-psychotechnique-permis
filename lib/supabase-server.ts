@@ -7,5 +7,4 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_A
   console.warn('⚠️ Variables Supabase manquantes. Utilisation des valeurs par défaut.')
 }
 
-// Client Supabase pour les API routes (côté serveur)
 export const supabaseServer = createClient(supabaseUrl, supabaseKey)

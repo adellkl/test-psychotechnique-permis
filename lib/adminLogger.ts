@@ -1,4 +1,3 @@
-// Admin activity logger utility
 export interface AdminLogEntry {
   admin_id: string
   admin_email: string
@@ -37,7 +36,6 @@ export class AdminLogger {
     }
   }
 
-  // Predefined action types
   static readonly ACTIONS = {
     LOGIN: 'LOGIN',
     LOGOUT: 'LOGOUT',
@@ -53,7 +51,6 @@ export class AdminLogger {
   } as const
 }
 
-// Helper function to get admin session
 export function getAdminSession() {
   if (typeof window === 'undefined') return null
   
@@ -61,7 +58,6 @@ export function getAdminSession() {
   return session ? JSON.parse(session) : null
 }
 
-// Enhanced logging with automatic admin detection
 export async function logAdminActivity(action: string, details?: string) {
   try {
     const admin = getAdminSession()
@@ -78,6 +74,5 @@ export async function logAdminActivity(action: string, details?: string) {
     })
   } catch (error) {
     console.error('Error in logAdminActivity:', error)
-    // Don't throw error to prevent breaking the main functionality
   }
 }

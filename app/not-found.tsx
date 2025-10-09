@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 
 export default function NotFound() {
   useEffect(() => {
-    // Masquer tout le contenu du body sauf la page 404
     document.body.style.overflow = 'hidden'
     const style = document.createElement('style')
     style.id = 'hide-layout-404'
