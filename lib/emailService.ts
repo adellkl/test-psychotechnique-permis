@@ -73,7 +73,7 @@ export async function sendEmailWithElasticEmail(emailData: {
     formData.append('subject', emailData.subject)
     formData.append('bodyHtml', emailData.html)
     formData.append('bodyText', emailData.text)
-    
+
     // Headers anti-spam
     formData.append('replyTo', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com')
     formData.append('headers', JSON.stringify({
@@ -91,7 +91,7 @@ export async function sendEmailWithElasticEmail(emailData: {
 
     const result = await response.text()
     console.log(`📥 [ELASTIC] Réponse HTTP ${response.status}:`, result.substring(0, 200))
-    
+
     if (!response.ok) {
       throw new Error(`Elastic Email API HTTP ${response.status}: ${result}`)
     }
@@ -244,7 +244,7 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
     })
 
     const subject = `🔔 Nouveau rendez-vous - ${appointmentData.first_name} ${appointmentData.last_name}`
-    
+
     const html = `
 <!DOCTYPE html>
 <html lang="fr">
