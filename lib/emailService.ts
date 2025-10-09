@@ -363,6 +363,65 @@ export async function sendAppointmentCancellation(appointmentData: {
   }
 }
 
+export async function sendConfirmationReminder(appointmentData: {
+  first_name: string
+  last_name: string
+  email: string
+  appointment_date: string
+  appointment_time: string
+  appointment_id: string
+}) {
+  try {
+    console.log(`📧 [REMINDER] Envoi rappel de confirmation à: ${appointmentData.email}`)
+
+    const template = await getEmailTemplate('appointment_confirmation_reminder')
+
+    const formattedDate = new Date(appointmentData.appointment_date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+
+    const crypto = require('crypto')
+    const confirmationToken = crypto
+      .createHash('sha256')
+      .update(`${appointmentData.appointment_id}-${appointmentData.email}`)
+      .digest('hex')
+
+    const variables = {
+      first_name: appointmentData.first_name,
+      last_name: appointmentData.last_name,
+      appointment_date: formattedDate,
+      appointment_time: appointmentData.appointment_time,
+      location: 'Centre Psychotechnique Permis Expert',
+      address: '82 Rue Henri Barbusse, 92110 Clichy',
+      contact_phone: '07 65 56 53 79',
+      website: 'https://test-psychotechnique-permis.com',
+      appointment_id: appointmentData.appointment_id,
+      confirmation_token: confirmationToken
+    }
+
+    const htmlContent = replaceTemplateVariables(template.html_content, variables)
+    const textContent = replaceTemplateVariables(template.text_content, variables)
+    const subject = replaceTemplateVariables(template.subject, variables)
+
+    const info = await sendEmailWithElasticEmail({
+      from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
+      to: appointmentData.email,
+      subject,
+      html: htmlContent,
+      text: textContent,
+    })
+
+    console.log('✅ [REMINDER] Rappel envoyé à:', appointmentData.email, 'ID:', info.messageId)
+    return info
+  } catch (error) {
+    console.error('❌ [REMINDER] Erreur:', error)
+    throw error
+  }
+}
+
 export async function testEmailConfiguration() {
   try {
     const info = await sendEmailWithElasticEmail({

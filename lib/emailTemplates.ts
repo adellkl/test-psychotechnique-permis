@@ -439,6 +439,88 @@ Site web : {{website}}
 Nous nous excusons pour la gêne occasionnée.
 L'équipe Permis Expert
 `
+  },
+  
+  {
+    template_name: 'appointment_confirmation_reminder',
+    subject: '⏰ Rappel : Confirmez votre rendez-vous - {{first_name}} {{last_name}}',
+    html_content: `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rappel de confirmation</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">⏰ N'oubliez pas de confirmer !</h1>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 0 0 10px 10px; border: 1px solid #e9ecef;">
+        <h2 style="color: #d97706; margin-top: 0;">Bonjour {{first_name}} {{last_name}},</h2>
+        
+        <p>Nous avons remarqué que vous n'avez pas encore confirmé votre rendez-vous réservé il y a quelques heures.</p>
+        
+        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #d97706;">📅 Votre rendez-vous</h3>
+            <p><strong>Date :</strong> {{appointment_date}}</p>
+            <p><strong>Heure :</strong> {{appointment_time}}</p>
+            <p><strong>Lieu :</strong> {{location}}</p>
+            <p>{{address}}</p>
+        </div>
+        
+        <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #92400e;">⚠️ Action requise</h4>
+            <p>Pour garantir votre place, merci de confirmer ou annuler votre rendez-vous en cliquant sur l'un des boutons ci-dessous.</p>
+            <p><strong>Si vous ne confirmez pas, votre créneau pourrait être libéré pour d'autres personnes.</strong></p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{website}}/api/appointments/confirm?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 0 10px;">
+                ✅ Confirmer ma présence
+            </a>
+            <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #ef4444; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 0 10px;">
+                ❌ Annuler
+            </a>
+        </div>
+        
+        <p style="text-align: center;">
+            <strong>Contact :</strong> {{contact_phone}}
+        </p>
+        
+        <p style="text-align: center; color: #6b7280; font-size: 14px;">
+            Merci de votre attention !<br>
+            L'équipe Test Psychotechnique Permis Expert
+        </p>
+    </div>
+</body>
+</html>`,
+    text_content: `
+⏰ RAPPEL DE CONFIRMATION
+
+Bonjour {{first_name}} {{last_name}},
+
+Nous avons remarqué que vous n'avez pas encore confirmé votre rendez-vous réservé il y a quelques heures.
+
+📅 VOTRE RENDEZ-VOUS
+Date : {{appointment_date}}
+Heure : {{appointment_time}}
+Lieu : {{location}}
+{{address}}
+
+⚠️ ACTION REQUISE
+Pour garantir votre place, merci de confirmer ou annuler votre rendez-vous.
+Si vous ne confirmez pas, votre créneau pourrait être libéré pour d'autres personnes.
+
+CONFIRMER : {{website}}/api/appointments/confirm?id={{appointment_id}}&token={{confirmation_token}}
+ANNULER : {{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}
+
+Contact : {{contact_phone}}
+
+Merci de votre attention !
+L'équipe Test Psychotechnique Permis Expert
+`
   }
 ]
 
