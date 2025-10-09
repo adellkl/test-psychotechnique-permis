@@ -37,14 +37,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Selected time slot is no longer available' }, { status: 400 })
     }
 
-    // Check if slot is already booked
+    // Check if slot is already booked (exclude cancelled appointments)
     const { data: existingAppointment, error: appointmentError } = await supabase
       .from('appointments')
       .select('id')
       .eq('appointment_date', appointment_date)
       .eq('appointment_time', appointment_time)
       .in('status', ['confirmed', 'completed'])
-      .single()
+      .maybeSingle()
 
     if (existingAppointment) {
       return NextResponse.json({ error: 'This time slot is already booked' }, { status: 400 })
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       test_type,
       reason,
       is_second_chance,
-      status: 'pending', // En attente de confirmation du client
+      status: 'confirmed', // Confirmé automatiquement par défaut
       client_notes: client_notes || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()

@@ -199,29 +199,19 @@ export const defaultEmailTemplates = [
                                 </tr>
                             </table>
                             
-                            <!-- Boutons de confirmation/annulation -->
+                            <!-- Bouton d'annulation uniquement -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
                                 <tr>
                                     <td align="center" style="padding: 10px 0;">
                                         <h3 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600; text-align: center;">
-                                            Confirmez-vous votre présence ?
+                                            Besoin d'annuler votre rendez-vous ?
                                         </h3>
-                                        <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
-                                            <tr>
-                                                <!-- Bouton Confirmer -->
-                                                <td style="padding: 0 10px;">
-                                                    <a href="{{website}}/api/appointments/confirm?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
-                                                        ✅ Confirmer
-                                                    </a>
-                                                </td>
-                                                <!-- Bouton Annuler -->
-                                                <td style="padding: 0 10px;">
-                                                    <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #ef4444; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
-                                                        ❌ Annuler
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                        <p class="mobile-font-small" style="margin: 0 0 20px 0; color: #6b7280; font-size: 14px; text-align: center;">
+                                            Votre rendez-vous est automatiquement confirmé. Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant sur le bouton ci-dessous.
+                                        </p>
+                                        <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #ef4444; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
+                                            ❌ Annuler mon rendez-vous
+                                        </a>
                                     </td>
                                 </tr>
                             </table>
@@ -283,12 +273,10 @@ Code d'entrée : 6138A
 🔔 Sonner à : Cabinet
 📍 Localisation : Rez-de-chaussée, droit
 
-⚡ CONFIRMEZ VOTRE PRÉSENCE
+⚡ BESOIN D'ANNULER ?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Pour confirmer votre rendez-vous, cliquez ici :
-{{website}}/api/appointments/confirm?id={{appointment_id}}&token={{confirmation_token}}
-
-Pour annuler votre rendez-vous, cliquez ici :
+Votre rendez-vous est automatiquement confirmé.
+Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant ici :
 {{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}
 
 Merci de votre confiance ! 🙏
