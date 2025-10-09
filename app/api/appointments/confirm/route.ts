@@ -224,7 +224,7 @@ export async function GET(request: NextRequest) {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="refresh" content="5;url=https://test-psychotechnique-permis.com">
+        <meta http-equiv="refresh" content="20;url=https://test-psychotechnique-permis.com">
         <title>Rendez-vous confirmé</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -257,7 +257,7 @@ export async function GET(request: NextRequest) {
           }
         </style>
         <script>
-          let seconds = 5;
+          let seconds = 20;
           function updateCountdown() {
             const elem = document.getElementById('countdown');
             if (elem && seconds > 0) {
@@ -315,7 +315,7 @@ export async function GET(request: NextRequest) {
           </div>
           
           <div class="redirect">
-            <p>🔄 Redirection automatique dans <span id="countdown" class="countdown">5</span> secondes...</p>
+            <p>🔄 Redirection automatique dans <span id="countdown" class="countdown">20</span> secondes...</p>
             <p>ou <a href="https://test-psychotechnique-permis.com">cliquez ici pour retourner au site</a></p>
           </div>
         </div>

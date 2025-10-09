@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
     // Mettre à jour le statut à "cancelled"
     const { error: updateError } = await supabase
       .from('appointments')
-      .update({ 
+      .update({
         status: 'cancelled',
         updated_at: new Date().toISOString()
       })
@@ -210,7 +210,7 @@ export async function GET(request: NextRequest) {
           }
         </style>
         <script>
-          let seconds = 5;
+          let seconds = 20;
           function updateCountdown() {
             const elem = document.getElementById('countdown');
             if (elem && seconds > 0) {
@@ -252,7 +252,7 @@ export async function GET(request: NextRequest) {
           </div>
           
           <div class="redirect">
-            <p>🔄 Redirection automatique dans <span id="countdown" class="countdown">5</span> secondes...</p>
+            <p>🔄 Redirection automatique dans <span id="countdown" class="countdown">20</span> secondes...</p>
             <p>vers la page de prise de rendez-vous</p>
           </div>
         </div>
