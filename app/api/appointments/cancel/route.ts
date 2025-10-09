@@ -166,72 +166,93 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Redirection vers la page de prise de rendez-vous
+    // Page simple d'annulation
     return new NextResponse(
       `<!DOCTYPE html>
       <html lang="fr">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="refresh" content="5;url=https://test-psychotechnique-permis.com/prendre-rendez-vous">
         <title>Rendez-vous annulé</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
-          .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 600px; width: 100%; margin: 0 auto; }
-          .icon { font-size: 80px; margin-bottom: 20px; animation: shake 0.5s ease; }
-          @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
-          h1 { color: #ef4444; margin-bottom: 10px; font-size: 32px; font-weight: 700; }
-          .subtitle { color: #dc2626; font-size: 18px; font-weight: 600; margin-bottom: 30px; }
-          p { color: #6b7280; line-height: 1.6; margin-bottom: 15px; font-size: 16px; }
-          .info { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); padding: 25px; border-radius: 12px; margin: 25px 0; border: 2px solid #ef4444; text-align: left; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1); }
-          .info-row { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; padding: 10px 0; border-bottom: 1px solid #fecaca; }
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+          }
+          .card { 
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+          }
+          .icon { font-size: 64px; margin-bottom: 20px; }
+          h1 { color: #1f2937; font-size: 28px; margin-bottom: 12px; }
+          .message { color: #6b7280; font-size: 16px; line-height: 1.6; margin-bottom: 30px; }
+          .info-box {
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+          }
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+          }
           .info-row:last-child { border-bottom: none; }
-          .info-label { color: #991b1b; font-weight: 600; font-size: 15px; }
-          .info-value { color: #991b1b; font-size: 15px; font-weight: 500; }
-          .cta { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 16px 32px; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-block; margin: 25px 0; transition: all 0.3s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); font-size: 16px; }
-          .cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
-          .contact { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 20px; border-radius: 12px; margin-top: 25px; border: 2px solid #3b82f6; }
-          .contact p { margin: 8px 0; color: #1e40af; font-size: 15px; font-weight: 500; }
-          .contact strong { color: #1e3a8a; }
-          .redirect { background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); padding: 16px; border-radius: 10px; margin-top: 25px; border: 2px solid #9ca3af; }
-          .redirect p { color: #4b5563; font-size: 15px; margin: 5px 0; font-weight: 500; }
-          .countdown { font-size: 24px; font-weight: 700; color: #6b7280; margin: 10px 0; }
-          a { color: #2563eb; text-decoration: none; font-weight: 600; transition: all 0.3s; }
-          a:hover { text-decoration: underline; color: #1d4ed8; }
+          .info-label { color: #6b7280; font-size: 14px; }
+          .info-value { color: #1f2937; font-weight: 600; font-size: 14px; }
+          .btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.3s;
+          }
+          .btn:hover { background: #1d4ed8; }
+          .contact {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+          }
+          .contact a { color: #2563eb; text-decoration: none; }
+          .contact a:hover { text-decoration: underline; }
           @media (max-width: 640px) {
-            .container { padding: 30px 20px; }
-            h1 { font-size: 26px; }
-            .subtitle { font-size: 16px; }
-            .icon { font-size: 60px; }
-            .cta { padding: 14px 24px; font-size: 15px; }
-            .info-row { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .card { padding: 30px 20px; }
+            h1 { font-size: 24px; }
+            .icon { font-size: 48px; }
+            .info-row { flex-direction: column; gap: 4px; }
             .info-value { text-align: left; }
           }
         </style>
-        <script>
-          let seconds = 20;
-          function updateCountdown() {
-            const elem = document.getElementById('countdown');
-            if (elem && seconds > 0) {
-              elem.textContent = seconds;
-              seconds--;
-              setTimeout(updateCountdown, 1000);
-            }
-          }
-          window.onload = updateCountdown;
-        </script>
       </head>
       <body>
-        <div class="container">
-          <div class="icon">❌</div>
+        <div class="card">
+          <div class="icon">✅</div>
           <h1>Rendez-vous annulé</h1>
-          <p class="subtitle">Votre rendez-vous a bien été annulé</p>
+          <p class="message">Votre rendez-vous a bien été annulé. Le créneau est maintenant disponible pour d'autres personnes.</p>
           
-          <div class="info">
+          <div class="info-box">
             <div class="info-row">
-              <span class="info-label">📅 Date annulée</span>
-              <span class="info-value">${new Date(appointment.appointment_date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span class="info-label">📅 Date</span>
+              <span class="info-value">${new Date(appointment.appointment_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
             </div>
             <div class="info-row">
               <span class="info-label">⏰ Heure</span>
@@ -239,21 +260,12 @@ export async function GET(request: NextRequest) {
             </div>
           </div>
           
-          <p style="margin-bottom: 25px;">Vous pouvez prendre un nouveau rendez-vous à tout moment.</p>
-          
-          <a href="https://test-psychotechnique-permis.com/prendre-rendez-vous" class="cta">
-            📅 Prendre un nouveau rendez-vous
+          <a href="https://test-psychotechnique-permis.com/prendre-rendez-vous" class="btn">
+            Prendre un nouveau rendez-vous
           </a>
           
           <div class="contact">
-            <p><strong>Besoin d'aide ?</strong></p>
-            <p>📞 Téléphone : <a href="tel:0765565379">07 65 56 53 79</a></p>
-            <p>🌐 Site web : <a href="https://test-psychotechnique-permis.com">test-psychotechnique-permis.com</a></p>
-          </div>
-          
-          <div class="redirect">
-            <p>🔄 Redirection automatique dans <span id="countdown" class="countdown">20</span> secondes...</p>
-            <p>vers la page de prise de rendez-vous</p>
+            <p>Besoin d'aide ? <a href="tel:0765565379">07 65 56 53 79</a></p>
           </div>
         </div>
       </body>

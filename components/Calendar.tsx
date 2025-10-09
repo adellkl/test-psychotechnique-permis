@@ -66,10 +66,27 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
   const generateCalendarDays = (): CalendarDay[] => {
     const monthStart = startOfMonth(currentDate)
     const monthEnd = endOfMonth(currentDate)
+    const now = new Date()
+    const currentHour = now.getHours()
+    const currentMinute = now.getMinutes()
     
     const slotsByDate = new Map<string, AvailableSlot[]>()
     availableSlots.forEach(slot => {
       const dateKey = slot.date
+      const slotDate = new Date(dateKey)
+      
+      // Filtrer les créneaux passés pour aujourd'hui
+      if (isToday(slotDate)) {
+        const [slotHour, slotMinute] = slot.start_time.split(':').map(Number)
+        const slotTimeInMinutes = slotHour * 60 + slotMinute
+        const currentTimeInMinutes = currentHour * 60 + currentMinute
+        
+        // Ne pas afficher les créneaux déjà passés
+        if (slotTimeInMinutes <= currentTimeInMinutes) {
+          return
+        }
+      }
+      
       if (!slotsByDate.has(dateKey)) {
         slotsByDate.set(dateKey, [])
       }
@@ -80,7 +97,8 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     slotsByDate.forEach((slots, dateStr) => {
       const day = new Date(dateStr)
       
-      if (!isBefore(day, new Date()) || isToday(day)) {
+      // Ne garder que les jours avec des créneaux disponibles
+      if (slots.length > 0 && (!isBefore(day, new Date()) || isToday(day))) {
         days.push({
           date: day,
           slots: slots,
