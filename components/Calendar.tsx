@@ -204,17 +204,31 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
                   {/* Show first 3 slots or all if expanded */}
                   <div className="space-y-2">
                     {(expandedDays.has(format(day.date, 'yyyy-MM-dd')) ? day.slots : day.slots.slice(0, 3)).map((slot: AvailableSlot) => (
-                      <button
-                        key={slot.id}
-                        onClick={() => handleSlotClick(slot.date, slot.start_time)}
-                        className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${
-                          selectedDate === slot.date && selectedTime === slot.start_time
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
-                            : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
-                        }`}
-                      >
-                        {slot.start_time.slice(0, 5)}
-                      </button>
+                      <div key={slot.id} className="relative">
+                        <button
+                          onClick={() => handleSlotClick(slot.date, slot.start_time)}
+                          disabled={slot.isPending}
+                          className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${
+                            selectedDate === slot.date && selectedTime === slot.start_time
+                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
+                              : slot.isPending
+                              ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
+                              : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <span>{slot.start_time.slice(0, 5)}</span>
+                            {slot.isPending && (
+                              <span className="text-xs">⏳</span>
+                            )}
+                          </div>
+                        </button>
+                        {slot.isPending && (
+                          <div className="text-xs text-orange-600 text-center mt-1 font-medium">
+                            Réservé - En attente
+                          </div>
+                        )}
+                      </div>
                     ))}
                     {day.slots.length > 3 && (
                       <button
@@ -240,6 +254,10 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded"></div>
           <span>Disponible</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-orange-50 border border-orange-300 rounded"></div>
+          <span>⏳ En attente de confirmation</span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-blue-600 rounded"></div>

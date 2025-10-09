@@ -329,13 +329,13 @@ Connectez-vous au dashboard admin pour gérer ce rendez-vous.
     console.log(`📤 [ADMIN] Envoi via Elastic Email...`)
     const info = await sendEmailWithElasticEmail({
       from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
-      to: process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
+      to: 'sebtifatiha170617@gmail.com',
       subject,
       html,
       text,
     })
 
-    console.log('✅ [ADMIN] Email envoyé avec succès à:', process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com', 'ID:', info.messageId)
+    console.log('✅ [ADMIN] Email envoyé avec succès à: sebtifatiha170617@gmail.com, ID:', info.messageId)
     return info
   } catch (error) {
     console.error('❌ [ADMIN] ERREUR:', error)

@@ -29,26 +29,39 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: slotsError.message }, { status: 500 })
     }
 
-    // Get existing appointments to check which slots are already booked
+    // Get existing appointments to check which slots are already booked or pending
     const { data: appointments, error: appointmentsError } = await supabase
       .from('appointments')
       .select('appointment_date, appointment_time, status')
       .gte('appointment_date', startDate)
       .lte('appointment_date', endDate)
-      .in('status', ['confirmed', 'completed'])
+      .neq('status', 'cancelled')
 
     if (appointmentsError) {
       return NextResponse.json({ error: appointmentsError.message }, { status: 500 })
     }
 
-    // Filter out slots that are already booked
+    // Separate confirmed/completed and pending appointments
     const bookedSlots = new Set(
-      appointments?.map(apt => `${apt.appointment_date}_${apt.appointment_time}`) || []
+      appointments?.filter(apt => apt.status === 'confirmed' || apt.status === 'completed')
+        .map(apt => `${apt.appointment_date}_${apt.appointment_time}`) || []
     )
 
+    const pendingSlots = new Set(
+      appointments?.filter(apt => apt.status === 'pending')
+        .map(apt => `${apt.appointment_date}_${apt.appointment_time}`) || []
+    )
+
+    // Filter out confirmed/completed slots and add pending status to pending slots
     const availableSlots = slots?.filter(slot => {
       const slotKey = `${slot.date}_${slot.start_time}`
       return !bookedSlots.has(slotKey)
+    }).map(slot => {
+      const slotKey = `${slot.date}_${slot.start_time}`
+      return {
+        ...slot,
+        isPending: pendingSlots.has(slotKey)
+      }
     }) || []
 
     return NextResponse.json({ slots: availableSlots })

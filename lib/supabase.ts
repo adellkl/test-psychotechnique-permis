@@ -36,8 +36,9 @@ export interface AvailableSlot {
   start_time: string
   end_time: string
   is_available: boolean
+  isPending?: boolean
   max_appointments: number
-  created_at: string
+  created_at?: string
 }
 
 export interface Admin {
