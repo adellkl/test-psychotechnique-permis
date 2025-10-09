@@ -147,10 +147,10 @@ export default function SlotsCalendar({
                       {!slot.is_booked && (
                         <button
                           onClick={() => onToggleAvailability(slot.id, slot.is_available)}
-                          className={`flex-1 px-3 py-2 rounded-lg transition-all font-medium text-xs ${
+                          className={`flex-1 px-2 py-2.5 rounded-lg transition-all font-bold text-xs shadow-md whitespace-nowrap ${
                             slot.is_available 
-                              ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
-                              : 'bg-green-500 hover:bg-green-600 text-white'
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white' 
+                              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
                           }`}
                           title={slot.is_available ? 'Désactiver' : 'Activer'}
                         >
@@ -159,7 +159,7 @@ export default function SlotsCalendar({
                       )}
                       <button
                         onClick={() => onDeleteSlot(slot.id)}
-                        className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-2.5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center flex-shrink-0"
                         title="Supprimer"
                         disabled={slot.is_booked}
                       >

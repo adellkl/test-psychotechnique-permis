@@ -6,6 +6,8 @@ import AuthGuard from '../components/AuthGuard'
 import Sidebar from '../components/Sidebar'
 import SlotsCalendar from '../components/SlotsCalendar'
 import AddSlotModal from '../components/AddSlotModal'
+import ConfirmDialog from '../components/ConfirmDialog'
+import Toast from '../components/Toast'
 import { format, addDays, startOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
@@ -39,6 +41,14 @@ function TimeSlotContent() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   // Notifications UI removed
   const [notification, setNotification] = useState<null | { type: 'success' | 'error', message: string }>(null)
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+    type?: 'danger' | 'warning' | 'info'
+  } | null>(null)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
   const [activeSection, setActiveSection] = useState('slots')
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
@@ -283,23 +293,45 @@ function TimeSlotContent() {
   }
 
   const toggleAvailability = async (id: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('available_slots')
-        .update({ is_available: !currentStatus })
-        .eq('id', id)
+    const slot = timeSlots.find(s => s.id === id)
+    if (!slot) return
 
-      if (error) throw error
+    const action = !currentStatus ? 'activer' : 'désactiver'
+    
+    setConfirmDialog({
+      isOpen: true,
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} le créneau`,
+      message: `Êtes-vous sûr de vouloir ${action} ce créneau ?\n\nDate: ${new Date(slot.date).toLocaleDateString('fr-FR')}\nHeure: ${slot.start_time} - ${slot.end_time}`,
+      type: currentStatus ? 'warning' : 'info',
+      onConfirm: async () => {
+        setConfirmDialog(null)
+        try {
+          const { error } = await supabase
+            .from('available_slots')
+            .update({ is_available: !currentStatus })
+            .eq('id', id)
 
-      await logAdminActivity(
-        AdminLogger.ACTIONS.UPDATE_SLOT,
-        `Updated slot ${id} availability to ${!currentStatus}`
-      )
+          if (error) throw error
 
-      fetchTimeSlots()
-    } catch (error) {
-      console.error('Error updating availability:', error)
-    }
+          await fetchTimeSlots()
+          setToast({
+            type: 'success',
+            message: `Créneau ${!currentStatus ? 'activé' : 'désactivé'} avec succès`
+          })
+
+          await logAdminActivity(
+            AdminLogger.ACTIONS.UPDATE_SLOT,
+            `Slot ${!currentStatus ? 'activated' : 'deactivated'} - ${slot.date} ${slot.start_time}`
+          )
+        } catch (error) {
+          console.error('Error toggling availability:', error)
+          setToast({
+            type: 'error',
+            message: 'Erreur lors de la modification du créneau'
+          })
+        }
+      }
+    })
   }
 
   const logout = async () => {
@@ -594,78 +626,98 @@ function TimeSlotContent() {
               </div>
 
               {/* Mobile Cards - Hidden on desktop */}
-              <div className="lg:hidden">
+              <div className="lg:hidden space-y-3 p-3">
                 {getFilteredSlots().map((slot) => (
                   <div
                     key={slot.id}
-                    className="p-4 border-b border-gray-200 last:border-b-0"
+                    className="bg-white rounded-xl shadow-md border-2 border-gray-200 overflow-hidden"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {/* Header avec statut */}
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-3 border-b border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
-                          <span className="text-sm font-bold text-gray-900">
-                            {format(new Date(slot.date), 'dd/MM/yyyy', { locale: fr })}
+                          <span className="text-base font-bold text-gray-900">
+                            {format(new Date(slot.date), 'EEEE dd MMMM yyyy', { locale: fr })}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      </div>
+                    </div>
+
+                    {/* Contenu */}
+                    <div className="p-4 space-y-3">
+                      {/* Heure */}
+                      <div className="flex items-center justify-between bg-blue-50 rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
-                          <span className="text-sm text-gray-700 font-medium">
-                            {slot.start_time} - {slot.end_time}
-                          </span>
+                          <span className="text-sm font-semibold text-gray-700">Horaire</span>
                         </div>
-                        {slot.client_name && (
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            <span className="text-sm text-gray-600">{slot.client_name}</span>
-                          </div>
-                        )}
+                        <span className="text-base font-bold text-gray-900">
+                          {slot.start_time} - {slot.end_time}
+                        </span>
                       </div>
-                      <div>
+
+                      {/* Statut */}
+                      <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm font-semibold text-gray-700">Statut</span>
+                        </div>
                         {slot.is_booked ? (
-                          <span className="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-300">
+                          <span className="inline-flex px-3 py-1.5 text-xs font-bold rounded-full bg-orange-100 text-orange-800 border-2 border-orange-300">
                             Réservé
                           </span>
                         ) : !slot.is_available ? (
-                          <span className="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-300">
+                          <span className="inline-flex px-3 py-1.5 text-xs font-bold rounded-full bg-red-100 text-red-800 border-2 border-red-300">
                             Désactivé
                           </span>
                         ) : (
-                          <span className="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-300">
+                          <span className="inline-flex px-3 py-1.5 text-xs font-bold rounded-full bg-green-100 text-green-800 border-2 border-green-300">
                             Disponible
                           </span>
                         )}
                       </div>
-                    </div>
 
-                    <div className="flex gap-2">
-                      {!slot.is_booked && (
+                      {/* Client si réservé */}
+                      {slot.client_name && (
+                        <div className="flex items-center justify-between bg-orange-50 rounded-lg p-3">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span className="text-sm font-semibold text-gray-700">Client</span>
+                          </div>
+                          <span className="text-sm font-bold text-gray-900">{slot.client_name}</span>
+                        </div>
+                      )}
+
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-2">
                         <button
                           onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${slot.is_available
-                            ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                            : 'bg-green-500 text-white hover:bg-green-600'
-                            }`}
+                          className={`flex-1 px-3 py-3 rounded-lg text-sm font-bold transition-all shadow-md whitespace-nowrap ${slot.is_available
+                            ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600'
+                            : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
+                          }`}
                         >
                           {slot.is_available ? 'Désactiver' : 'Activer'}
                         </button>
-                      )}
-                      <button
-                        onClick={() => setDeleteConfirmId(slot.id)}
-                        disabled={slot.is_booked}
-                        className="px-4 py-2.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Supprimer
-                      </button>
+                        <button
+                          onClick={() => setDeleteConfirmId(slot.id)}
+                          disabled={slot.is_booked}
+                          className="px-3 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center justify-center shadow-md flex-shrink-0"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -725,6 +777,27 @@ function TimeSlotContent() {
         </div>
       )}
 
+      {/* Confirmation Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          type={confirmDialog.type}
+          onConfirm={confirmDialog.onConfirm}
+          onCancel={() => setConfirmDialog(null)}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
@@ -756,12 +829,6 @@ function TimeSlotContent() {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {notification && (
-        <div className={`fixed bottom-6 right-6 z-[10000] px-4 py-3 rounded-xl shadow-lg text-white ${notification.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
-          {notification.message}
         </div>
       )}
     </div>

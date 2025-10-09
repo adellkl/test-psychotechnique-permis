@@ -13,6 +13,8 @@ import AdminSettingsContent from '../components/AdminSettingsContent'
 import SearchBar, { SearchFilters } from '../components/SearchBar'
 import ExportStatisticsButton from '../components/ExportStatisticsButton'
 import NotificationsPanel from '../components/NotificationsPanel'
+import ConfirmDialog from '../components/ConfirmDialog'
+import Toast from '../components/Toast'
 
 export default function AdminDashboard() {
   return (
@@ -29,6 +31,14 @@ function DashboardContent() {
   const [admin, setAdmin] = useState<any>(null)
   const [activeSection, setActiveSection] = useState('appointments')
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+    type?: 'danger' | 'warning' | 'info'
+  } | null>(null)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
   // Notifications UI removed
   // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -144,17 +154,50 @@ function DashboardContent() {
   }
 
   const updateAppointmentStatus = async (id: string, status: string) => {
-    try {
-      const { error } = await supabase
-        .from('appointments')
-        .update({ status })
-        .eq('id', id)
+    const appointment = appointments.find(a => a.id === id)
+    if (!appointment) return
 
-      if (error) throw error
-      await fetchAppointments()
-    } catch (error) {
-      console.error('Error updating appointment:', error)
+    const statusLabels: Record<string, string> = {
+      'confirmed': 'confirmé',
+      'completed': 'terminé',
+      'cancelled': 'annulé',
+      'no_show': 'absent'
     }
+
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Modifier le statut',
+      message: `Êtes-vous sûr de vouloir marquer ce rendez-vous comme "${statusLabels[status] || status}" ?\n\nClient: ${appointment.first_name} ${appointment.last_name}\nDate: ${new Date(appointment.appointment_date).toLocaleDateString('fr-FR')}\nHeure: ${appointment.appointment_time}`,
+      type: status === 'cancelled' ? 'danger' : 'warning',
+      onConfirm: async () => {
+        setConfirmDialog(null)
+        try {
+          const { error } = await supabase
+            .from('appointments')
+            .update({ status })
+            .eq('id', id)
+
+          if (error) throw error
+          await fetchAppointments()
+          
+          setToast({
+            type: 'success',
+            message: `Rendez-vous marqué comme ${statusLabels[status]} avec succès`
+          })
+          
+          await logAdminActivity(
+            AdminLogger.ACTIONS.UPDATE_APPOINTMENT,
+            `Rendez-vous ${appointment.first_name} ${appointment.last_name} marqué comme ${statusLabels[status]}`
+          )
+        } catch (error) {
+          console.error('Error updating appointment:', error)
+          setToast({
+            type: 'error',
+            message: 'Erreur lors de la mise à jour du rendez-vous'
+          })
+        }
+      }
+    })
   }
 
   const deleteAppointment = async (id: string) => {
@@ -356,6 +399,27 @@ function DashboardContent() {
         </main>
       </div>
 
+      {/* Confirmation Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          type={confirmDialog.type}
+          onConfirm={confirmDialog.onConfirm}
+          onCancel={() => setConfirmDialog(null)}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
@@ -389,8 +453,6 @@ function DashboardContent() {
           </div>
         </div>
       )}
-
-      {/* Notifications UI removed */}
     </div>
   )
 }
