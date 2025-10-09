@@ -34,7 +34,9 @@ export async function POST(request: NextRequest) {
       phone: appointmentData.phone ? sanitizeString(appointmentData.phone) : '',
       appointment_date: appointmentData.appointment_date,
       appointment_time: appointmentData.appointment_time,
-      reason: appointmentData.reason ? sanitizeString(appointmentData.reason) : ''
+      reason: appointmentData.reason ? sanitizeString(appointmentData.reason) : '',
+      appointment_id: appointmentData.appointment_id,
+      created_at: appointmentData.created_at
     }
 
     console.log('📧 Sending emails for appointment:', {

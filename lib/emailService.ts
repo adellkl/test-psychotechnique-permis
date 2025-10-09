@@ -180,7 +180,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
     const crypto = require('crypto')
     const confirmationToken = crypto
       .createHash('sha256')
-      .update(`${appointmentData.appointment_id}-${appointmentData.email}-${appointmentData.created_at}`)
+      .update(`${appointmentData.appointment_id}-${appointmentData.email}`)
       .digest('hex')
 
     const variables = {

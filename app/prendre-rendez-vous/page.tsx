@@ -99,12 +99,16 @@ export default function RendezVous() {
             appointment_time: selectedTime,
             reason: sanitizedData.reason,
             client_notes: sanitizedData.notes,
-            status: 'confirmed'
+            status: 'pending',
+            test_type: sanitizedData.reason,
+            duration_minutes: 120
           }
         ])
         .select()
 
       if (error) throw error
+
+      const appointment = data?.[0]
 
       // Immediately show success and move to confirmation step
       setSuccess(true)
@@ -124,7 +128,9 @@ export default function RendezVous() {
           phone: sanitizedData.phone,
           appointment_date: selectedDate,
           appointment_time: selectedTime,
-          reason: sanitizedData.reason
+          reason: sanitizedData.reason,
+          appointment_id: appointment?.id,
+          created_at: appointment?.created_at
         }),
       }).then(async (emailResponse) => {
         if (!emailResponse.ok) {

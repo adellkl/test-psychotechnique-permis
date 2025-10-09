@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
     // Vérifier le token
     const expectedToken = crypto
       .createHash('sha256')
-      .update(`${appointmentId}-${appointment.email}-${appointment.created_at}`)
+      .update(`${appointmentId}-${appointment.email}`)
       .digest('hex')
 
     if (token !== expectedToken) {
