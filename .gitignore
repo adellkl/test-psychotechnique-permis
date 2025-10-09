@@ -19,13 +19,16 @@ dist/
 # Production
 /build
 
-# Environment Variables
+# Environment Variables - CRITIQUE
 .env
-.env*.local
+.env*
 .env.local
+.env.production
+.env.example
 .env.development.local
 .env.test.local
 .env.production.local
+*.local
 
 # Debug
 npm-debug.log*
@@ -111,3 +114,8 @@ README_SECURITY.txt
 SECURITE_COMPLETE.txt
 CONFIGURATION_EMAIL_FINALE.txt
 .env.local.backup
+
+# Rapports de validation
+VALIDATION_*.md
+RAPPORT_*.md
+SECURITY_*.md
