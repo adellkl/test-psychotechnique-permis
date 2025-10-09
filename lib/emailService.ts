@@ -1,6 +1,9 @@
 import nodemailer from 'nodemailer'
 import { supabase } from './supabase'
 
+// Elastic Email API configuration
+const ELASTIC_EMAIL_API_KEY = process.env.ELASTIC_EMAIL_API_KEY
+
 // Configuration SMTP Outlook
 const outlookTransporter = nodemailer.createTransport({
   host: 'smtp-mail.outlook.com',
@@ -59,15 +62,15 @@ export async function sendEmailWithElasticEmail(emailData: {
       from: emailData.from,
       to: emailData.to,
       subject: emailData.subject.substring(0, 50) + '...',
-      apiKey: process.env.ELASTIC_EMAIL_API_KEY ? 'Définie (' + process.env.ELASTIC_EMAIL_API_KEY.substring(0, 10) + '...)' : 'NON DÉFINIE'
+      apiKey: ELASTIC_EMAIL_API_KEY ? 'Définie (' + ELASTIC_EMAIL_API_KEY.substring(0, 10) + '...)' : 'NON DÉFINIE'
     })
 
-    if (!process.env.ELASTIC_EMAIL_API_KEY) {
+    if (!ELASTIC_EMAIL_API_KEY) {
       throw new Error('ELASTIC_EMAIL_API_KEY non définie dans les variables d\'environnement')
     }
 
     const formData = new FormData()
-    formData.append('apikey', process.env.ELASTIC_EMAIL_API_KEY)
+    formData.append('apikey', ELASTIC_EMAIL_API_KEY)
     formData.append('from', emailData.from)
     formData.append('to', emailData.to)
     formData.append('subject', emailData.subject)
