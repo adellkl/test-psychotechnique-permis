@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '../../../../lib/supabase'
-import { sendConfirmationReminder } from '../../../../lib/emailService'
 
 export const dynamic = 'force-dynamic'
 
