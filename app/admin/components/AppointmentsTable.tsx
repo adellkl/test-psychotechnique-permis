@@ -66,8 +66,9 @@ export default function AppointmentsTable({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'confirmed': return 'bg-blue-100 text-blue-800 border-blue-300'
-      case 'completed': return 'bg-green-100 text-green-800 border-green-300'
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
+      case 'confirmed': return 'bg-green-100 text-green-800 border-green-300'
+      case 'completed': return 'bg-blue-100 text-blue-800 border-blue-300'
       case 'cancelled': return 'bg-red-100 text-red-800 border-red-300'
       case 'no_show': return 'bg-gray-100 text-gray-800 border-gray-300'
       default: return 'bg-gray-100 text-gray-800 border-gray-300'
@@ -76,10 +77,11 @@ export default function AppointmentsTable({
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'confirmed': return 'Confirmé'
-      case 'completed': return 'Terminé'
-      case 'cancelled': return 'Annulé'
-      case 'no_show': return 'Absent'
+      case 'pending': return '⏳ En attente de confirmation'
+      case 'confirmed': return '✅ Confirmé'
+      case 'completed': return '✓ Terminé'
+      case 'cancelled': return '❌ Annulé'
+      case 'no_show': return '👻 Absent'
       default: return status
     }
   }
@@ -141,10 +143,11 @@ export default function AppointmentsTable({
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
               <option value="all">Tous les statuts</option>
-              <option value="confirmed">Confirmés</option>
-              <option value="completed">Terminés</option>
-              <option value="cancelled">Annulés</option>
-              <option value="no_show">Absents</option>
+              <option value="pending">⏳ En attente de confirmation</option>
+              <option value="confirmed">✅ Confirmés</option>
+              <option value="completed">✓ Terminés</option>
+              <option value="cancelled">❌ Annulés</option>
+              <option value="no_show">👻 Absents</option>
             </select>
 
             {/* Export & Cleanup */}

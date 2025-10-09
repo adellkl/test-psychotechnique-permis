@@ -62,8 +62,12 @@ export async function sendEmailWithElasticEmail(emailData: {
       apiKey: process.env.ELASTIC_EMAIL_API_KEY ? 'Définie (' + process.env.ELASTIC_EMAIL_API_KEY.substring(0, 10) + '...)' : 'NON DÉFINIE'
     })
 
+    if (!process.env.ELASTIC_EMAIL_API_KEY) {
+      throw new Error('ELASTIC_EMAIL_API_KEY non définie dans les variables d\'environnement')
+    }
+
     const formData = new FormData()
-    formData.append('apikey', process.env.ELASTIC_EMAIL_API_KEY || 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987')
+    formData.append('apikey', process.env.ELASTIC_EMAIL_API_KEY)
     formData.append('from', emailData.from)
     formData.append('to', emailData.to)
     formData.append('subject', emailData.subject)
@@ -155,6 +159,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
   phone?: string
   appointment_date: string
   appointment_time: string
+  appointment_id?: string
+  created_at?: string
 }) {
   try {
     console.log(`📧 [CLIENT] Récupération du template...`)
@@ -170,6 +176,13 @@ export async function sendAppointmentConfirmation(appointmentData: {
       day: 'numeric'
     })
 
+    // Générer le token de confirmation sécurisé
+    const crypto = require('crypto')
+    const confirmationToken = crypto
+      .createHash('sha256')
+      .update(`${appointmentData.appointment_id}-${appointmentData.email}-${appointmentData.created_at}`)
+      .digest('hex')
+
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
@@ -177,6 +190,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
       phone: appointmentData.phone || 'Non renseigné',
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
+      appointment_id: appointmentData.appointment_id || '',
+      confirmation_token: confirmationToken,
       location: 'Centre Psychotechnique Permis Expert',
       address: '82 Rue Henri Barbusse, 92110 Clichy',
       location_details: 'À 3 minutes du métro Mairie de Clichy (Ligne 13)',

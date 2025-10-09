@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       test_type,
       reason,
       is_second_chance,
-      status: 'confirmed',
+      status: 'pending', // En attente de confirmation du client
       client_notes: client_notes || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -95,7 +95,9 @@ export async function POST(request: NextRequest) {
         email,
         phone,
         appointment_date,
-        appointment_time
+        appointment_time,
+        appointment_id: appointment.id,
+        created_at: appointment.created_at
       })
       console.log('✅ Email client envoyé avec succès, ID:', clientResult?.messageId)
     } catch (clientError) {

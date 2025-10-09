@@ -99,75 +99,130 @@ export const defaultEmailTemplates = [
                                 Nous avons le plaisir de confirmer votre rendez-vous pour le test psychotechnique. Toutes les informations importantes sont détaillées ci-dessous.
                             </p>
                             
-                            <!-- Carte d'informations du RDV -->
+                            <!-- Section Informations unique -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 12px; border: 2px solid #667eea; margin-bottom: 30px;">
                                 <tr>
                                     <td class="mobile-padding-small" style="padding: 25px;">
-                                        <h3 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #667eea; font-size: 18px; font-weight: 600; line-height: 1.3;">
+                                        <h2 class="mobile-font-medium" style="margin: 0 0 25px 0; color: #667eea; font-size: 22px; font-weight: 700; line-height: 1.3; text-align: center;">
                                             📋 Informations de votre rendez-vous
-                                        </h3>
+                                        </h2>
                                         
-                                        <!-- Informations en liste pour mobile -->
+                                        <!-- Sous-section: Rendez-vous -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 600; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                            📅 Votre rendez-vous
+                                        </h3>
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+                                            <tr>
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Date</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{appointment_date}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Heure</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 16px; font-weight: 700; padding: 8px 0; text-align: right;">{{appointment_time}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Tarif</td>
+                                                <td class="mobile-stack mobile-price" style="color: #059669; font-size: 18px; font-weight: 700; padding: 8px 0; text-align: right;">90€</td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <!-- Sous-section: Localisation -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 600; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                            📍 Localisation
+                                        </h3>
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+                                            <tr>
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Centre</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{location}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Adresse</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; line-height: 1.4;">{{address}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Métro</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">Ligne 13 - Mairie de Clichy</td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <!-- Sous-section: Accès au cabinet -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 600; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                            🔑 Accès au cabinet
+                                        </h3>
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+                                            <tr>
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Code d'entrée</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; padding: 8px 0; text-align: right;">
+                                                    <span style="background-color: #d1fae5; padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 16px; color: #065f46;">6138A</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Sonner à</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">Cabinet</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Localisation</td>
+                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">Rez-de-chaussée, droit</td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <!-- Sous-section: À prévoir -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 600; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                            ⚠️ À prévoir
+                                        </h3>
+                                        <ul class="mobile-font-small" style="margin: 0 0 20px 0; padding-left: 20px; color: #374151; font-size: 14px; line-height: 1.8;">
+                                            <li style="margin-bottom: 6px;">Arrivez <strong>15 minutes avant</strong></li>
+                                            <li style="margin-bottom: 6px;"><strong>Pièce d'identité valide</strong> obligatoire</li>
+                                            <li style="margin-bottom: 6px;">Lunettes ou lentilles si nécessaire</li>
+                                            <li style="margin-bottom: 6px;"><strong>Paiement en espèces</strong></li>
+                                            <li>Durée : environ 45 minutes</li>
+                                        </ul>
+                                        
+                                        <!-- Sous-section: Contact -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 600; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                            📞 Contact
+                                        </h3>
                                         <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                             <tr>
-                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 15px; padding: 10px 0; width: 40%;">📅 Date</td>
-                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 15px; padding: 10px 0; text-align: right;">{{appointment_date}}</td>
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Téléphone</td>
+                                                <td class="mobile-stack mobile-font-small" style="padding: 8px 0; text-align: right;">
+                                                    <a href="tel:{{contact_phone}}" style="color: #2563eb; text-decoration: none; font-weight: 600; font-size: 14px;">{{contact_phone}}</a>
+                                                </td>
                                             </tr>
                                             <tr style="border-top: 1px solid #e5e7eb;">
-                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 15px; padding: 10px 0; width: 40%;">⏰ Heure</td>
-                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 16px; font-weight: 700; padding: 10px 0; text-align: right;">{{appointment_time}}</td>
-                                            </tr>
-                                            <tr style="border-top: 1px solid #e5e7eb;">
-                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 15px; padding: 10px 0; width: 40%;">📍 Centre</td>
-                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 15px; padding: 10px 0; text-align: right;">{{location}}</td>
-                                            </tr>
-                                            <tr style="border-top: 1px solid #e5e7eb;">
-                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 15px; padding: 10px 0; width: 40%;">🏠 Adresse</td>
-                                                <td class="mobile-stack mobile-font-small" style="color: #1f2937; font-size: 14px; padding: 10px 0; text-align: right; line-height: 1.4;">{{address}}</td>
-                                            </tr>
-                                            <tr style="border-top: 2px solid #667eea;">
-                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 16px; padding: 15px 0 10px 0; width: 40%;">💰 Tarif</td>
-                                                <td class="mobile-stack mobile-price" style="color: #059669; font-size: 24px; font-weight: 700; padding: 15px 0 10px 0; text-align: right;">90€</td>
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Site web</td>
+                                                <td class="mobile-stack mobile-font-small" style="padding: 8px 0; text-align: right;">
+                                                    <a href="{{website}}" style="color: #2563eb; text-decoration: none; font-weight: 600; font-size: 14px;">test-psychotechnique-permis.com</a>
+                                                </td>
                                             </tr>
                                         </table>
                                     </td>
                                 </tr>
                             </table>
                             
-                            <!-- Instructions importantes -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #fef3c7; border-radius: 12px; border-left: 4px solid #f59e0b; margin-bottom: 30px;">
+                            <!-- Boutons de confirmation/annulation -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
                                 <tr>
-                                    <td class="mobile-padding-small" style="padding: 25px;">
-                                        <h3 class="mobile-font-medium" style="margin: 0 0 15px 0; color: #92400e; font-size: 18px; font-weight: 600; line-height: 1.3;">
-                                            ⚠️ Informations importantes
+                                    <td align="center" style="padding: 10px 0;">
+                                        <h3 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600; text-align: center;">
+                                            Confirmez-vous votre présence ?
                                         </h3>
-                                        <ul class="mobile-font-small" style="margin: 0; padding-left: 20px; color: #78350f; font-size: 15px; line-height: 1.8;">
-                                            <li style="margin-bottom: 8px;"><strong>Arrivez 15 minutes avant</strong> l'heure de votre rendez-vous</li>
-                                            <li style="margin-bottom: 8px;"><strong>Pièce d'identité valide</strong> obligatoire (CNI, passeport ou titre de séjour)</li>
-                                            <li style="margin-bottom: 8px;"><strong>Lunettes ou lentilles</strong> si vous en portez habituellement</li>
-                                            <li style="margin-bottom: 8px;"><strong>Paiement en espèces</strong></li>
-                                            <li><strong>Durée du test</strong> : environ 45 minutes</li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <!-- Accès et contact -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #eff6ff; border-radius: 12px; border-left: 4px solid #3b82f6;">
-                                <tr>
-                                    <td class="mobile-padding-small" style="padding: 25px;">
-                                        <h3 class="mobile-font-medium" style="margin: 0 0 15px 0; color: #1e40af; font-size: 18px; font-weight: 600; line-height: 1.3;">
-                                            🚇 Accès et Contact
-                                        </h3>
-                                        <p class="mobile-font-small" style="margin: 0 0 10px 0; color: #1e3a8a; font-size: 15px; line-height: 1.6;">
-                                            <strong>Métro :</strong> Ligne 13 - Station Mairie de Clichy (3 minutes à pied)
-                                        </p>
-                                        <p class="mobile-font-small" style="margin: 0 0 10px 0; color: #1e3a8a; font-size: 15px; line-height: 1.6;">
-                                            <strong>Téléphone :</strong> <a href="tel:{{contact_phone}}" style="color: #2563eb; text-decoration: none; font-weight: 600; word-break: break-all;">{{contact_phone}}</a>
-                                        </p>
-                                        <p class="mobile-font-small" style="margin: 0; color: #1e3a8a; font-size: 15px; line-height: 1.6;">
-                                            <strong>Site web :</strong> <a href="{{website}}" style="color: #2563eb; text-decoration: none; font-weight: 600; word-break: break-all;">{{website}}</a>
-                                        </p>
+                                        <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                                            <tr>
+                                                <!-- Bouton Confirmer -->
+                                                <td style="padding: 0 10px;">
+                                                    <a href="{{website}}/api/appointments/confirm?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                                                        ✅ Confirmer
+                                                    </a>
+                                                </td>
+                                                <!-- Bouton Annuler -->
+                                                <td style="padding: 0 10px;">
+                                                    <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #ef4444; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
+                                                        ❌ Annuler
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </table>
@@ -222,6 +277,20 @@ Nous avons le plaisir de confirmer votre rendez-vous pour le test psychotechniqu
 Métro : Ligne 13 - Station Mairie de Clichy (3 minutes à pied)
 Téléphone : {{contact_phone}}
 Site web : {{website}}
+
+🔑 INFORMATIONS D'ACCÈS AU CABINET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Code d'entrée : 6138A
+🔔 Sonner à : Cabinet
+📍 Localisation : Rez-de-chaussée, droit
+
+⚡ CONFIRMEZ VOTRE PRÉSENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Pour confirmer votre rendez-vous, cliquez ici :
+{{website}}/api/appointments/confirm?id={{appointment_id}}&token={{confirmation_token}}
+
+Pour annuler votre rendez-vous, cliquez ici :
+{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}
 
 Merci de votre confiance ! 🙏
 Centre Psychotechnique Permis Expert

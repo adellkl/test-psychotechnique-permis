@@ -1,12 +1,13 @@
+require('dotenv').config({ path: '.env.local' })
 const { createClient } = require('@supabase/supabase-js')
 
 const supabaseUrl = 'https://hzfpscgdyrqbplmhgwhi.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6ZnBzY2dkeXJxYnBsbWhnd2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MDQ3NTMsImV4cCI6MjA3NDk4MDc1M30.NxhJGc8TxYaw8UmWFLPxdGd8Q5yN25Cpq757T0J3MyA'
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Configuration Elastic Email
-const ELASTIC_API_KEY = 'B0D3C9F949F85DF5B9045463F6B4A04C1194929A06D05B8B972AAC0B14682CEFB03CA8FA79579D005F264103C6C92987'
+const ELASTIC_API_KEY = process.env.ELASTIC_EMAIL_API_KEY || ''
 const FROM_EMAIL = 'contact@test-psychotechnique-permis.com'
 const ADMIN_EMAIL = 'sebtifatiha170617@gmail.com'
 

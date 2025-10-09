@@ -81,6 +81,21 @@ test-calendar-direct.html
 setup-admin.js
 fix-admin-*.js
 create-admin-*.js
+test-*.js
+update-*.js
+force-*.js
+debug-*.js
+elastic-*.js
+gmail-*.js
+outlook-*.js
+resend-*.js
+email-*.js
+api-*.js
+cleanup-*.js
+clean-*.js
+fix-*.js
+standardize-*.js
+verify-*.js
 
 # SQL files
 *.sql
@@ -88,3 +103,11 @@ create-admin-*.js
 # Markdown documentation files
 *.md
 !README.md
+
+# Credentials and sensitive files
+SECURITY_CREDENTIALS.md
+SETUP_INSTRUCTIONS.txt
+README_SECURITY.txt
+SECURITE_COMPLETE.txt
+CONFIGURATION_EMAIL_FINALE.txt
+.env.local.backup
