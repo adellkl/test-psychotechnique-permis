@@ -38,15 +38,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if slot is already booked (exclude cancelled appointments)
-    const { data: existingAppointment, error: appointmentError } = await supabase
+    const { data: existingAppointments, error: appointmentError } = await supabase
       .from('appointments')
       .select('id')
       .eq('appointment_date', appointment_date)
       .eq('appointment_time', appointment_time)
       .in('status', ['confirmed', 'completed'])
-      .maybeSingle()
 
-    if (existingAppointment) {
+    if (appointmentError) {
+      console.error('Error checking existing appointments:', appointmentError)
+    }
+
+    if (existingAppointments && existingAppointments.length > 0) {
       return NextResponse.json({ error: 'This time slot is already booked' }, { status: 400 })
     }
 
