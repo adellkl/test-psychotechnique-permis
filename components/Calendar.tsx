@@ -69,34 +69,34 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
     const now = new Date()
     const currentHour = now.getHours()
     const currentMinute = now.getMinutes()
-    
+
     const slotsByDate = new Map<string, AvailableSlot[]>()
     availableSlots.forEach(slot => {
       const dateKey = slot.date
       const slotDate = new Date(dateKey)
-      
+
       // Filtrer les créneaux passés pour aujourd'hui
       if (isToday(slotDate)) {
         const [slotHour, slotMinute] = slot.start_time.split(':').map(Number)
         const slotTimeInMinutes = slotHour * 60 + slotMinute
         const currentTimeInMinutes = currentHour * 60 + currentMinute
-        
+
         // Ne pas afficher les créneaux déjà passés
         if (slotTimeInMinutes <= currentTimeInMinutes) {
           return
         }
       }
-      
+
       if (!slotsByDate.has(dateKey)) {
         slotsByDate.set(dateKey, [])
       }
       slotsByDate.get(dateKey)!.push(slot)
     })
-    
+
     const days: CalendarDay[] = []
     slotsByDate.forEach((slots, dateStr) => {
       const day = new Date(dateStr)
-      
+
       // Ne garder que les jours avec des créneaux disponibles
       if (slots.length > 0 && (!isBefore(day, new Date()) || isToday(day))) {
         days.push({
@@ -107,7 +107,7 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
         })
       }
     })
-    
+
     return days.sort((a, b) => a.date.getTime() - b.date.getTime())
   }
 
@@ -194,8 +194,8 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
           </div>
         ) : (
           days.map((day: CalendarDay, index: number) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="border-2 border-blue-200 bg-white rounded-xl p-3 sm:p-4 transition-all hover:shadow-lg hover:border-blue-400"
             >
               {/* Date header */}
@@ -203,9 +203,8 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
                 <div className="text-xs sm:text-sm text-gray-500 mb-0.5">
                   {format(day.date, 'EEEE', { locale: fr })}
                 </div>
-                <div className={`text-lg sm:text-xl font-bold ${
-                  isToday(day.date) ? 'text-blue-600' : 'text-gray-900'
-                }`}>
+                <div className={`text-lg sm:text-xl font-bold ${isToday(day.date) ? 'text-blue-600' : 'text-gray-900'
+                  }`}>
                   {format(day.date, 'd MMMM', { locale: fr })}
                 </div>
               </div>
@@ -219,13 +218,12 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
                         <button
                           onClick={() => handleSlotClick(slot.date, slot.start_time)}
                           disabled={slot.isPending}
-                          className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${
-                            selectedDate === slot.date && selectedTime === slot.start_time
+                          className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${selectedDate === slot.date && selectedTime === slot.start_time
                               ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
                               : slot.isPending
-                              ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
-                              : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
-                          }`}
+                                ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
+                                : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
+                            }`}
                         >
                           <div className="flex items-center justify-center gap-2">
                             <span>{slot.start_time.slice(0, 5)}</span>
@@ -266,10 +264,7 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
           <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded"></div>
           <span>Disponible</span>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-orange-50 border border-orange-300 rounded"></div>
-          <span>⏳ En attente de confirmation</span>
-        </div>
+
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-blue-600 rounded"></div>
           <span>Sélectionné</span>

@@ -6,12 +6,9 @@ import type { Appointment } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
 import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
 import Sidebar from '../components/Sidebar'
-import EnhancedStats from '../components/EnhancedStats'
 import AppointmentsTable from '../components/AppointmentsTable'
-import StatisticsCharts from '../components/StatisticsCharts'
 import AdminSettingsContent from '../components/AdminSettingsContent'
 import SearchBar, { SearchFilters } from '../components/SearchBar'
-import ExportStatisticsButton from '../components/ExportStatisticsButton'
 import NotificationsPanel from '../components/NotificationsPanel'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Toast from '../components/Toast'
@@ -30,6 +27,7 @@ function DashboardContent() {
   const [loading, setLoading] = useState(true)
   const [admin, setAdmin] = useState<any>(null)
   const [activeSection, setActiveSection] = useState('appointments')
+  const [todayAppointments, setTodayAppointments] = useState<Appointment[]>([])
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
@@ -39,8 +37,6 @@ function DashboardContent() {
     type?: 'danger' | 'warning' | 'info'
   } | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
-  // Notifications UI removed
-  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('admin_sidebar_collapsed')
@@ -51,7 +47,6 @@ function DashboardContent() {
   const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null)
 
   useEffect(() => {
-    // Check admin session
     const adminSession = localStorage.getItem('admin_session')
     if (!adminSession) {
       window.location.href = '/admin'
@@ -60,15 +55,12 @@ function DashboardContent() {
     const adminData = JSON.parse(adminSession)
     setAdmin(adminData)
 
-    // Check URL hash for active section
     const hash = window.location.hash.replace('#', '')
-    if (hash && ['dashboard', 'appointments', 'statistics', 'settings'].includes(hash)) {
+    if (hash && ['appointments', 'settings'].includes(hash)) {
       setActiveSection(hash)
     }
 
-    // Log dashboard view
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
-
     fetchAppointments()
   }, [])
 
@@ -83,6 +75,10 @@ function DashboardContent() {
       if (error) throw error
       setAppointments(data || [])
       setFilteredAppointments(data || [])
+      
+      const today = new Date().toISOString().split('T')[0]
+      const todayApts = (data || []).filter(apt => apt.appointment_date === today)
+      setTodayAppointments(todayApts)
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {
@@ -90,10 +86,8 @@ function DashboardContent() {
     }
   }
 
-  // Filtrer les rendez-vous selon les critères de recherche
   useEffect(() => {
     if (!searchFilters || !searchFilters.searchTerm) {
-      // Filtrer uniquement par dates si spécifiées
       if (searchFilters?.dateFrom || searchFilters?.dateTo) {
         const filtered = appointments.filter(apt => {
           const aptDate = apt.appointment_date
@@ -110,14 +104,12 @@ function DashboardContent() {
 
     const term = searchFilters.searchTerm.toLowerCase()
     const filtered = appointments.filter(apt => {
-      // Filtrage par dates
       const aptDate = apt.appointment_date
       const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
       const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
 
       if (!fromMatch || !toMatch) return false
 
-      // Filtrage par terme de recherche
       const fullName = `${apt.first_name} ${apt.last_name}`.toLowerCase()
 
       switch (searchFilters.searchField) {
@@ -208,7 +200,6 @@ function DashboardContent() {
         .eq('id', id)
 
       if (error) throw error
-
       await fetchAppointments()
     } catch (error) {
       console.error('Error deleting appointment:', error)
@@ -223,7 +214,6 @@ function DashboardContent() {
         .in('id', ids)
 
       if (error) throw error
-
       await fetchAppointments()
     } catch (error) {
       console.error('Error deleting appointments:', error)
@@ -254,7 +244,6 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Sidebar */}
       <Sidebar
         activeSection={activeSection}
         onSectionChange={(section) => {
@@ -266,23 +255,17 @@ function DashboardContent() {
         isCollapsed={sidebarCollapsed}
         setIsCollapsed={(collapsed) => {
           setSidebarCollapsed(collapsed)
-          // Sauvegarder la préférence
           localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
         }}
       />
 
-      {/* Main Content */}
-      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
-        }`}>
-        {/* Top Header */}
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
           <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                  {activeSection === 'dashboard' && 'Vue d\'ensemble'}
                   {activeSection === 'appointments' && 'Gestion des rendez-vous'}
-                  {activeSection === 'statistics' && 'Statistiques'}
                   {activeSection === 'settings' && 'Paramètres du compte'}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600 mt-1">
@@ -291,79 +274,88 @@ function DashboardContent() {
               </div>
               <div className="flex items-center gap-3">
                 <NotificationsPanel />
-                {activeSection === 'statistics' && (
-                  <ExportStatisticsButton appointments={appointments} />
-                )}
               </div>
             </div>
           </div>
         </header>
 
-        {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          {/* Dashboard Section */}
-          {activeSection === 'dashboard' && (
-            <div className="space-y-6 sm:space-y-8">
-              <EnhancedStats appointments={appointments} />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                {/* Quick Stats */}
-                <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Aperçu rapide</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Total rendez-vous</span>
-                      <span className="text-lg font-bold text-blue-600">{appointments.length}</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Confirmés</span>
-                      <span className="text-lg font-bold text-green-600">
-                        {appointments.filter(a => a.status === 'confirmed').length}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Terminés</span>
-                      <span className="text-lg font-bold text-purple-600">
-                        {appointments.filter(a => a.status === 'completed').length}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Activité récente</h3>
-                  <div className="space-y-3">
-                    {appointments.slice(0, 5).map((apt) => (
-                      <div key={apt.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                          {apt.first_name[0]}{apt.last_name[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {apt.first_name} {apt.last_name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(apt.appointment_date).toLocaleDateString('fr-FR')}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Appointments Section */}
           {activeSection === 'appointments' && (
             <div className="space-y-6">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-md p-4 border border-blue-200">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">Rendez-vous aujourd&apos;hui</h2>
+                      <p className="text-xs text-gray-600">{new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center px-3 py-1 bg-blue-600 text-white font-bold text-sm rounded-lg">
+                    {todayAppointments.length}
+                  </span>
+                </div>
+
+                {todayAppointments.length === 0 ? (
+                  <div className="bg-white rounded-lg p-4 text-center">
+                    <p className="text-sm text-gray-500">Aucun rendez-vous aujourd&apos;hui</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {todayAppointments.map((apt) => {
+                      const statusColors = {
+                        confirmed: 'bg-green-100 text-green-800',
+                        completed: 'bg-blue-100 text-blue-800',
+                        cancelled: 'bg-red-100 text-red-800',
+                        no_show: 'bg-gray-100 text-gray-800'
+                      }
+                      const statusLabels = {
+                        confirmed: 'Confirmé',
+                        completed: 'Terminé',
+                        cancelled: 'Annulé',
+                        no_show: 'Absent'
+                      }
+                      return (
+                        <div key={apt.id} className="bg-white rounded-lg p-3 border border-gray-200 hover:shadow-md transition-shadow">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 bg-blue-600 text-white rounded px-2 py-1 text-center min-w-[60px]">
+                              <div className="text-lg font-bold">{apt.appointment_time}</div>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                  {apt.first_name[0]}{apt.last_name[0]}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="text-sm font-bold text-gray-900 truncate">{apt.first_name} {apt.last_name}</h3>
+                                  <p className="text-xs text-gray-600 truncate">{apt.phone}</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex-shrink-0">
+                              <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${statusColors[apt.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}`}>
+                                {statusLabels[apt.status as keyof typeof statusLabels] || apt.status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
               <SearchBar
                 onSearch={handleSearch}
                 onReset={handleResetSearch}
               />
 
-              {/* Résultats de recherche */}
               {searchFilters && (
                 <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
                   <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -376,30 +368,24 @@ function DashboardContent() {
                 </div>
               )}
 
-              <AppointmentsTable
-                appointments={filteredAppointments}
-                onUpdateStatus={updateAppointmentStatus}
-                onDelete={deleteAppointment}
-                onBulkDelete={handleBulkDelete}
-              />
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Tous les rendez-vous</h2>
+                <AppointmentsTable
+                  appointments={filteredAppointments}
+                  onUpdateStatus={updateAppointmentStatus}
+                  onDelete={deleteAppointment}
+                  onBulkDelete={handleBulkDelete}
+                />
+              </div>
             </div>
           )}
 
-          {/* Statistics Section */}
-          {activeSection === 'statistics' && (
-            <div className="space-y-6">
-              <StatisticsCharts appointments={appointments} />
-            </div>
-          )}
-
-          {/* Settings Section */}
           {activeSection === 'settings' && (
             <AdminSettingsContent />
           )}
         </main>
       </div>
 
-      {/* Confirmation Dialog */}
       {confirmDialog && (
         <ConfirmDialog
           isOpen={confirmDialog.isOpen}
@@ -411,7 +397,6 @@ function DashboardContent() {
         />
       )}
 
-      {/* Toast Notification */}
       {toast && (
         <Toast
           message={toast.message}
@@ -420,7 +405,6 @@ function DashboardContent() {
         />
       )}
 
-      {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">

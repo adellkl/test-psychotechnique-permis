@@ -589,8 +589,7 @@ export default function ModernHero() {
                             </div>
                             <div className="flex-1">
                               <p className="text-xs text-emerald-600 font-medium mb-1">PAIEMENT</p>
-                              <p className="text-sm font-bold text-gray-900">Sur place uniquement</p>
-                              <p className="text-xs text-gray-600">CB, espèces acceptées</p>
+                              <p className="text-sm font-bold text-gray-900">Espèces uniquement</p>
                             </div>
                           </div>
                         </div>
