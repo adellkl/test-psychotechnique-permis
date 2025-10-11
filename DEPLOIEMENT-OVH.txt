@@ -1,0 +1,61 @@
+GUIDE DE DÉPLOIEMENT SUR OVH
+=============================
+
+PROBLÈME ACTUEL :
+La cliente arrive sur une deuxième page au lieu de la page d'accueil.
+
+SOLUTIONS SELON VOTRE TYPE D'HÉBERGEMENT OVH :
+
+1. HÉBERGEMENT MUTUALISÉ OVH (Web classique)
+   ----------------------------------------
+   Next.js nécessite Node.js et ne fonctionne PAS directement sur un hébergement mutualisé.
+   
+   Solution : Exporter Next.js en mode statique
+   
+   a) Modifier next.config.js :
+      module.exports = {
+        output: 'export',
+        images: {
+          unoptimized: true
+        }
+      }
+   
+   b) Build et export :
+      npm run build
+      
+   c) Uploader le contenu du dossier "out" sur OVH via FTP
+   
+   d) Le fichier .htaccess créé gérera les redirections
+
+2. VPS/SERVEUR DÉDIÉ OVH (avec Node.js)
+   -------------------------------------
+   a) Installer Node.js et PM2
+   b) Cloner le projet
+   c) npm install && npm run build
+   d) Démarrer avec PM2 : pm2 start npm --name "permis-expert" -- start
+   e) Configurer Nginx comme reverse proxy vers localhost:3000
+
+3. RECOMMANDATION : UTILISER VERCEL (GRATUIT)
+   -------------------------------------------
+   Vercel est créé par l'équipe de Next.js et est GRATUIT pour ce type de projet.
+   
+   Avantages :
+   - Déploiement automatique depuis GitHub
+   - Optimisé pour Next.js
+   - CDN mondial
+   - HTTPS automatique
+   - Domaine personnalisé gratuit
+   
+   Étapes :
+   1. Créer un compte sur vercel.com
+   2. Connecter votre repository GitHub
+   3. Configurer le domaine test-psychotechnique-permis.com
+   4. Déploiement automatique à chaque push
+
+VÉRIFICATION IMMÉDIATE :
+- Demander à la cliente l'URL exacte qu'elle utilise
+- Si elle utilise un favori, vérifier qu'il pointe vers https://test-psychotechnique-permis.com
+- Pas vers https://test-psychotechnique-permis.com/prendre-rendez-vous ou autre
+
+FICHIERS CRÉÉS :
+- .htaccess : Configuration Apache pour OVH (si hébergement mutualisé)

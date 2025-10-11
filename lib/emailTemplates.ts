@@ -174,7 +174,7 @@ export const defaultEmailTemplates = [
                                             <li style="margin-bottom: 6px;"><strong>Pièce d'identité valide</strong> obligatoire</li>
                                             <li style="margin-bottom: 6px;">Lunettes ou lentilles si nécessaire</li>
                                             <li style="margin-bottom: 6px;"><strong>Paiement en espèces</strong></li>
-                                            <li>Durée : environ 45 minutes</li>
+                                            <li>Durée : 40 minutes</li>
                                         </ul>
                                         
                                         <!-- Sous-section: Contact -->
@@ -259,7 +259,7 @@ Nous avons le plaisir de confirmer votre rendez-vous pour le test psychotechniqu
 • Pièce d'identité valide obligatoire (CNI, passeport ou titre de séjour)
 • Lunettes ou lentilles si vous en portez habituellement
 • Paiement en espèces
-• Durée du test : environ 45 minutes
+• Durée du test : 40 minutes
 
 🚇 ACCÈS ET CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

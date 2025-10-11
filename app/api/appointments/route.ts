@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       phone,
       appointment_date,
       appointment_time,
-      duration_minutes: 120, // 2 hours default
+      duration_minutes: 40, // 40 minutes
       test_type,
       reason,
       is_second_chance,

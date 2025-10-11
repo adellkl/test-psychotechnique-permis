@@ -93,9 +93,9 @@ export default function RendezVous() {
             appointment_time: selectedTime,
             reason: sanitizedData.reason,
             client_notes: sanitizedData.notes,
-            status: 'pending',
+            status: 'confirmed',
             test_type: sanitizedData.reason,
-            duration_minutes: 120
+            duration_minutes: 40
           }
         ])
         .select()
@@ -207,7 +207,7 @@ export default function RendezVous() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span className="text-sm font-medium text-blue-800">Durée : 2h</span>
+                        <span className="text-sm font-medium text-blue-800">Durée : 40 minutes</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -536,7 +536,7 @@ export default function RendezVous() {
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <span className="text-sm sm:text-base text-blue-800">Durée : environ 2 heures (tests + entretien)</span>
+                          <span className="text-sm sm:text-base text-blue-800">Durée : 40 minutes</span>
                         </div>
                         <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
                           <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
@@ -586,9 +586,8 @@ export default function RendezVous() {
                 <div className="flex lg:hidden justify-between items-center">
                   {/* Step 1 */}
                   <div className="flex flex-col items-center">
-                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${
-                      step >= 1 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'
-                    }`}>
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 1 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'
+                      }`}>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -599,15 +598,13 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 1 */}
-                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${
-                    step >= 2 ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gray-200'
-                  }`}></div>
+                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gray-200'
+                    }`}></div>
 
                   {/* Step 2 */}
                   <div className="flex flex-col items-center">
-                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${
-                      step >= 2 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'
-                    }`}>
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 2 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'
+                      }`}>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
@@ -618,15 +615,13 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 2 */}
-                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${
-                    step >= 3 ? 'bg-gradient-to-r from-blue-500 to-emerald-500' : 'bg-gray-200'
-                  }`}></div>
+                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 3 ? 'bg-gradient-to-r from-blue-500 to-emerald-500' : 'bg-gray-200'
+                    }`}></div>
 
                   {/* Step 3 */}
                   <div className="flex flex-col items-center">
-                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${
-                      step >= 3 ? 'bg-gradient-to-br from-green-500 to-emerald-500 text-white' : 'bg-gray-200 text-gray-400'
-                    }`}>
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 3 ? 'bg-gradient-to-br from-green-500 to-emerald-500 text-white' : 'bg-gray-200 text-gray-400'
+                      }`}>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -642,8 +637,8 @@ export default function RendezVous() {
                   {/* Step 1 */}
                   <div className="flex items-center mb-6">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${step >= 1
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-400'
+                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-400'
                       }`}>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -664,8 +659,8 @@ export default function RendezVous() {
                   {/* Step 2 */}
                   <div className="flex items-center mb-6">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${step >= 2
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-400'
+                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-400'
                       }`}>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -686,8 +681,8 @@ export default function RendezVous() {
                   {/* Step 3 */}
                   <div className="flex items-center">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${step >= 3
-                        ? 'bg-gradient-to-br from-green-500 to-emerald-500 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-400'
+                      ? 'bg-gradient-to-br from-green-500 to-emerald-500 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-400'
                       }`}>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

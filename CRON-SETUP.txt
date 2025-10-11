@@ -1,0 +1,57 @@
+CONFIGURATION DU CRON JOB POUR MARQUER LES RENDEZ-VOUS TERMINÉS
+================================================================
+
+Le système marque automatiquement les rendez-vous passés comme "terminé" de 2 façons :
+
+1. AUTOMATIQUE AU CHARGEMENT DU DASHBOARD ADMIN
+   - Chaque fois qu'un admin ouvre le dashboard
+   - Vérifie et met à jour tous les rendez-vous passés
+   - Déjà implémenté et fonctionnel
+
+2. CRON JOB AUTOMATIQUE (OPTIONNEL)
+   - API créée : /api/cron/mark-completed
+   - S'exécute automatiquement chaque jour à minuit
+   - Marque tous les rendez-vous passés comme "terminé"
+
+CONFIGURATION NETLIFY (Recommandé) :
+------------------------------------
+Ajouter dans netlify.toml :
+
+[functions]
+  schedule = "@daily"
+
+[[functions]]
+  path = "/.netlify/functions/mark-completed-cron"
+  schedule = "0 0 * * *"  # Tous les jours à minuit
+
+CONFIGURATION VERCEL (Alternative) :
+------------------------------------
+Créer vercel.json :
+
+{
+  "crons": [{
+    "path": "/api/cron/mark-completed",
+    "schedule": "0 0 * * *"
+  }]
+}
+
+CONFIGURATION MANUELLE (Alternative) :
+--------------------------------------
+Utiliser un service externe comme cron-job.org ou EasyCron :
+- URL : https://test-psychotechnique-permis.com/api/cron/mark-completed
+- Méthode : GET
+- Header : Authorization: Bearer YOUR_SECRET_TOKEN
+- Fréquence : Tous les jours à 00:00
+
+VARIABLE D'ENVIRONNEMENT REQUISE :
+----------------------------------
+CRON_SECRET_TOKEN=votre-token-secret-ici
+
+FONCTIONNEMENT :
+----------------
+✅ Rendez-vous confirmés dont la date/heure est passée → Marqués comme "terminé"
+✅ Style gris avec opacité 60% dans le dashboard
+✅ Créneaux restent bloqués (pas réaffichés dans le calendrier)
+
+NOTE : Le système fonctionne déjà automatiquement au chargement du dashboard admin.
+Le cron job est optionnel pour garantir la mise à jour même si personne n'ouvre le dashboard.
