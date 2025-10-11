@@ -12,7 +12,7 @@ export async function DELETE(request: NextRequest) {
     if (appointmentIds && Array.isArray(appointmentIds) && appointmentIds.length > 0) {
       const { data, error: selectError } = await supabase
         .from('appointments')
-        .select('id, first_name, last_name, appointment_date, status')
+        .select('id, first_name, last_name, appointment_date, appointment_time, status')
         .in('id', appointmentIds)
 
       if (selectError) {
@@ -41,7 +41,7 @@ export async function DELETE(request: NextRequest) {
 
       const { data, error: selectError } = await supabase
         .from('appointments')
-        .select('id, first_name, last_name, appointment_date, status, created_at')
+        .select('id, first_name, last_name, appointment_date, appointment_time, status, created_at')
         .eq('status', status)
         .lte('created_at', cutoffDate.toISOString())
 
@@ -68,6 +68,12 @@ export async function DELETE(request: NextRequest) {
 
     const idsToDelete = appointmentsToDelete.map(apt => apt.id)
 
+    // Récupérer les dates et heures des rendez-vous pour libérer les créneaux
+    const slotsToFree = appointmentsToDelete.map(apt => ({
+      date: apt.appointment_date,
+      time: apt.appointment_time
+    }))
+
     const { error: deleteError } = await supabase
       .from('appointments')
       .delete()
@@ -76,6 +82,24 @@ export async function DELETE(request: NextRequest) {
     if (deleteError) {
       console.error('Error deleting appointments:', deleteError)
       return NextResponse.json({ error: deleteError.message }, { status: 500 })
+    }
+
+    // Libérer UNIQUEMENT les créneaux des rendez-vous annulés (cancelled)
+    // Les rendez-vous terminés (completed) ne libèrent pas leur créneau
+    const cancelledSlots = appointmentsToDelete
+      .filter(apt => apt.status === 'cancelled')
+      .map(apt => ({ date: apt.appointment_date, time: apt.appointment_time }))
+
+    for (const slot of cancelledSlots) {
+      if (slot.date && slot.time) {
+        const slotTime = slot.time.includes(':') ? slot.time : `${slot.time}:00`
+        
+        await supabase
+          .from('available_slots')
+          .update({ is_available: true })
+          .eq('date', slot.date)
+          .eq('start_time', slotTime)
+      }
     }
 
     try {

@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete appointment
+// DELETE - Delete appointment and free up the slot
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -82,16 +82,42 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Appointment ID is required' }, { status: 400 })
     }
 
-    const { error } = await supabase
+    // Récupérer les infos du rendez-vous avant de le supprimer
+    const { data: appointment, error: fetchError } = await supabase
+      .from('appointments')
+      .select('appointment_date, appointment_time, status')
+      .eq('id', id)
+      .single()
+
+    if (fetchError) {
+      return NextResponse.json({ error: fetchError.message }, { status: 500 })
+    }
+
+    // Supprimer le rendez-vous
+    const { error: deleteError } = await supabase
       .from('appointments')
       .delete()
       .eq('id', id)
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (deleteError) {
+      return NextResponse.json({ error: deleteError.message }, { status: 500 })
     }
 
-    return NextResponse.json({ message: 'Appointment deleted successfully' })
+    // Libérer le créneau UNIQUEMENT si le rendez-vous était annulé (cancelled)
+    // Si terminé (completed), le créneau reste occupé et ne réapparaît pas
+    if (appointment && appointment.status === 'cancelled') {
+      const slotTime = appointment.appointment_time.includes(':') 
+        ? appointment.appointment_time 
+        : `${appointment.appointment_time}:00`
+
+      await supabase
+        .from('available_slots')
+        .update({ is_available: true })
+        .eq('date', appointment.appointment_date)
+        .eq('start_time', slotTime)
+    }
+
+    return NextResponse.json({ message: 'Appointment deleted and slot freed successfully' })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

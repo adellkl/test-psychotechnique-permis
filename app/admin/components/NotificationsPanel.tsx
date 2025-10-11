@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { NotificationSound } from '../../../lib/notificationSound'
 
 interface Notification {
   id: string
@@ -21,6 +22,9 @@ export default function NotificationsPanel() {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<'all' | 'unread'>('unread')
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const previousUnreadCount = useRef(0)
+  const isFirstLoad = useRef(true)
 
   // Récupérer les notifications
   const fetchNotifications = async () => {
@@ -36,7 +40,34 @@ export default function NotificationsPanel() {
       
       if (data.notifications) {
         setNotifications(data.notifications)
-        setUnreadCount(data.notifications.filter((n: Notification) => !n.is_read).length)
+        
+        // Toujours récupérer le nombre total de non lues (pas seulement celles affichées)
+        const unreadResponse = await fetch('/api/admin/notifications?is_read=false')
+        const unreadData = await unreadResponse.json()
+        const newUnreadCount = unreadData.notifications?.length || 0
+        setUnreadCount(newUnreadCount)
+
+        // Jouer un son si de nouvelles notifications arrivent
+        if (!isFirstLoad.current && newUnreadCount > previousUnreadCount.current) {
+          const newNotifs = newUnreadCount - previousUnreadCount.current
+          console.log(`🔔 ${newNotifs} nouvelle(s) notification(s)`)
+          
+          if (soundEnabled && NotificationSound.isNotificationSoundEnabled()) {
+            NotificationSound.playNotificationSound()
+          }
+
+          // Notification navigateur si autorisée
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Nouvelle notification', {
+              body: `Vous avez ${newNotifs} nouvelle(s) notification(s)`,
+              icon: '/favicon-32x32.png',
+              tag: 'admin-notification'
+            })
+          }
+        }
+
+        previousUnreadCount.current = newUnreadCount
+        isFirstLoad.current = false
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des notifications:', error)
@@ -71,11 +102,30 @@ export default function NotificationsPanel() {
   }
 
   useEffect(() => {
+    // Initialiser les préférences de son
+    NotificationSound.init()
+    setSoundEnabled(NotificationSound.isNotificationSoundEnabled())
+
+    // Demander permission notifications navigateur
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
+
     fetchNotifications()
     // Rafraîchir toutes les 30 secondes
     const interval = setInterval(fetchNotifications, 30000)
     return () => clearInterval(interval)
   }, [filter])
+
+  // Toggle son
+  const toggleSound = () => {
+    const newState = !soundEnabled
+    setSoundEnabled(newState)
+    NotificationSound.setEnabled(newState)
+    if (newState) {
+      NotificationSound.playNotificationSound()
+    }
+  }
 
   // Icône selon le type
   const getIcon = (type: string) => {
@@ -126,24 +176,47 @@ export default function NotificationsPanel() {
   }
 
   return (
-    <div className="relative">
-      {/* Bouton Notifications */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-        title="Notifications"
-      >
-        <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
-        
-        {/* Badge nombre non lues */}
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </button>
+    <>
+      <div className="flex items-center gap-1">
+        {/* Bouton Toggle Son */}
+        <button
+          onClick={toggleSound}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative group"
+          title={soundEnabled ? 'Désactiver le son' : 'Activer le son'}
+        >
+          {soundEnabled ? (
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+          )}
+        </button>
+
+        {/* Bouton Notifications */}
+        <div className="relative">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Notifications"
+          >
+            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            
+            {/* Badge nombre non lues avec animation */}
+            {unreadCount > 0 && (
+              <>
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse z-10">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+                <span className="absolute -top-1 -right-1 bg-red-500 rounded-full w-5 h-5 animate-ping opacity-75"></span>
+              </>
+            )}
+          </button>
 
       {/* Panel des notifications */}
       <AnimatePresence>
@@ -155,35 +228,36 @@ export default function NotificationsPanel() {
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Panel */}
+            {/* Panel responsive */}
             <motion.div
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[600px] flex flex-col"
+              className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 md:w-[420px] lg:w-[450px] bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[70vh] sm:max-h-[600px] flex flex-col"
             >
-              {/* Header */}
-              <div className="p-4 border-b border-gray-200">
+              {/* Header responsive */}
+              <div className="p-3 sm:p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                     Notifications
                   </h3>
                   {unreadCount > 0 && (
                     <button
                       onClick={markAllAsRead}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
                     >
-                      Tout marquer comme lu
+                      <span className="hidden sm:inline">Tout marquer comme lu</span>
+                      <span className="sm:hidden">Tout lire</span>
                     </button>
                   )}
                 </div>
 
-                {/* Filtres */}
+                {/* Filtres responsive */}
                 <div className="flex gap-2">
                   <button
                     onClick={() => setFilter('unread')}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       filter === 'unread'
                         ? 'bg-blue-100 text-blue-700'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -193,7 +267,7 @@ export default function NotificationsPanel() {
                   </button>
                   <button
                     onClick={() => setFilter('all')}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       filter === 'all'
                         ? 'bg-blue-100 text-blue-700'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -281,6 +355,8 @@ export default function NotificationsPanel() {
           </>
         )}
       </AnimatePresence>
-    </div>
+        </div>
+      </div>
+    </>
   )
 }

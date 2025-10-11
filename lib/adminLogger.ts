@@ -9,7 +9,7 @@ export interface AdminLogEntry {
 export class AdminLogger {
   static async log(entry: AdminLogEntry) {
     try {
-      const response = await fetch('/api/admin/logs', {
+      const response = await fetch('/api/admin/activity-logs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

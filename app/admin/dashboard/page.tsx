@@ -313,7 +313,7 @@ function DashboardContent() {
                   Bienvenue, {admin?.full_name}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 ml-auto">
                 <NotificationsPanel />
               </div>
             </div>
