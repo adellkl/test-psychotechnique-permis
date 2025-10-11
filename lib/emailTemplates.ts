@@ -207,7 +207,7 @@ export const defaultEmailTemplates = [
                                             Besoin d'annuler votre rendez-vous ?
                                         </h3>
                                         <p class="mobile-font-small" style="margin: 0 0 20px 0; color: #6b7280; font-size: 14px; text-align: center;">
-                                            Votre rendez-vous est automatiquement confirmé. Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant sur le bouton ci-dessous.
+                                            Votre rendez-vous est <strong style="color: #059669;">confirmé</strong>. Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant sur le bouton ci-dessous.
                                         </p>
                                         <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" style="display: inline-block; padding: 14px 32px; background-color: #ef4444; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
                                             ❌ Annuler mon rendez-vous
@@ -275,7 +275,7 @@ Code d'entrée : 6138A
 
 ⚡ BESOIN D'ANNULER ?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Votre rendez-vous est automatiquement confirmé.
+Votre rendez-vous est CONFIRMÉ.
 Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant ici :
 {{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}
 

@@ -70,15 +70,57 @@ function DashboardContent() {
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('appointment_date', { ascending: false })
+        .order('appointment_time', { ascending: false })
 
       if (error) throw error
-      setAppointments(data || [])
-      setFilteredAppointments(data || [])
       
-      const today = new Date().toISOString().split('T')[0]
-      const todayApts = (data || []).filter(apt => apt.appointment_date === today)
-      setTodayAppointments(todayApts)
+      // Auto-marquer les rendez-vous passés comme "terminé"
+      const now = new Date()
+      const today = now.toISOString().split('T')[0]
+      const currentTime = now.toTimeString().slice(0, 5) // HH:MM
+      
+      const appointmentsToUpdate: string[] = []
+      
+      data?.forEach(apt => {
+        // Si le rendez-vous est confirmé et la date/heure est passée
+        if (apt.status === 'confirmed') {
+          const aptDate = apt.appointment_date
+          const aptTime = apt.appointment_time.slice(0, 5)
+          
+          // Si la date est avant aujourd'hui, ou si c'est aujourd'hui mais l'heure est passée
+          if (aptDate < today || (aptDate === today && aptTime < currentTime)) {
+            appointmentsToUpdate.push(apt.id)
+          }
+        }
+      })
+      
+      // Mettre à jour les rendez-vous passés en masse
+      if (appointmentsToUpdate.length > 0) {
+        await supabase
+          .from('appointments')
+          .update({ status: 'completed' })
+          .in('id', appointmentsToUpdate)
+        
+        // Rafraîchir les données après la mise à jour
+        const { data: updatedData } = await supabase
+          .from('appointments')
+          .select('*')
+          .order('appointment_date', { ascending: false })
+          .order('appointment_time', { ascending: false })
+        
+        setAppointments(updatedData || [])
+        setFilteredAppointments(updatedData || [])
+        
+        const todayApts = (updatedData || []).filter(apt => apt.appointment_date === today)
+        setTodayAppointments(todayApts)
+      } else {
+        setAppointments(data || [])
+        setFilteredAppointments(data || [])
+        
+        const todayApts = (data || []).filter(apt => apt.appointment_date === today)
+        setTodayAppointments(todayApts)
+      }
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {

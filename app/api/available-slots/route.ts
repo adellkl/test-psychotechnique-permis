@@ -29,7 +29,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: slotsError.message }, { status: 500 })
     }
 
-    // Get existing appointments to check which slots are already booked (exclude cancelled)
+    // Get existing appointments to check which slots are already booked
+    // Only confirmed and completed appointments block the slot
+    // Cancelled, pending, and no_show appointments free up the slot
     const { data: appointments, error: appointmentsError } = await supabase
       .from('appointments')
       .select('appointment_date, appointment_time, status')
