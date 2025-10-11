@@ -20,7 +20,6 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
     const confirmed = appointments.filter(a => a.status === 'confirmed')
     const completed = appointments.filter(a => a.status === 'completed')
     const cancelled = appointments.filter(a => a.status === 'cancelled')
-    const noShow = appointments.filter(a => a.status === 'no_show')
 
     const todayAppointments = appointments.filter(a => {
       const aptDate = new Date(a.appointment_date)
@@ -54,24 +53,18 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
       ? (cancelled.length / appointments.length) * 100
       : 0
 
-    const noShowRate = appointments.length > 0
-      ? (noShow.length / appointments.length) * 100
-      : 0
-
     return {
       total: appointments.length,
       confirmed: confirmed.length,
       completed: completed.length,
       cancelled: cancelled.length,
-      noShow: noShow.length,
       today: todayAppointments.length,
       thisWeek: thisWeekAppointments.length,
       thisMonth: thisMonthAppointments.length,
       lastMonth: lastMonthAppointments.length,
       monthGrowth,
       completionRate,
-      cancellationRate,
-      noShowRate
+      cancellationRate
     }
   }, [appointments])
 
@@ -175,10 +168,6 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
           <div className="flex justify-between">
             <span className="text-white/80">Taux d'annulation:</span>
             <span className="font-semibold">{stats.cancellationRate.toFixed(0)}%</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-white/80">Absents:</span>
-            <span className="font-semibold">{stats.noShow} ({stats.noShowRate.toFixed(0)}%)</span>
           </div>
         </div>
       </div>

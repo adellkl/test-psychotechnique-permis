@@ -1,0 +1,20 @@
+/* TEAM */
+Développeur: Adel Loukal
+Email: adelloukal2@gmail.com
+Localisation: France
+
+Centre: Test Psychotechnique Permis Expert
+Responsable: Fatiha Sebti
+Email: sebtifatiha@live.fr
+Téléphone: 07 65 56 53 79
+Adresse: 82 Rue Henri Barbusse, 92110 Clichy
+Contact: contact@test-psychotechnique-permis.com
+
+/* SITE */
+Dernière mise à jour: 2025/01/11
+Standards: HTML5, CSS3, JavaScript ES6+
+Composants: Next.js 14, React 18, Tailwind CSS
+Base de données: Supabase (PostgreSQL)
+Email: Elastic Email API
+Hébergement: OVH
+Logiciel: Visual Studio Code, Windsurf IDE

@@ -194,8 +194,7 @@ function DashboardContent() {
     const statusLabels: Record<string, string> = {
       'confirmed': 'confirmé',
       'completed': 'terminé',
-      'cancelled': 'annulé',
-      'no_show': 'absent'
+      'cancelled': 'annulé'
     }
 
     setConfirmDialog({
@@ -352,14 +351,12 @@ function DashboardContent() {
                       const statusColors = {
                         confirmed: 'bg-green-100 text-green-800',
                         completed: 'bg-blue-100 text-blue-800',
-                        cancelled: 'bg-red-100 text-red-800',
-                        no_show: 'bg-gray-100 text-gray-800'
+                        cancelled: 'bg-red-100 text-red-800'
                       }
                       const statusLabels = {
                         confirmed: 'Confirmé',
                         completed: 'Terminé',
-                        cancelled: 'Annulé',
-                        no_show: 'Absent'
+                        cancelled: 'Annulé'
                       }
                       return (
                         <div key={apt.id} className="bg-white rounded-lg p-3 border border-gray-200 hover:shadow-md transition-shadow">

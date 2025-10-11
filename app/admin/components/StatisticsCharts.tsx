@@ -29,16 +29,15 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
     const statusCounts = {
       confirmed: appointments.filter(a => a.status === 'confirmed').length,
       completed: appointments.filter(a => a.status === 'completed').length,
-      cancelled: appointments.filter(a => a.status === 'cancelled').length,
-      no_show: appointments.filter(a => a.status === 'no_show').length
+      cancelled: appointments.filter(a => a.status === 'cancelled').length
     }
 
     const statusChart = new Chart(appointmentsByStatusRef.current, {
       type: 'doughnut',
       data: {
-        labels: ['Confirmés', 'Terminés', 'Annulés', 'Absents'],
+        labels: ['Confirmés', 'Terminés', 'Annulés'],
         datasets: [{
-          data: [statusCounts.confirmed, statusCounts.completed, statusCounts.cancelled, statusCounts.no_show],
+          data: [statusCounts.confirmed, statusCounts.completed, statusCounts.cancelled],
           backgroundColor: [
             'rgba(59, 130, 246, 0.8)',
             'rgba(34, 197, 94, 0.8)',
@@ -316,7 +315,6 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
       ['Confirm\u00e9s', appointments.filter(a => a.status === 'confirmed').length.toString()],
       ['Termin\u00e9s', appointments.filter(a => a.status === 'completed').length.toString()],
       ['Annul\u00e9s', appointments.filter(a => a.status === 'cancelled').length.toString()],
-      ['Absents', appointments.filter(a => a.status === 'no_show').length.toString()]
     ]
 
     const csvContent = stats.map(row => row.map(cell => `"${cell}"`).join(';')).join('\n')

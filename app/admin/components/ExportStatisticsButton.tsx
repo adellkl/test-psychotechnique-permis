@@ -33,8 +33,7 @@ export default function ExportStatisticsButton({ appointments }: ExportStatistic
       ['Répartition par statut', ''],
       ['Confirmés', appointments.filter(a => a.status === 'confirmed').length.toString()],
       ['Terminés', appointments.filter(a => a.status === 'completed').length.toString()],
-      ['Annulés', appointments.filter(a => a.status === 'cancelled').length.toString()],
-      ['Absents', appointments.filter(a => a.status === 'no_show').length.toString()]
+      ['Annulés', appointments.filter(a => a.status === 'cancelled').length.toString()]
     ]
 
     const csvContent = stats.map(row => row.map(cell => `"${cell}"`).join(';')).join('\n')

@@ -18,7 +18,7 @@ export default function NotificationsPage() {
   const router = useRouter()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all')
+  const [filter, setFilter] = useState<'all' | 'confirmed' | 'cancelled' | 'completed'>('all')
 
   useEffect(() => {
     // Vérifier l'authentification
@@ -102,8 +102,8 @@ export default function NotificationsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
       case 'confirmed': return 'bg-green-100 text-green-800 border-green-300'
+      case 'completed': return 'bg-blue-100 text-blue-800 border-blue-300'
       case 'cancelled': return 'bg-red-100 text-red-800 border-red-300'
       default: return 'bg-gray-100 text-gray-800 border-gray-300'
     }
@@ -111,8 +111,8 @@ export default function NotificationsPage() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'pending': return '⏳ En attente'
       case 'confirmed': return '✅ Confirmé'
+      case 'completed': return '✓ Terminé'
       case 'cancelled': return '❌ Annulé'
       default: return status
     }
@@ -173,14 +173,14 @@ export default function NotificationsPage() {
               Toutes
             </button>
             <button
-              onClick={() => setFilter('pending')}
+              onClick={() => setFilter('completed')}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'pending'
-                  ? 'bg-yellow-500 text-white shadow-md'
+                filter === 'completed'
+                  ? 'bg-blue-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              ⏳ En attente
+              ✓ Terminés
             </button>
             <button
               onClick={() => setFilter('confirmed')}

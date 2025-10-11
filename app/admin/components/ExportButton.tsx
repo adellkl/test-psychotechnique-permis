@@ -65,7 +65,6 @@ export default function ExportButton({ appointments }: ExportButtonProps) {
       case 'confirmed': return 'Confirmé'
       case 'completed': return 'Terminé'
       case 'cancelled': return 'Annulé'
-      case 'no_show': return 'Absent'
       default: return status
     }
   }

@@ -4,10 +4,10 @@ import * as bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
-    const { adminId, currentPassword, newPassword } = await request.json()
+    const { email, currentPassword, newPassword } = await request.json()
 
-    if (!adminId || !currentPassword || !newPassword) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!email || !currentPassword || !newPassword) {
+      return NextResponse.json({ error: 'Champs requis manquants' }, { status: 400 })
     }
 
     // Validation du nouveau mot de passe
@@ -17,19 +17,19 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Vérifier le mot de passe actuel
+    // Récupérer l'admin par email
     const { data: admin, error: fetchError } = await supabaseServer
       .from('admins')
-      .select('password')
-      .eq('id', adminId)
+      .select('id, password_hash')
+      .eq('email', email.toLowerCase())
       .single()
 
     if (fetchError || !admin) {
-      return NextResponse.json({ error: 'Admin not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Admin non trouvé' }, { status: 404 })
     }
 
-    // Comparer avec bcrypt
-    const isPasswordValid = await bcrypt.compare(currentPassword, admin.password)
+    // Vérifier le mot de passe actuel
+    const isPasswordValid = await bcrypt.compare(currentPassword, admin.password_hash)
     if (!isPasswordValid) {
       return NextResponse.json({ error: 'Mot de passe actuel incorrect' }, { status: 401 })
     }
@@ -41,10 +41,10 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await supabaseServer
       .from('admins')
       .update({
-        password: hashedPassword,
+        password_hash: hashedPassword,
         updated_at: new Date().toISOString()
       })
-      .eq('id', adminId)
+      .eq('id', admin.id)
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 })

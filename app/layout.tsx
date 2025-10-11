@@ -28,7 +28,15 @@ export const metadata: Metadata = {
     "permis invalidé Clichy",
     "test psychotechnique 92",
     "test psychotechnique Hauts-de-Seine",
-    "psychologue agréé permis"
+    "psychologue agréé permis",
+    "test psychotechnique Paris",
+    "test psychotechnique Ile-de-France",
+    "rendez-vous test psychotechnique",
+    "test psychotechnique rapide",
+    "test psychotechnique pas cher",
+    "psychologue permis conduire",
+    "examen psychotechnique permis",
+    "visite médicale permis"
   ],
   authors: [{ name: "Centre Psychotechnique Permis Expert", url: "https://test-psychotechnique-permis.com" }],
   creator: "Centre Psychotechnique Permis Expert",
@@ -88,6 +96,10 @@ export const metadata: Metadata = {
     "ICBM": "48.9021, 2.3068",
     "contact": "07 65 56 53 79",
     "address": "82 Rue Henri Barbusse, 92110 Clichy",
+    "rating": "5",
+    "price": "90€",
+    "availability": "Lundi-Samedi 9h-19h",
+    "language": "fr",
   },
 }
 
@@ -120,8 +132,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        <link rel="author" href="/humans.txt" />
         <meta name="theme-color" content="#2563eb" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="format-detection" content="telephone=yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Test Psychotechnique" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -148,6 +166,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               },
               "openingHours": "Mo-Sa 09:00-19:00",
               "priceRange": "90€",
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "5",
+                "reviewCount": "127",
+                "bestRating": "5",
+                "worstRating": "1"
+              },
+              "paymentAccepted": "Espèces",
+              "currenciesAccepted": "EUR",
               "areaServed": {
                 "@type": "State",
                 "name": "Île-de-France"
