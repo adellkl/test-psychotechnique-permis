@@ -127,133 +127,128 @@ export default function AppointmentsTable({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-200">
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Gestion des rendez-vous</h2>
-              <p className="text-sm text-gray-600 mt-1">{filteredAppointments.length} rendez-vous trouvés</p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-3">
-              {/* Filter */}
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
-                <option value="all">Tous les statuts</option>
-                <option value="confirmed">✅ Confirmés</option>
-                <option value="completed">✓ Terminés</option>
-                <option value="cancelled">❌ Annulés</option>
-              </select>
-
-              {/* Export & Cleanup */}
-              <ExportButton appointments={appointments} />
-              <CleanupManager />
-            </div>
+    <div className="space-y-4" id="appointments-table">
+      {/* Header with actions */}
+      <div className="flex flex-col gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Gestion des rendez-vous</h2>
+            <p className="text-sm text-gray-600 mt-1">{filteredAppointments.length} rendez-vous trouvés</p>
           </div>
           
-          {/* Search Bar */}
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Rechercher par nom, email, téléphone..."
-                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
-              >
-                Effacer
-              </button>
-            )}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Filter */}
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="all">Tous les statuts</option>
+              <option value="confirmed">✅ Confirmés</option>
+              <option value="completed">✓ Terminés</option>
+              <option value="cancelled">❌ Annulés</option>
+            </select>
+
+            {/* Export & Cleanup */}
+            <ExportButton appointments={appointments} />
+            <CleanupManager />
           </div>
         </div>
-
-        {/* Espace supplémentaire après le header */}
-        <div className="h-4 lg:h-0"></div>
-
-        {/* Bulk Actions Bar */}
-        {selectedAppointments.size > 0 && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
-                {selectedAppointments.size}
-              </div>
-              <span className="text-sm font-medium text-gray-900">
-                {selectedAppointments.size} rendez-vous sélectionné{selectedAppointments.size > 1 ? 's' : ''}
-              </span>
-            </div>
-            
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => setShowBulkActions(!showBulkActions)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm font-medium"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-                Actions groupées
-              </button>
-              
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 text-sm font-medium"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Supprimer
-              </button>
-
-              <button
-                onClick={() => setSelectedAppointments(new Set())}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
-              >
-                Désélectionner
-              </button>
-            </div>
+        
+        {/* Search Bar */}
+        <div className="flex gap-2">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Rechercher par nom, email, téléphone..."
+              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
-        )}
-
-        {/* Bulk Actions Menu */}
-        {showBulkActions && (
-          <div className="mt-3 p-4 bg-white rounded-lg border border-gray-200 shadow-lg">
-            <p className="text-sm font-medium text-gray-700 mb-3">Changer le statut en:</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => handleBulkStatusChange('confirmed')}
-                className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
-              >
-                Confirmé
-              </button>
-              <button
-                onClick={() => handleBulkStatusChange('completed')}
-                className="px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
-              >
-                Terminé
-              </button>
-              <button
-                onClick={() => handleBulkStatusChange('cancelled')}
-                className="px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
-              >
-                Annulé
-              </button>
-            </div>
-          </div>
-        )}
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
+              Effacer
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Bulk Actions Bar */}
+      {selectedAppointments.size > 0 && (
+        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+              {selectedAppointments.size}
+            </div>
+            <span className="text-sm font-medium text-gray-900">
+              {selectedAppointments.size} rendez-vous sélectionné{selectedAppointments.size > 1 ? 's' : ''}
+            </span>
+          </div>
+          
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setShowBulkActions(!showBulkActions)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+              Actions groupées
+            </button>
+            
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 text-sm font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Supprimer
+            </button>
+
+            <button
+              onClick={() => setSelectedAppointments(new Set())}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
+            >
+              Désélectionner
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Actions Menu */}
+      {showBulkActions && (
+        <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-lg">
+          <p className="text-sm font-medium text-gray-700 mb-3">Changer le statut en:</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => handleBulkStatusChange('confirmed')}
+              className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+            >
+              Confirmé
+            </button>
+            <button
+              onClick={() => handleBulkStatusChange('completed')}
+              className="px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
+            >
+              Terminé
+            </button>
+            <button
+              onClick={() => handleBulkStatusChange('cancelled')}
+              className="px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
+            >
+              Annulé
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Desktop Table - Hidden on mobile */}
       <div className="hidden lg:block overflow-x-auto">
@@ -292,7 +287,8 @@ export default function AppointmentsTable({
             {filteredAppointments.map((appointment, index) => (
               <tr
                 key={appointment.id}
-                className={`hover:bg-gray-50 transition-colors ${
+                data-appointment-id={appointment.id}
+                className={`hover:bg-gray-50 transition-all ${
                   selectedAppointments.has(appointment.id) ? 'bg-blue-50' : ''
                 } ${
                   appointment.status === 'completed' ? 'bg-gray-50 opacity-60' : ''

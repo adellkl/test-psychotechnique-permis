@@ -342,8 +342,14 @@ function DashboardContent() {
                 </div>
 
                 {todayAppointments.length === 0 ? (
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="text-sm text-gray-500">Aucun rendez-vous aujourd&apos;hui</p>
+                  <div className="bg-white rounded-lg p-8 text-center">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-base font-semibold text-gray-700 mb-1">Aucun rendez-vous aujourd&apos;hui</p>
+                    <p className="text-sm text-gray-500">Profitez de cette journée calme ! 🌟</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -359,7 +365,33 @@ function DashboardContent() {
                         cancelled: 'Annulé'
                       }
                       return (
-                        <div key={apt.id} className="bg-white rounded-lg p-3 border border-gray-200 hover:shadow-md transition-shadow">
+                        <button
+                          key={apt.id}
+                          onClick={() => {
+                            // Faire défiler vers la table des rendez-vous
+                            const appointmentsTable = document.getElementById('appointments-table')
+                            if (appointmentsTable) {
+                              appointmentsTable.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                              // Attendre la fin du scroll avant de surligner
+                              setTimeout(() => {
+                                const row = document.querySelector(`[data-appointment-id="${apt.id}"]`)
+                                if (row) {
+                                  // Animation de pulsation avec fond bleu
+                                  row.classList.add('!bg-blue-100', 'ring-4', 'ring-blue-500', 'animate-pulse')
+                                  // Arrêter l'animation après 1 seconde
+                                  setTimeout(() => {
+                                    row.classList.remove('animate-pulse')
+                                  }, 1000)
+                                  // Retirer complètement le surlignage après 3 secondes
+                                  setTimeout(() => {
+                                    row.classList.remove('!bg-blue-100', 'ring-4', 'ring-blue-500')
+                                  }, 3000)
+                                }
+                              }, 500)
+                            }
+                          }}
+                          className="w-full bg-white rounded-lg p-3 border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer text-left group"
+                        >
                           <div className="flex items-center gap-3">
                             <div className="flex-shrink-0 bg-blue-600 text-white rounded px-2 py-1 text-center min-w-[60px]">
                               <div className="text-lg font-bold">{apt.appointment_time}</div>
@@ -377,13 +409,16 @@ function DashboardContent() {
                               </div>
                             </div>
 
-                            <div className="flex-shrink-0">
+                            <div className="flex-shrink-0 flex items-center gap-2">
                               <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${statusColors[apt.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}`}>
                                 {statusLabels[apt.status as keyof typeof statusLabels] || apt.status}
                               </span>
+                              <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
                             </div>
                           </div>
-                        </div>
+                        </button>
                       )
                     })}
                   </div>

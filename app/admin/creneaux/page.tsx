@@ -8,7 +8,7 @@ import SlotsCalendar from '../components/SlotsCalendar'
 import AddSlotModal from '../components/AddSlotModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Toast from '../components/Toast'
-import { format, addDays, startOfWeek } from 'date-fns'
+import { format, addDays, startOfWeek, isPast, parse, isSameDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
 
@@ -139,7 +139,27 @@ function TimeSlotContent() {
         }
       }) || []
 
-      setTimeSlots(enrichedSlots)
+      // Filtrer les créneaux passés immédiatement après le chargement
+      // Garder les créneaux d'aujourd'hui + les créneaux futurs
+      const now = new Date()
+      const today = format(now, 'yyyy-MM-dd')
+
+      const futureSlots = enrichedSlots.filter(slot => {
+        // Garder tous les créneaux d'aujourd'hui
+        if (slot.date === today) {
+          return true
+        }
+
+        // Pour les autres jours, garder uniquement les créneaux futurs
+        const slotDateTime = parse(
+          `${slot.date} ${slot.start_time}`,
+          'yyyy-MM-dd HH:mm',
+          new Date()
+        )
+        return !isPast(slotDateTime)
+      })
+
+      setTimeSlots(futureSlots)
     } catch (error) {
       console.error('Error fetching time slots:', error)
     } finally {
@@ -297,7 +317,7 @@ function TimeSlotContent() {
     if (!slot) return
 
     const action = !currentStatus ? 'activer' : 'désactiver'
-    
+
     setConfirmDialog({
       isOpen: true,
       title: `${action.charAt(0).toUpperCase() + action.slice(1)} le créneau`,
@@ -347,6 +367,8 @@ function TimeSlotContent() {
   }
 
   const getFilteredSlots = () => {
+    // Les créneaux passés sont déjà filtrés dans fetchTimeSlots
+    // On applique juste le filtre de statut ici
     let filtered = timeSlots
 
     if (filterStatus === 'available') {
@@ -704,7 +726,7 @@ function TimeSlotContent() {
                           className={`flex-1 px-3 py-3 rounded-lg text-sm font-bold transition-all shadow-md whitespace-nowrap ${slot.is_available
                             ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600'
                             : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
-                          }`}
+                            }`}
                         >
                           {slot.is_available ? 'Désactiver' : 'Activer'}
                         </button>
