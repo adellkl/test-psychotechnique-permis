@@ -12,6 +12,7 @@ import SearchBar, { SearchFilters } from '../components/SearchBar'
 import NotificationsPanel from '../components/NotificationsPanel'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Toast from '../components/Toast'
+import { sendAppointmentCancellation } from '../../../lib/emailService'
 
 export default function AdminDashboard() {
   return (
@@ -191,16 +192,16 @@ function DashboardContent() {
     const appointment = appointments.find(a => a.id === id)
     if (!appointment) return
 
-    const statusLabels: Record<string, string> = {
-      'confirmed': 'confirmé',
-      'completed': 'terminé',
-      'cancelled': 'annulé'
+    const statusLabels: { [key: string]: string } = {
+      confirmed: 'confirmé',
+      completed: 'terminé',
+      cancelled: 'annulé'
     }
 
     setConfirmDialog({
       isOpen: true,
       title: 'Modifier le statut',
-      message: `Êtes-vous sûr de vouloir marquer ce rendez-vous comme "${statusLabels[status] || status}" ?\n\nClient: ${appointment.first_name} ${appointment.last_name}\nDate: ${new Date(appointment.appointment_date).toLocaleDateString('fr-FR')}\nHeure: ${appointment.appointment_time}`,
+      message: `Êtes-vous sûr de vouloir marquer ce rendez-vous comme "${statusLabels[status] || status}" ?\n\nClient: ${appointment.first_name} ${appointment.last_name}\nDate: ${new Date(appointment.appointment_date).toLocaleDateString('fr-FR')}\nHeure: ${appointment.appointment_time}${status === 'cancelled' ? '\n\n⚠️ Un email d\'annulation sera automatiquement envoyé au client.' : ''}`,
       type: status === 'cancelled' ? 'danger' : 'warning',
       onConfirm: async () => {
         setConfirmDialog(null)
@@ -211,11 +212,32 @@ function DashboardContent() {
             .eq('id', id)
 
           if (error) throw error
+          
+          // Si le statut est "annulé", envoyer un email au client
+          if (status === 'cancelled') {
+            try {
+              await sendAppointmentCancellation({
+                first_name: appointment.first_name,
+                last_name: appointment.last_name,
+                email: appointment.email,
+                appointment_date: appointment.appointment_date,
+                appointment_time: appointment.appointment_time,
+                reason: 'Annulé par l\'administrateur'
+              })
+              console.log('✅ Email d\'annulation envoyé au client')
+            } catch (emailError) {
+              console.error('❌ Erreur envoi email annulation client:', emailError)
+              // On continue même si l'email échoue
+            }
+          }
+          
           await fetchAppointments()
           
           setToast({
             type: 'success',
-            message: `Rendez-vous marqué comme ${statusLabels[status]} avec succès`
+            message: status === 'cancelled' 
+              ? `Rendez-vous annulé et email envoyé au client`
+              : `Rendez-vous marqué comme ${statusLabels[status]} avec succès`
           })
           
           await logAdminActivity(

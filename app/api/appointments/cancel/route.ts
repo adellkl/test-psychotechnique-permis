@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../../lib/supabase'
 import crypto from 'crypto'
+import { sendCancellationNotificationToAdmin } from '../../../../lib/emailService'
 
 export const dynamic = 'force-dynamic'
 
@@ -196,6 +197,22 @@ export async function GET(request: NextRequest) {
       }
     } catch (notifError) {
       console.error('❌ Erreur création notification annulation:', notifError)
+    }
+
+    // Envoyer un email à l'admin pour l'informer de l'annulation
+    try {
+      await sendCancellationNotificationToAdmin({
+        first_name: appointment.first_name,
+        last_name: appointment.last_name,
+        email: appointment.email,
+        phone: appointment.phone,
+        appointment_date: appointment.appointment_date,
+        appointment_time: appointment.appointment_time
+      })
+      console.log('✅ Email d\'annulation envoyé à l\'admin')
+    } catch (emailError) {
+      console.error('❌ Erreur envoi email annulation admin:', emailError)
+      // On ne bloque pas le processus si l'email échoue
     }
 
     // Page simple d'annulation

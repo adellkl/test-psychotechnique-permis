@@ -422,6 +422,132 @@ export async function sendConfirmationReminder(appointmentData: {
   }
 }
 
+export async function sendCancellationNotificationToAdmin(appointmentData: {
+  first_name: string
+  last_name: string
+  email: string
+  phone?: string
+  appointment_date: string
+  appointment_time: string
+}) {
+  try {
+    console.log(`📧 [ADMIN-CANCEL] Notification annulation à l'admin...`)
+
+    const formattedDate = new Date(appointmentData.appointment_date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+
+    const subject = `❌ Annulation - ${appointmentData.first_name} ${appointmentData.last_name}`
+
+    const html = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rendez-vous annulé</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px;">❌ Rendez-vous Annulé</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px;">
+                            <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                                <p style="margin: 0; color: #991b1b; font-size: 14px;">
+                                    <strong>⚠️ Un client a annulé son rendez-vous</strong>
+                                </p>
+                            </div>
+                            
+                            <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px;">Détails du rendez-vous annulé</h2>
+                            
+                            <table width="100%" cellpadding="10" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; margin-bottom: 20px;">
+                                <tr>
+                                    <td style="color: #374151; font-weight: 600;">👤 Client</td>
+                                    <td style="color: #1f2937; text-align: right;">${appointmentData.first_name} ${appointmentData.last_name}</td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">📧 Email</td>
+                                    <td style="color: #1f2937; text-align: right;"><a href="mailto:${appointmentData.email}" style="color: #2563eb; text-decoration: none;">${appointmentData.email}</a></td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">📱 Téléphone</td>
+                                    <td style="color: #1f2937; text-align: right;"><a href="tel:${appointmentData.phone}" style="color: #2563eb; text-decoration: none;">${appointmentData.phone || 'Non renseigné'}</a></td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">📅 Date</td>
+                                    <td style="color: #1f2937; text-align: right; font-weight: 700;">${formattedDate}</td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">⏰ Heure</td>
+                                    <td style="color: #1f2937; text-align: right; font-weight: 700; font-size: 18px;">${appointmentData.appointment_time}</td>
+                                </tr>
+                            </table>
+                            
+                            <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-top: 20px;">
+                                <p style="margin: 0; color: #1e40af; font-size: 14px;">
+                                    <strong>💡 Information :</strong> Ce créneau est maintenant disponible pour d'autres clients.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <a href="https://test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600;">
+                                Voir le Dashboard Admin
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`
+
+    const text = `
+❌ RENDEZ-VOUS ANNULÉ
+
+Un client a annulé son rendez-vous :
+
+Client: ${appointmentData.first_name} ${appointmentData.last_name}
+Email: ${appointmentData.email}
+Téléphone: ${appointmentData.phone || 'Non renseigné'}
+Date: ${formattedDate}
+Heure: ${appointmentData.appointment_time}
+
+Ce créneau est maintenant disponible pour d'autres clients.
+Connectez-vous au dashboard admin pour voir les détails.
+`
+
+    console.log(`📤 [ADMIN-CANCEL] Envoi via Elastic Email...`)
+    const info = await sendEmailWithElasticEmail({
+      from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
+      to: 'sebtifatiha170617@gmail.com',
+      subject,
+      html,
+      text,
+    })
+
+    console.log('✅ [ADMIN-CANCEL] Email envoyé avec succès à: sebtifatiha170617@gmail.com, ID:', info.messageId)
+    return info
+  } catch (error) {
+    console.error('❌ [ADMIN-CANCEL] ERREUR:', error)
+    console.error('❌ [ADMIN-CANCEL] Type:', error instanceof Error ? error.constructor.name : typeof error)
+    console.error('❌ [ADMIN-CANCEL] Message:', error instanceof Error ? error.message : String(error))
+    throw error
+  }
+}
+
 export async function testEmailConfiguration() {
   try {
     const info = await sendEmailWithElasticEmail({
