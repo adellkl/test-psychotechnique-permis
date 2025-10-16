@@ -16,7 +16,7 @@ interface AddSlotModalProps {
 const generateTimeOptions = (intervalMinutes: number): string[] => {
   const options: string[] = []
   const startHour = 8 // 8h du matin
-  const endHour = 19 // 19h (7h du soir)
+  const endHour = 21 // 21h (8h du soir)
   const totalMinutes = (endHour - startHour) * 60
 
   if (intervalMinutes <= 0 || !Number.isFinite(intervalMinutes)) {
@@ -42,7 +42,7 @@ export default function AddSlotModal({
   onAddMultiple,
   onAddBulk
 }: AddSlotModalProps) {
-  const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [mode, setMode] = useState<'single' | 'bulk'>('single')
   const [bulkConfig, setBulkConfig] = useState({
     startDate: new Date().toISOString().split('T')[0],
@@ -172,7 +172,7 @@ export default function AddSlotModal({
               </svg>
             </button>
           </div>
-          
+
           {/* Mode Toggle */}
           <div className="mt-4 flex gap-2">
             <button
@@ -221,9 +221,8 @@ export default function AddSlotModal({
                     setErrors(prev => ({ ...prev, date: '' }))
                   }}
                   min={new Date().toISOString().split('T')[0]}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                    errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
                 />
               </div>
 
@@ -237,9 +236,8 @@ export default function AddSlotModal({
                     setNewSlot({ ...newSlot, time: e.target.value })
                     setErrors(prev => ({ ...prev, time: '' }))
                   }}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                    errors.time ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${errors.time ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
                 >
                   {timeOptions.map(time => (
                     <option key={time} value={time}>{time}</option>
@@ -302,9 +300,8 @@ export default function AddSlotModal({
                       setErrors(prev => ({ ...prev, date: '' }))
                     }}
                     min={new Date().toISOString().split('T')[0]}
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
-                      errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
                   />
                 </div>
                 <div>
@@ -319,9 +316,8 @@ export default function AddSlotModal({
                       setErrors(prev => ({ ...prev, date: '' }))
                     }}
                     min={bulkConfig.startDate}
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
-                      errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${errors.date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
                   />
                 </div>
               </div>
@@ -334,11 +330,10 @@ export default function AddSlotModal({
                   <button
                     type="button"
                     onClick={toggleAllTimes}
-                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
-                      bulkConfig.selectedTimes.length === timeOptions.length
-                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                        : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                    }`}
+                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${bulkConfig.selectedTimes.length === timeOptions.length
+                      ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                      : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                      }`}
                   >
                     {bulkConfig.selectedTimes.length === timeOptions.length ? 'Tout désélectionner' : 'Tout sélectionner'}
                   </button>
@@ -349,11 +344,10 @@ export default function AddSlotModal({
                       key={time}
                       type="button"
                       onClick={() => toggleTime(time)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                        bulkConfig.selectedTimes.includes(time)
-                          ? 'bg-purple-600 text-white ring-2 ring-purple-300'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${bulkConfig.selectedTimes.includes(time)
+                        ? 'bg-purple-600 text-white ring-2 ring-purple-300'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
                     >
                       {time}
                     </button>

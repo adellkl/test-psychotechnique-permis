@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Nous Contacter - Test Psychotechnique Permis Clichy | 07 65 56 53 79",
-  description: "Contactez notre centre agréé à Clichy pour toute question sur le test psychotechnique du permis. Téléphone : 07 65 56 53 79. Réponse rapide par téléphone ou email. Ouvert du lundi au samedi.",
+  description: "Contactez notre centre agréé à Clichy pour toute question sur le test psychotechnique du permis. Téléphone : 07 65 56 53 79. Réponse rapide par téléphone ou email. Ouvert du lundi au samedi de 8h - 20h.",
   keywords: "contact test psychotechnique, téléphone centre Clichy, contacter psychologue permis, rendez-vous test psychotechnique, adresse centre agréé, horaires test psychotechnique",
   openGraph: {
     title: "Nous Contacter - Test Psychotechnique Permis Clichy",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Contact - Test Psychotechnique Permis Clichy",
-    description: "Contactez notre centre agréé au 07 65 56 53 79. Ouvert du lundi au samedi.",
+    description: "Contactez notre centre agréé au 07 65 56 53 79. ouvert du lundi au samedi de 8h - 20h.",
   },
   alternates: {
     canonical: "https://test-psychotechnique-permis.com/contact",
@@ -40,7 +40,7 @@ export default function ContactLayout({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "MedicalBusiness",
-            "name": "Test Psychotechnique Permis - Centre Agréé Clichy",
+            "name": "Test Psychotechnique Permis - Centre Agréé tout départements",
             "image": "https://test-psychotechnique-permis.com/logo.png",
             "telephone": "+33765565379",
             "email": "contact@test-psychotechnique-permis.com",
@@ -69,7 +69,7 @@ export default function ContactLayout({
           }),
         }}
       />
-      
+
       {/* JSON-LD BreadcrumbList */}
       <script
         type="application/ld+json"
@@ -94,7 +94,7 @@ export default function ContactLayout({
           }),
         }}
       />
-      
+
       {children}
     </>
   )

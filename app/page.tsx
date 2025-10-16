@@ -5,11 +5,11 @@ import FAQ from './components/FAQ'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Test Psychotechnique Permis - Centre Agréé Clichy | Récupération Permis de Conduire",
+  title: "Test Psychotechnique Permis - Centre Agréé tout départements | Récupération Permis de Conduire",
   description: "Centre agréé préfecture pour tests psychotechniques du permis de conduire à Clichy. Invalidation, suspension, annulation. Psychologue certifiée ADELI 929334555. Deuxième chance gratuite. RDV immédiat 07 65 56 53 79.",
   keywords: "test psychotechnique permis, centre agréé préfecture, invalidation permis, suspension permis, annulation permis, psychologue ADELI, Clichy, récupération permis conduire, test psychotechnique Clichy, permis invalidé, ligne 13 métro",
   openGraph: {
-    title: "Test Psychotechnique Permis - Centre Agréé Clichy",
+    title: "Test Psychotechnique Permis - Centre Agréé tout départements",
     description: "Centre agréé préfecture pour tests psychotechniques. Psychologue certifiée ADELI. Deuxième chance gratuite. À 3min du métro Mairie de Clichy.",
     url: "https://test-psychotechnique-permis.com",
   },
@@ -28,7 +28,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-              Test Psychotechnique Permis - Centre Agréé Clichy
+              Test Psychotechnique Permis - Centre Agréé tout départements
             </h2>
           </div>
 

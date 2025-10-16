@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
       FROM_EMAIL: process.env.FROM_EMAIL,
       ELASTIC_EMAIL_API_KEY: process.env.ELASTIC_EMAIL_API_KEY ? 'Définie' : 'Non définie'
     })
-    
+
     try {
       // Email au client
       console.log('📤 Envoi email client à:', email)
@@ -158,9 +158,9 @@ export async function POST(request: NextRequest) {
       console.error('❌ Stack:', adminError instanceof Error ? adminError.stack : 'No stack')
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       appointment,
-      message: 'Appointment created successfully' 
+      message: 'Appointment created successfully'
     }, { status: 201 })
 
   } catch (error) {

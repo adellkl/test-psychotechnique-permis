@@ -44,14 +44,14 @@ export default function AgrementPrefectoralPage() {
             Agrément Préfectoral Officiel
           </h1>
           <p className="text-xl text-gray-700 leading-relaxed mb-8">
-            Centre agréé par la préfecture des Hauts-de-Seine pour les tests psychotechniques d'aptitude à la conduite
+            Centre agréé  pour les tests psychotechniques d'aptitude à la conduite
           </p>
         </div>
       </section>
 
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-6">
-          
+
           {/* Document officiel */}
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-8 mb-12">
             <div className="text-center mb-8">
@@ -62,10 +62,10 @@ export default function AgrementPrefectoralPage() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Document Officiel d'Agrément</h2>
               <p className="text-gray-600 mb-6">
-                Récépissé officiel délivré par la préfecture des Hauts-de-Seine
+                Récépissé officiel
               </p>
-              
-              <a 
+
+              <a
                 href="/Récépissé SEBTI .pdf"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -152,7 +152,7 @@ export default function AgrementPrefectoralPage() {
               Pour toute question concernant notre agrément préfectoral ou nos certifications
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
+              <a
                 href="tel:0765565379"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
@@ -161,7 +161,7 @@ export default function AgrementPrefectoralPage() {
                 </svg>
                 07 65 56 53 79
               </a>
-              <a 
+              <a
                 href="mailto:f.sebti@outlook.com"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
               >

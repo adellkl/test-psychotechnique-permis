@@ -4,7 +4,7 @@ export default function ReviewsSchema() {
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Test Psychotechnique Permis - Centre Agréé Clichy",
+    "name": "Test Psychotechnique Permis - Centre Agréé tout départements",
     "image": "https://test-psychotechnique-permis.com/images/logo.png",
     "description": "Centre agréé pour test psychotechnique du permis de conduire à Clichy. Résultats immédiats, deuxième chance gratuite en cas d'échec.",
     "@id": "https://test-psychotechnique-permis.com",

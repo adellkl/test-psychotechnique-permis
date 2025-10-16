@@ -95,7 +95,7 @@ export default function ContactPage() {
                   <a href="tel:0765565379" className="text-2xl font-bold text-green-600 hover:text-green-700 transition-colors block mb-1">
                     07 65 56 53 79
                   </a>
-                  <p className="text-sm text-gray-600 mb-3">Réponse immédiate • Du lundi au samedi</p>
+                  <p className="text-sm text-gray-600 mb-3">Réponse immédiate • du lundi au samedi de 8h - 20h</p>
                   <a href="tel:0765565379" className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -146,8 +146,8 @@ export default function ContactPage() {
                     <h3 className="text-lg font-bold text-gray-900">Horaires</h3>
                     <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">OUVERT</span>
                   </div>
-                  <p className="text-sm font-semibold text-gray-700">Du lundi au samedi</p>
-                  <p className="text-2xl font-bold text-orange-600 mb-2">9h - 19h</p>
+                  <p className="text-sm font-semibold text-gray-700">8h - 20h</p>
+                  <p className="text-2xl font-bold text-orange-600 mb-2">8h - 20h</p>
                   <p className="text-sm text-gray-600 mb-3">Fermé le dimanche • Créneaux flexibles</p>
                   <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 py-2 px-3 rounded-lg">
                     <p className="text-xs font-medium text-orange-800 text-center">📞 Appelez-nous pour plus de créneaux</p>

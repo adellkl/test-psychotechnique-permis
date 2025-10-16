@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: "Réservez votre test psychotechnique permis en ligne à Clichy. Centre agréé préfecture. Disponibilités immédiates. Psychologue certifiée ADELI. Prise de rendez-vous rapide et sécurisée pour invalidation, suspension ou annulation de permis.",
   keywords: "prendre rendez-vous test psychotechnique, réservation test psychotechnique permis, rendez-vous permis Clichy, réserver test psychotechnique en ligne, centre agréé Clichy, psychologue permis conduire, rdv test psychotechnique",
   openGraph: {
-    title: "Prendre Rendez-vous Test Psychotechnique Permis - Centre Agréé Clichy",
+    title: "Prendre Rendez-vous Test Psychotechnique Permis - Centre Agréé tout départements",
     description: "Réservez votre test psychotechnique en ligne. Disponibilités immédiates. Centre agréé préfecture à Clichy. Psychologue certifiée.",
     url: "https://test-psychotechnique-permis.com/prendre-rendez-vous",
     type: "website",
@@ -50,7 +50,7 @@ export default function PrendreRendezVousLayout({
             "serviceType": "Test Psychotechnique pour Permis de Conduire",
             "provider": {
               "@type": "MedicalBusiness",
-              "name": "Test Psychotechnique Permis - Centre Agréé Clichy",
+              "name": "Test Psychotechnique Permis - Centre Agréé tout départements",
               "image": "https://test-psychotechnique-permis.com/logo.png",
               "telephone": "+33765565379",
               "address": {
