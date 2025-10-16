@@ -6,8 +6,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: "Test Psychotechnique Permis - Centre Agréé tout départements | Récupération Permis de Conduire",
-  description: "Centre agréé préfecture pour tests psychotechniques du permis de conduire à Clichy. Invalidation, suspension, annulation. Psychologue certifiée ADELI 929334555. Deuxième chance gratuite. RDV immédiat 07 65 56 53 79.",
-  keywords: "test psychotechnique permis, centre agréé préfecture, invalidation permis, suspension permis, annulation permis, psychologue ADELI, Clichy, récupération permis conduire, test psychotechnique Clichy, permis invalidé, ligne 13 métro",
+  description: "Centre agréé préfecture pour tests psychotechniques du permis de conduire à Clichy. Invalidation, suspension, annulation. Psychologue certifiée ADELI 929334555. Deuxième chance gratuite. RDV immédiat 07 65 56 53 79. Service Île-de-France complet.",
+  keywords: "test psychotechnique permis, centre agréé préfecture, invalidation permis, suspension permis, annulation permis, psychologue ADELI, Clichy, récupération permis conduire, test psychotechnique Clichy, permis invalidé, ligne 13 métro, Île-de-France, Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Hauts-de-Seine 92, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95, Boulogne-Billancourt, Nanterre, Versailles, Évry, Bobigny, Créteil, Cergy, psychologue permis conduire Île-de-France",
   openGraph: {
     title: "Test Psychotechnique Permis - Centre Agréé tout départements",
     description: "Centre agréé préfecture pour tests psychotechniques. Psychologue certifiée ADELI. Deuxième chance gratuite. À 3min du métro Mairie de Clichy.",

@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: "Test Psychotechnique Annulation Permis - Infractions Graves | Clichy 92",
   description: "Test psychotechnique obligatoire après annulation permis pour homicide, alcool, récidive. Centre agréé préfecture Clichy. Psychologue ADELI certifiée. Repasser permis après annulation. RDV 07 65 56 53 79.",
-  keywords: "test psychotechnique annulation permis, permis annulé, annulation homicide, annulation alcool, annulation récidive, repasser permis annulé, centre agréé préfecture, Clichy 92, psychologue ADELI, test aptitude conduite, annulation 3 ans, Hauts-de-Seine, auto-école après annulation",
+  keywords: "test psychotechnique annulation permis, permis annulé, annulation homicide, annulation alcool, annulation récidive, repasser permis annulé, centre agréé préfecture, Clichy 92, psychologue ADELI, test aptitude conduite, annulation 3 ans, Hauts-de-Seine, auto-école après annulation, Île-de-France, Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95, Boulogne-Billancourt, Nanterre, Versailles, Évry, Bobigny, Créteil, Cergy, test psychotechnique annulation permis Île-de-France",
   openGraph: {
     title: "Test Psychotechnique Annulation Permis - Infractions Graves | Clichy",
     description: "Test psychotechnique obligatoire après annulation permis pour homicide, alcool, récidive. Centre agréé préfecture Clichy. Psychologue ADELI certifiée.",

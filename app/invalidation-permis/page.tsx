@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: "Test Psychotechnique Invalidation Permis - Solde Nul Points | Centre Clichy 92",
   description: "Test psychotechnique obligatoire après invalidation permis pour solde nul de points. Centre agréé préfecture Clichy. Psychologue ADELI certifiée. Récupération permis invalidé. RDV 07 65 56 53 79.",
-  keywords: "test psychotechnique invalidation permis, permis invalidé, solde nul points, récupération permis invalidé, centre agréé préfecture, Clichy 92, psychologue ADELI, test aptitude conduite, permis points zéro, invalidation 6 mois, Hauts-de-Seine",
+  keywords: "test psychotechnique invalidation permis, permis invalidé, solde nul points, récupération permis invalidé, centre agréé préfecture, Clichy 92, psychologue ADELI, test aptitude conduite, permis points zéro, invalidation 6 mois, Hauts-de-Seine, Île-de-France, Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95, Boulogne-Billancourt, Nanterre, Versailles, Évry, Bobigny, Créteil, Cergy, test psychotechnique invalidation permis Île-de-France",
   openGraph: {
     title: "Test Psychotechnique Invalidation Permis - Solde Nul Points | Centre Clichy",
     description: "Test psychotechnique obligatoire après invalidation permis pour solde nul de points. Centre agréé préfecture Clichy. Psychologue ADELI certifiée. Récupération permis invalidé.",
