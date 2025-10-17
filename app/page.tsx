@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ModernHero from './components/ModernHero'
 import FAQ from './components/FAQ'
+import CentersShowcase from './components/CentersShowcase'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -30,6 +31,22 @@ export default function HomePage() {
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up">
               Test Psychotechnique Permis - Centre Agréé tout départements
             </h2>
+            <div className="flex flex-wrap justify-center gap-3 mt-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-full">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-sm font-semibold text-blue-900">Clichy 92110</span>
+              </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 rounded-full">
+                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-sm font-semibold text-purple-900">Colombes 92700</span>
+              </div>
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -44,10 +61,24 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Centre Test Psychotechnique Permis Agréé</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      Notre <strong>centre de test psychotechnique agréé préfecture</strong> est situé à <span className="font-semibold text-blue-600">3 min du métro Mairie de Clichy</span>, sur la ligne 13 et à <span className="font-semibold text-blue-600">10 min à pied de la gare de Clichy-Levallois</span>. Accessible depuis Paris et toute l'Île-de-France pour votre <strong>récupération de permis de conduire</strong>.
-                    </p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">2 Centres Test Psychotechnique Permis Agréés</h3>
+                    <div className="space-y-3">
+                      <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                        <p className="font-semibold text-blue-900 mb-1">📍 Centre de Clichy</p>
+                        <p className="text-sm text-gray-600">
+                          82 Rue Henri Barbusse, 92110 Clichy - <span className="font-semibold text-blue-600">3 min du métro Mairie de Clichy (Ligne 13)</span>
+                        </p>
+                      </div>
+                      <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
+                        <p className="font-semibold text-purple-900 mb-1">📍 Centre de Colombes</p>
+                        <p className="text-sm text-gray-600">
+                          14 rue de Mantes, 92700 Colombes - <span className="font-semibold text-purple-600">Proche des transports en commun</span>
+                        </p>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed pt-2">
+                        Nos <strong>2 centres agréés préfecture</strong> vous offrent plus de flexibilité pour votre <strong>test psychotechnique du permis de conduire</strong>. Choisissez le centre le plus proche de chez vous !
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div className="relative h-48 rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
@@ -402,6 +433,13 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Section Nos Centres */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="container mx-auto px-4">
+          <CentersShowcase variant="full" showBookingButton={true} />
         </div>
       </section>
 

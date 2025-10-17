@@ -89,6 +89,10 @@ export async function sendAppointmentConfirmation(appointmentData: {
   appointment_time: string
   appointment_id?: string
   created_at?: string
+  center_name?: string
+  center_address?: string
+  center_city?: string
+  center_postal_code?: string
 }) {
   try {
     console.log(`📧 [CLIENT] Récupération du template...`)
@@ -109,6 +113,12 @@ export async function sendAppointmentConfirmation(appointmentData: {
       .update(`${appointmentData.appointment_id}-${appointmentData.email}`)
       .digest('hex')
 
+    const centerName = appointmentData.center_name || 'Centre Psychotechnique Permis Expert'
+    const centerAddress = appointmentData.center_address || '82 Rue Henri Barbusse'
+    const centerCity = appointmentData.center_city || 'Clichy'
+    const centerPostalCode = appointmentData.center_postal_code || '92110'
+    const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
+
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
@@ -118,9 +128,9 @@ export async function sendAppointmentConfirmation(appointmentData: {
       appointment_time: appointmentData.appointment_time,
       appointment_id: appointmentData.appointment_id || '',
       confirmation_token: confirmationToken,
-      location: 'Centre Psychotechnique Permis Expert',
-      address: '82 Rue Henri Barbusse, 92110 Clichy',
-      location_details: 'À 3 minutes du métro Mairie de Clichy (Ligne 13)',
+      location: centerName,
+      address: fullAddress,
+      location_details: centerCity === 'Clichy' ? 'À 3 minutes du métro Mairie de Clichy (Ligne 13)' : 'Proche des transports en commun',
       contact_phone: '07 65 56 53 79',
       website: 'https://test-psychotechnique-permis.com'
     }
@@ -156,6 +166,10 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
   phone?: string
   appointment_date: string
   appointment_time: string
+  center_name?: string
+  center_address?: string
+  center_city?: string
+  center_postal_code?: string
 }) {
   try {
     console.log(`📧 [ADMIN] Préparation notification admin...`)
@@ -212,6 +226,14 @@ export async function sendAppointmentNotificationToAdmin(appointmentData: {
                                 <tr style="border-top: 1px solid #e5e7eb;">
                                     <td style="color: #374151; font-weight: 600;">⏰ Heure</td>
                                     <td style="color: #1f2937; text-align: right; font-weight: 700; font-size: 18px;">${appointmentData.appointment_time}</td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">📍 Centre</td>
+                                    <td style="color: #1f2937; text-align: right; font-weight: 700;">${appointmentData.center_name || 'Centre de Clichy'}</td>
+                                </tr>
+                                <tr style="border-top: 1px solid #e5e7eb;">
+                                    <td style="color: #374151; font-weight: 600;">🏢 Adresse</td>
+                                    <td style="color: #1f2937; text-align: right;">${appointmentData.center_address || '82 Rue Henri Barbusse'}, ${appointmentData.center_postal_code || '92110'} ${appointmentData.center_city || 'Clichy'}</td>
                                 </tr>
                             </table>
                             

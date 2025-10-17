@@ -24,6 +24,20 @@ export interface Appointment {
   status: 'confirmed' | 'completed' | 'cancelled' | 'no_show'
   admin_notes?: string
   client_notes?: string
+  center_id: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Center {
+  id: string
+  name: string
+  address: string
+  city: string
+  postal_code: string
+  phone: string
+  email: string
+  is_active: boolean
   created_at: string
   updated_at: string
 }

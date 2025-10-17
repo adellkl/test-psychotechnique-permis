@@ -81,40 +81,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: createError.message }, { status: 500 })
     }
 
-    // Créer une notification pour les admins
-    try {
-      const { data: admins } = await supabase
-        .from('admins')
-        .select('id')
-        .eq('is_active', true)
-
-      if (admins && admins.length > 0) {
-        const notificationsToCreate = admins.map(admin => ({
-          admin_id: admin.id,
-          type: 'new_appointment',
-          title: `Nouveau rendez-vous - ${first_name} ${last_name}`,
-          message: `Un nouveau rendez-vous a été réservé pour le ${appointment_date} à ${appointment_time}`,
-          link: `/admin/dashboard?appointment=${appointment.id}`,
-          metadata: {
-            appointment_id: appointment.id,
-            client_name: `${first_name} ${last_name}`,
-            client_email: email,
-            appointment_date,
-            appointment_time,
-            test_type
-          },
-          is_read: false
-        }))
-
-        await supabase
-          .from('notifications')
-          .insert(notificationsToCreate)
-      }
-    } catch (notifError) {
-      console.error('❌ Erreur création notification:', notifError)
-    }
-
-    // Send confirmation emails
+    // Notifications désactivées - table supprimée
     console.log('📧 Envoi des emails de confirmation...')
     console.log('📧 Configuration:', {
       ADMIN_EMAIL: process.env.ADMIN_EMAIL,
@@ -122,6 +89,7 @@ export async function POST(request: NextRequest) {
       ELASTIC_EMAIL_API_KEY: process.env.ELASTIC_EMAIL_API_KEY ? 'Définie' : 'Non définie'
     })
 
+    // Send confirmation emails
     try {
       // Email au client
       console.log('📤 Envoi email client à:', email)

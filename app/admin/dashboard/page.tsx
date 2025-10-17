@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import type { Appointment } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
+import { useCenterContext } from '../context/CenterContext'
 import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
 import Sidebar from '../components/Sidebar'
 import AppointmentsTable from '../components/AppointmentsTable'
 import AdminSettingsContent from '../components/AdminSettingsContent'
 import SearchBar, { SearchFilters } from '../components/SearchBar'
-import NotificationsPanel from '../components/NotificationsPanel'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Toast from '../components/Toast'
 import { sendAppointmentCancellation } from '../../../lib/emailService'
@@ -23,6 +23,7 @@ export default function AdminDashboard() {
 }
 
 function DashboardContent() {
+  const { selectedCenterId } = useCenterContext()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
@@ -63,11 +64,13 @@ function DashboardContent() {
 
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
     fetchAppointments()
-  }, [])
+  }, [selectedCenterId]) // Recharger quand le centre change
 
   const fetchAppointments = async () => {
     try {
       setLoading(true)
+      
+      // Récupérer TOUS les rendez-vous sans filtre de centre
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
@@ -76,11 +79,19 @@ function DashboardContent() {
 
       if (error) throw error
       
-      // Auto-marquer les rendez-vous passés comme "terminé"
+      // Calculer la date du jour pour les RDV d'aujourd'hui
       const now = new Date()
       const today = now.toISOString().split('T')[0]
-      const currentTime = now.toTimeString().slice(0, 5) // HH:MM
       
+      // Filtrer les RDV d'aujourd'hui AVANT la mise à jour automatique
+      let todayApts = (data || []).filter(apt => apt.appointment_date === today)
+      if (selectedCenterId) {
+        todayApts = todayApts.filter(apt => apt.center_id === selectedCenterId)
+      }
+      setTodayAppointments(todayApts)
+      
+      // Auto-marquer les rendez-vous passés comme "terminé"
+      const currentTime = now.toTimeString().slice(0, 5) // HH:MM
       const appointmentsToUpdate: string[] = []
       
       data?.forEach(apt => {
@@ -113,14 +124,15 @@ function DashboardContent() {
         setAppointments(updatedData || [])
         setFilteredAppointments(updatedData || [])
         
-        const todayApts = (updatedData || []).filter(apt => apt.appointment_date === today)
-        setTodayAppointments(todayApts)
+        // Recalculer les RDV d'aujourd'hui après mise à jour
+        let refreshedTodayApts = (updatedData || []).filter(apt => apt.appointment_date === today)
+        if (selectedCenterId) {
+          refreshedTodayApts = refreshedTodayApts.filter(apt => apt.center_id === selectedCenterId)
+        }
+        setTodayAppointments(refreshedTodayApts)
       } else {
         setAppointments(data || [])
         setFilteredAppointments(data || [])
-        
-        const todayApts = (data || []).filter(apt => apt.appointment_date === today)
-        setTodayAppointments(todayApts)
       }
     } catch (error) {
       console.error('Error fetching appointments:', error)
@@ -130,53 +142,60 @@ function DashboardContent() {
   }
 
   useEffect(() => {
+    let filtered = appointments
+
+    // Filtrer par centre sélectionné
+    if (selectedCenterId) {
+      filtered = filtered.filter(apt => apt.center_id === selectedCenterId)
+    }
+
+    // Exclure les rendez-vous terminés de la liste principale
+    filtered = filtered.filter(apt => apt.status !== 'completed')
+
+    // Filter by search
     if (!searchFilters || !searchFilters.searchTerm) {
       if (searchFilters?.dateFrom || searchFilters?.dateTo) {
-        const filtered = appointments.filter(apt => {
+        filtered = filtered.filter(apt => {
           const aptDate = apt.appointment_date
           const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
           const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
           return fromMatch && toMatch
         })
-        setFilteredAppointments(filtered)
-      } else {
-        setFilteredAppointments(appointments)
       }
-      return
+    } else {
+      const term = searchFilters.searchTerm.toLowerCase()
+      filtered = filtered.filter(apt => {
+        const aptDate = apt.appointment_date
+        const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
+        const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
+
+        if (!fromMatch || !toMatch) return false
+
+        const fullName = `${apt.first_name} ${apt.last_name}`.toLowerCase()
+
+        switch (searchFilters.searchField) {
+          case 'name':
+            return fullName.includes(term)
+          case 'email':
+            return apt.email.toLowerCase().includes(term)
+          case 'phone':
+            return apt.phone?.toLowerCase().includes(term)
+          case 'date':
+            return apt.appointment_date.includes(term)
+          case 'all':
+          default:
+            return (
+              fullName.includes(term) ||
+              apt.email.toLowerCase().includes(term) ||
+              apt.phone?.toLowerCase().includes(term) ||
+              apt.appointment_date.includes(term)
+            )
+        }
+      })
     }
 
-    const term = searchFilters.searchTerm.toLowerCase()
-    const filtered = appointments.filter(apt => {
-      const aptDate = apt.appointment_date
-      const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
-      const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
-
-      if (!fromMatch || !toMatch) return false
-
-      const fullName = `${apt.first_name} ${apt.last_name}`.toLowerCase()
-
-      switch (searchFilters.searchField) {
-        case 'name':
-          return fullName.includes(term)
-        case 'email':
-          return apt.email.toLowerCase().includes(term)
-        case 'phone':
-          return apt.phone?.toLowerCase().includes(term)
-        case 'date':
-          return apt.appointment_date.includes(term)
-        case 'all':
-        default:
-          return (
-            fullName.includes(term) ||
-            apt.email.toLowerCase().includes(term) ||
-            apt.phone?.toLowerCase().includes(term) ||
-            apt.appointment_date.includes(term)
-          )
-      }
-    })
-
     setFilteredAppointments(filtered)
-  }, [searchFilters, appointments])
+  }, [searchFilters, appointments, selectedCenterId])
 
   const handleSearch = (filters: SearchFilters) => {
     setSearchFilters(filters)
@@ -336,7 +355,6 @@ function DashboardContent() {
                 </p>
               </div>
               <div className="flex items-center gap-3 ml-auto">
-                <NotificationsPanel />
               </div>
             </div>
           </div>
@@ -460,7 +478,9 @@ function DashboardContent() {
               )}
 
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Tous les rendez-vous</h2>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Tous les rendez-vous</h2>
+                </div>
                 <AppointmentsTable
                   appointments={filteredAppointments}
                   onUpdateStatus={updateAppointmentStatus}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useCenterContext } from '../context/CenterContext'
 
 interface SidebarProps {
   activeSection: string
@@ -12,6 +13,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeSection, onSectionChange, adminName, onLogout, isCollapsed: externalIsCollapsed, setIsCollapsed: externalSetIsCollapsed }: SidebarProps) {
+  const { centers, selectedCenterId, setSelectedCenterId, loadingCenters } = useCenterContext()
+  
   // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut en desktop)
   const [internalIsCollapsed, setInternalIsCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -43,6 +46,16 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       )
+    },
+    {
+      id: 'completed',
+      label: 'RDV Terminés',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      href: '/admin/completed'
     },
     {
       id: 'slots',
@@ -114,6 +127,29 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
             </button>
           </div>
         </div>
+
+        {/* Sélecteur de Centre */}
+        {!loadingCenters && centers.length > 0 && !isCollapsed && (
+          <div className="p-4 border-b border-blue-700">
+            <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
+              Centre actif
+            </label>
+            <select
+              value={selectedCenterId || ''}
+              onChange={(e) => setSelectedCenterId(e.target.value)}
+              className="w-full px-3 py-2 bg-blue-800 border-2 border-blue-600 rounded-lg text-white font-medium focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all hover:bg-blue-700"
+            >
+              {centers.map((center) => (
+                <option key={center.id} value={center.id}>
+                  {center.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-blue-300 mt-2">
+              {centers.find(c => c.id === selectedCenterId)?.city}
+            </p>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

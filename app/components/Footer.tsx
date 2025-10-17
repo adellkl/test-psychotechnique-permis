@@ -117,10 +117,18 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-2">
                 <span className="mt-0.5" style={{ color: 'var(--secondary-orange)' }}>📍</span>
-                <address className="text-gray-300 not-italic">
-                  82 Rue Henri Barbusse<br />
-                  92110 Clichy
-                </address>
+                <div className="text-gray-300">
+                  <p className="font-semibold text-white mb-1">Centre de Clichy</p>
+                  <address className="not-italic mb-3">
+                    82 Rue Henri Barbusse<br />
+                    92110 Clichy
+                  </address>
+                  <p className="font-semibold text-white mb-1">Centre de Colombes</p>
+                  <address className="not-italic">
+                    14 rue de Mantes<br />
+                    92700 Colombes
+                  </address>
+                </div>
               </div>
             </div>
           </div>

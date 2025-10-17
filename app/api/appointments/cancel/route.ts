@@ -167,39 +167,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Créer une notification d'annulation pour les admins
-    try {
-      const { data: admins } = await supabase
-        .from('admins')
-        .select('id')
-        .eq('is_active', true)
-
-      if (admins && admins.length > 0) {
-        const notificationsToCreate = admins.map(admin => ({
-          admin_id: admin.id,
-          type: 'cancellation',
-          title: `Annulation - ${appointment.first_name} ${appointment.last_name}`,
-          message: `Le rendez-vous du ${appointment.appointment_date} à ${appointment.appointment_time} a été annulé`,
-          link: `/admin/dashboard`,
-          metadata: {
-            appointment_id: appointmentId,
-            client_name: `${appointment.first_name} ${appointment.last_name}`,
-            client_email: appointment.email,
-            appointment_date: appointment.appointment_date,
-            appointment_time: appointment.appointment_time
-          },
-          is_read: false
-        }))
-
-        await supabase
-          .from('notifications')
-          .insert(notificationsToCreate)
-      }
-    } catch (notifError) {
-      console.error('❌ Erreur création notification annulation:', notifError)
-    }
-
-    // Envoyer un email à l'admin pour l'informer de l'annulation
+    // Notifications désactivées - table supprimée
     try {
       await sendCancellationNotificationToAdmin({
         first_name: appointment.first_name,

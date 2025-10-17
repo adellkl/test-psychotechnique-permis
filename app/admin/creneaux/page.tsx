@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
+import type { Center } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
+import { useCenterContext } from '../context/CenterContext'
 import Sidebar from '../components/Sidebar'
 import SlotsCalendar from '../components/SlotsCalendar'
 import AddSlotModal from '../components/AddSlotModal'
@@ -22,6 +24,7 @@ interface TimeSlot {
   appointment_id?: string
   client_name?: string
   booking_status?: string
+  center_id?: string
 }
 
 export default function TimeSlotManagement() {
@@ -33,13 +36,13 @@ export default function TimeSlotManagement() {
 }
 
 function TimeSlotContent() {
+  const { selectedCenterId } = useCenterContext()
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(true)
   const [admin, setAdmin] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddForm, setShowAddForm] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  // Notifications UI removed
   const [notification, setNotification] = useState<null | { type: 'success' | 'error', message: string }>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
@@ -53,7 +56,6 @@ function TimeSlotContent() {
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('admin_sidebar_collapsed')
@@ -89,8 +91,10 @@ function TimeSlotContent() {
   }, [])
 
   useEffect(() => {
-    fetchTimeSlots()
-  }, [selectedDate])
+    if (selectedCenterId) {
+      fetchTimeSlots()
+    }
+  }, [selectedDate, selectedCenterId])
 
   const fetchTimeSlots = async () => {
     try {
@@ -98,22 +102,36 @@ function TimeSlotContent() {
       const startDate = format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
       const endDate = format(addDays(startOfWeek(selectedDate, { weekStartsOn: 1 }), 6), 'yyyy-MM-dd')
 
-      const { data: slots, error: slotsError } = await supabase
+      // Filtrer par centre sélectionné
+      let query = supabase
         .from('available_slots')
         .select('*')
         .gte('date', startDate)
         .lte('date', endDate)
+      
+      if (selectedCenterId) {
+        query = query.eq('center_id', selectedCenterId)
+      }
+
+      const { data: slots, error: slotsError } = await query
         .order('date')
         .order('start_time')
 
       if (slotsError) throw slotsError
 
-      const { data: appointments, error: appointmentsError } = await supabase
+      // Filtrer les rendez-vous par centre également
+      let appointmentsQuery = supabase
         .from('appointments')
-        .select('id, appointment_date, appointment_time, first_name, last_name, status')
+        .select('id, appointment_date, appointment_time, first_name, last_name, status, center_id')
         .gte('appointment_date', startDate)
         .lte('appointment_date', endDate)
         .in('status', ['confirmed', 'completed'])
+      
+      if (selectedCenterId) {
+        appointmentsQuery = appointmentsQuery.eq('center_id', selectedCenterId)
+      }
+
+      const { data: appointments, error: appointmentsError } = await appointmentsQuery
 
       if (appointmentsError) throw appointmentsError
 
@@ -179,7 +197,8 @@ function TimeSlotContent() {
           date: newSlot.date,
           start_time: newSlot.time,
           end_time: endTime,
-          is_available: true
+          is_available: true,
+          center_id: selectedCenterId
         }])
 
       if (error) throw error
@@ -218,7 +237,8 @@ function TimeSlotContent() {
         date: dateStr,
         start_time: newSlot.time,
         end_time: endTime,
-        is_available: true
+        is_available: true,
+        center_id: selectedCenterId
       })
     }
 
@@ -263,7 +283,8 @@ function TimeSlotContent() {
           date: dateStr,
           start_time: time,
           end_time: endTime,
-          is_available: true
+          is_available: true,
+          center_id: selectedCenterId
         })
       })
     }
@@ -749,15 +770,17 @@ function TimeSlotContent() {
         </main>
       </div>
 
-      <AddSlotModal
-        isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        newSlot={newSlot}
-        setNewSlot={setNewSlot}
-        onAddSingle={addTimeSlot}
-        onAddMultiple={addMultipleSlots}
-        onAddBulk={addBulkSlots}
-      />
+      {selectedCenterId && (
+        <AddSlotModal
+          isOpen={showAddForm}
+          onClose={() => setShowAddForm(false)}
+          newSlot={newSlot}
+          setNewSlot={setNewSlot}
+          onAddSingle={addTimeSlot}
+          onAddMultiple={addMultipleSlots}
+          onAddBulk={addBulkSlots}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (

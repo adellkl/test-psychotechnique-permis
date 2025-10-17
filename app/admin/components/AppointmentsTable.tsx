@@ -29,7 +29,7 @@ export default function AppointmentsTable({
 
   const filteredAppointments = appointments.filter(apt => {
     const matchesFilter = filter === 'all' || apt.status === filter
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       `${apt.first_name} ${apt.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       apt.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       apt.phone?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -117,7 +117,7 @@ export default function AppointmentsTable({
 
       const result = await response.json()
       console.log('✅ Email envoyé:', result)
-      
+
       // Rafraîchir la page pour voir les changements
       window.location.reload()
     } catch (error) {
@@ -135,7 +135,7 @@ export default function AppointmentsTable({
             <h2 className="text-2xl font-bold text-gray-900">Gestion des rendez-vous</h2>
             <p className="text-sm text-gray-600 mt-1">{filteredAppointments.length} rendez-vous trouvés</p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Filter */}
             <select
@@ -154,7 +154,7 @@ export default function AppointmentsTable({
             <CleanupManager />
           </div>
         </div>
-        
+
         {/* Search Bar */}
         <div className="flex gap-2">
           <div className="flex-1 relative">
@@ -191,7 +191,7 @@ export default function AppointmentsTable({
               {selectedAppointments.size} rendez-vous sélectionné{selectedAppointments.size > 1 ? 's' : ''}
             </span>
           </div>
-          
+
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => setShowBulkActions(!showBulkActions)}
@@ -202,7 +202,7 @@ export default function AppointmentsTable({
               </svg>
               Actions groupées
             </button>
-            
+
             <button
               onClick={() => setShowDeleteConfirm(true)}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 text-sm font-medium"
@@ -276,6 +276,9 @@ export default function AppointmentsTable({
                 Motif
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Notes Client
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Statut
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -288,11 +291,9 @@ export default function AppointmentsTable({
               <tr
                 key={appointment.id}
                 data-appointment-id={appointment.id}
-                className={`hover:bg-gray-50 transition-all ${
-                  selectedAppointments.has(appointment.id) ? 'bg-blue-50' : ''
-                } ${
-                  appointment.status === 'completed' ? 'bg-gray-50 opacity-60' : ''
-                }`}
+                className={`hover:bg-gray-50 transition-all ${selectedAppointments.has(appointment.id) ? 'bg-blue-50' : ''
+                  } ${appointment.status === 'completed' ? 'bg-gray-50 opacity-60' : ''
+                  }`}
                 style={{
                   opacity: 0,
                   animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`
@@ -329,10 +330,10 @@ export default function AppointmentsTable({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    {new Date(appointment.appointment_date).toLocaleDateString('fr-FR', { 
-                      weekday: 'short', 
-                      day: '2-digit', 
-                      month: 'short' 
+                    {new Date(appointment.appointment_date).toLocaleDateString('fr-FR', {
+                      weekday: 'short',
+                      day: '2-digit',
+                      month: 'short'
                     })}
                   </div>
                   <div className="text-sm text-gray-500">
@@ -342,6 +343,19 @@ export default function AppointmentsTable({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900 capitalize">
                     {appointment.reason}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-600 max-w-xs">
+                    {appointment.client_notes && appointment.client_notes.trim() !== '' ? (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                        <p className="text-xs text-gray-700 line-clamp-2" title={appointment.client_notes}>
+                          {appointment.client_notes}
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-xs italic">Aucune note</span>
+                    )}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -415,11 +429,9 @@ export default function AppointmentsTable({
         {filteredAppointments.map((appointment, index) => (
           <div
             key={appointment.id}
-            className={`bg-white rounded-xl shadow-md border-2 p-4 hover:shadow-lg transition-all duration-200 ${
-              selectedAppointments.has(appointment.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-            } ${
-              appointment.status === 'completed' ? 'bg-gray-50 opacity-60' : ''
-            }`}
+            className={`bg-white rounded-xl shadow-md border-2 p-4 hover:shadow-lg transition-all duration-200 ${selectedAppointments.has(appointment.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+              } ${appointment.status === 'completed' ? 'bg-gray-50 opacity-60' : ''
+              }`}
             style={{
               opacity: 0,
               animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`
@@ -440,19 +452,19 @@ export default function AppointmentsTable({
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
                   {appointment.first_name} {appointment.last_name}
                 </h3>
-                
+
                 {/* Badges en ligne */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(appointment.status)}`}>
                     {getStatusLabel(appointment.status)}
                   </span>
-                  
+
                   {appointment.is_second_chance && (
                     <span className="inline-flex items-center px-2 py-1 text-xs text-orange-600 font-semibold bg-orange-100 rounded-full">
                       ⭐ 2ème chance
                     </span>
                   )}
-                  
+
                   {isNewAppointment(appointment.created_at) && (
                     <span className="inline-flex items-center px-2 py-1 text-xs text-green-700 font-semibold bg-green-100 rounded-full">
                       🆕 Nouveau
@@ -469,16 +481,16 @@ export default function AppointmentsTable({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span className="text-gray-900 font-medium">
-                  {new Date(appointment.appointment_date).toLocaleDateString('fr-FR', { 
-                    weekday: 'short', 
-                    day: '2-digit', 
-                    month: 'short' 
+                  {new Date(appointment.appointment_date).toLocaleDateString('fr-FR', {
+                    weekday: 'short',
+                    day: '2-digit',
+                    month: 'short'
                   })}
                 </span>
                 <span className="text-gray-500">•</span>
                 <span className="text-gray-700">{appointment.appointment_time.slice(0, 5)}</span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm">
                 <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
@@ -487,7 +499,7 @@ export default function AppointmentsTable({
                   {appointment.email}
                 </a>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm">
                 <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -496,13 +508,28 @@ export default function AppointmentsTable({
                   {appointment.phone}
                 </a>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm">
                 <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 <span className="text-gray-700 capitalize">{appointment.reason}</span>
               </div>
+
+              {/* Notes Client */}
+              {appointment.client_notes && appointment.client_notes.trim() !== '' && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="text-xs font-semibold text-yellow-800 mb-1">Note du client :</p>
+                      <p className="text-xs text-gray-700">{appointment.client_notes}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Actions */}
@@ -594,7 +621,7 @@ export default function AppointmentsTable({
                   </p>
                 </div>
               </div>
-              
+
               {appointment && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                   <div className="flex items-start gap-3">
@@ -606,9 +633,9 @@ export default function AppointmentsTable({
                         {appointment.first_name} {appointment.last_name}
                       </p>
                       <p className="text-xs text-gray-600 mt-1">
-                        {new Date(appointment.appointment_date).toLocaleDateString('fr-FR', { 
-                          weekday: 'long', 
-                          day: 'numeric', 
+                        {new Date(appointment.appointment_date).toLocaleDateString('fr-FR', {
+                          weekday: 'long',
+                          day: 'numeric',
                           month: 'long',
                           year: 'numeric'
                         })} à {appointment.appointment_time.slice(0, 5)}
@@ -620,13 +647,13 @@ export default function AppointmentsTable({
                   </div>
                 </div>
               )}
-              
+
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
                 <p className="text-sm text-yellow-800">
                   <strong>Attention :</strong> Cette action est irréversible.
                 </p>
               </div>
-              
+
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={() => setDeleteAppointmentId(null)}
@@ -678,13 +705,13 @@ export default function AppointmentsTable({
                 </p>
               </div>
             </div>
-            
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
               <p className="text-sm text-yellow-800">
                 <strong>Attention :</strong> Cette action est irréversible.
               </p>
             </div>
-            
+
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
