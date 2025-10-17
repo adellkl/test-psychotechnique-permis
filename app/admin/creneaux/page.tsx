@@ -56,13 +56,7 @@ function TimeSlotContent() {
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('admin_sidebar_collapsed')
-      return saved ? JSON.parse(saved) : false
-    }
-    return false
-  })
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [newSlot, setNewSlot] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
     time: '09:00'
@@ -284,8 +278,8 @@ function TimeSlotContent() {
           start_time: time,
           end_time: endTime,
           is_available: true,
-          center_id: selectedCenterId
-        })
+          center_id: selectedCenterId || '11111111-1111-1111-1111-111111111111'
+        } as any)
       })
     }
 
@@ -434,11 +428,7 @@ function TimeSlotContent() {
         adminName={admin?.full_name || 'Admin'}
         onLogout={() => setShowLogoutConfirm(true)}
         isCollapsed={sidebarCollapsed}
-        setIsCollapsed={(collapsed) => {
-          setSidebarCollapsed(collapsed)
-          // Sauvegarder la préférence
-          localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
-        }}
+        setIsCollapsed={setSidebarCollapsed}
       />
 
       <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'

@@ -22,13 +22,7 @@ function CompletedContent() {
   const [completedAppointments, setCompletedAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [admin, setAdmin] = useState<any>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('admin_sidebar_collapsed')
-      return saved ? JSON.parse(saved) : false
-    }
-    return false
-  })
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [stats, setStats] = useState({
     total: 0,
     thisMonth: 0,

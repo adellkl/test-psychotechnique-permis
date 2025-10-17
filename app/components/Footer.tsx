@@ -123,10 +123,12 @@ export default function Footer() {
                     82 Rue Henri Barbusse<br />
                     92110 Clichy
                   </address>
-                  <p className="font-semibold text-white mb-1">Centre de Colombes</p>
+                  <p className="font-semibold text-white mb-1">Pro Drive Academy - Colombes</p>
                   <address className="not-italic">
-                    14 rue de Mantes<br />
-                    92700 Colombes
+                    14 Rue de Mantes<br />
+                    92700 Colombes<br />
+                    Tél: 09 72 13 22 50<br />
+                    Email: reservation@mon-permis-auto.com
                   </address>
                 </div>
               </div>

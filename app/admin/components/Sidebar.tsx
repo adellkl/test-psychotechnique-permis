@@ -15,14 +15,8 @@ interface SidebarProps {
 export default function Sidebar({ activeSection, onSectionChange, adminName, onLogout, isCollapsed: externalIsCollapsed, setIsCollapsed: externalSetIsCollapsed }: SidebarProps) {
   const { centers, selectedCenterId, setSelectedCenterId, loadingCenters } = useCenterContext()
   
-  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut en desktop)
-  const [internalIsCollapsed, setInternalIsCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('admin_sidebar_collapsed')
-      return saved ? JSON.parse(saved) : false // Ouvert par défaut
-    }
-    return false
-  })
+  // Toujours ouvert par défaut, ignorer localStorage
+  const [internalIsCollapsed, setInternalIsCollapsed] = useState(false)
 
   const isCollapsed = externalIsCollapsed !== undefined ? externalIsCollapsed : internalIsCollapsed
   const setIsCollapsed = (collapsed: boolean) => {
@@ -31,10 +25,7 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
     } else {
       setInternalIsCollapsed(collapsed)
     }
-    // Sauvegarder la préférence dans localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
-    }
+    // Ne plus sauvegarder dans localStorage pour garder toujours ouvert
   }
 
   const menuItems = [

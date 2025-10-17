@@ -39,13 +39,7 @@ function DashboardContent() {
     type?: 'danger' | 'warning' | 'info'
   } | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('admin_sidebar_collapsed')
-      return saved ? JSON.parse(saved) : false
-    }
-    return false
-  })
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null)
 
   useEffect(() => {
@@ -90,24 +84,18 @@ function DashboardContent() {
       }
       setTodayAppointments(todayApts)
       
-      // Auto-marquer les rendez-vous passés comme "terminé"
-      const currentTime = now.toTimeString().slice(0, 5) // HH:MM
+      // Auto-marquer uniquement les rendez-vous des jours PRÉCÉDENTS comme "terminé"
+      // Les RDV d'aujourd'hui ne sont jamais marqués automatiquement
       const appointmentsToUpdate: string[] = []
       
       data?.forEach(apt => {
-        // Si le rendez-vous est confirmé et la date/heure est passée
-        if (apt.status === 'confirmed') {
-          const aptDate = apt.appointment_date
-          const aptTime = apt.appointment_time.slice(0, 5)
-          
-          // Si la date est avant aujourd'hui, ou si c'est aujourd'hui mais l'heure est passée
-          if (aptDate < today || (aptDate === today && aptTime < currentTime)) {
-            appointmentsToUpdate.push(apt.id)
-          }
+        // Si le rendez-vous est confirmé et la date est AVANT aujourd'hui (pas aujourd'hui)
+        if (apt.status === 'confirmed' && apt.appointment_date < today) {
+          appointmentsToUpdate.push(apt.id)
         }
       })
       
-      // Mettre à jour les rendez-vous passés en masse
+      // Mettre à jour les rendez-vous des jours précédents en masse
       if (appointmentsToUpdate.length > 0) {
         await supabase
           .from('appointments')
@@ -335,10 +323,7 @@ function DashboardContent() {
         adminName={admin?.full_name || 'Admin'}
         onLogout={handleLogoutClick}
         isCollapsed={sidebarCollapsed}
-        setIsCollapsed={(collapsed) => {
-          setSidebarCollapsed(collapsed)
-          localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
-        }}
+        setIsCollapsed={setSidebarCollapsed}
       />
 
       <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>

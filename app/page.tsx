@@ -70,9 +70,10 @@ export default function HomePage() {
                         </p>
                       </div>
                       <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-                        <p className="font-semibold text-purple-900 mb-1">📍 Centre de Colombes</p>
+                        <p className="font-semibold text-purple-900 mb-1">📍 Pro Drive Academy - Colombes</p>
                         <p className="text-sm text-gray-600">
-                          14 rue de Mantes, 92700 Colombes - <span className="font-semibold text-purple-600">Proche des transports en commun</span>
+                          14 Rue de Mantes, 92700 Colombes<br />
+                          Tél: 09 72 13 22 50 - Email: reservation@mon-permis-auto.com
                         </p>
                       </div>
                       <p className="text-gray-600 text-sm leading-relaxed pt-2">
