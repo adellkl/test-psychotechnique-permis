@@ -95,7 +95,8 @@ export default function RendezVous() {
             client_notes: sanitizedData.notes,
             status: 'confirmed',
             test_type: sanitizedData.reason,
-            duration_minutes: 40
+            duration_minutes: 40,
+            center_id: '11111111-1111-1111-1111-111111111111'
           }
         ])
         .select()
