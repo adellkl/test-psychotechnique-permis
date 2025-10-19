@@ -23,7 +23,7 @@ export default function AdminDashboard() {
 }
 
 function DashboardContent() {
-  const { selectedCenterId } = useCenterContext()
+  const { selectedCenterId, centers } = useCenterContext()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
@@ -336,14 +336,30 @@ function DashboardContent() {
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
           <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
+              <div className="flex-1">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                   {activeSection === 'appointments' && 'Gestion des rendez-vous'}
                   {activeSection === 'settings' && 'Paramètres du compte'}
                 </h1>
-                <p className="text-sm sm:text-base text-gray-600 mt-1">
-                  Bienvenue, {admin?.full_name}
-                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <p className="text-sm sm:text-base text-gray-600">
+                    Bienvenue, {admin?.full_name}
+                  </p>
+                  {selectedCenterId && centers.length > 0 && (
+                    <>
+                      <span className="text-gray-400">•</span>
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 rounded-lg">
+                        <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="text-xs font-semibold text-blue-700">
+                          {centers.find(c => c.id === selectedCenterId)?.name}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-3 ml-auto">
               </div>

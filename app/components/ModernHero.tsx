@@ -218,8 +218,8 @@ export default function ModernHero() {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-3 justify-start"
             >
-              <motion.div 
-                whileHover={{ scale: 1.05 }} 
+              <motion.div
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
               >
@@ -240,8 +240,8 @@ export default function ModernHero() {
                 </Link>
               </motion.div>
 
-              <motion.div 
-                whileHover={{ scale: 1.05 }} 
+              <motion.div
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
               >
@@ -363,7 +363,7 @@ export default function ModernHero() {
                 }}
                 transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
               />
-              
+
               {/* Particules côté droit */}
               <motion.div
                 className="absolute -top-6 right-16 w-2 h-2 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"
@@ -415,7 +415,7 @@ export default function ModernHero() {
                 }}
                 transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
               />
-              
+
               {/* Particules en haut et en bas */}
               <motion.div
                 className="absolute -top-10 left-1/2 w-2 h-2 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50"
@@ -546,7 +546,7 @@ export default function ModernHero() {
                             <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                             </svg>
-                            <p className="text-sm text-gray-700">06 12 34 56 78</p>
+                            <p className="text-sm text-gray-700">06 ** ** ** **</p>
                           </div>
                         </div>
                       </div>

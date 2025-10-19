@@ -3,7 +3,7 @@ const nextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  
+
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -22,10 +22,13 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    domains: ['localhost'],
+    domains: [
+      'localhost',
+      'maps.googleapis.com',
+      'maps.gstatic.com',
+    ],
   },
-  
-  
+
   // Security headers for production
   async headers() {
     return [
@@ -34,7 +37,7 @@ const nextConfig = {
         headers: [
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',
@@ -62,7 +65,17 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://api.elasticemail.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
+            value: `
+              default-src 'self';
+              script-src 'self' 'unsafe-eval' 'unsafe-inline' https://maps.googleapis.com https://maps.gstatic.com;
+              style-src 'self' 'unsafe-inline';
+              img-src 'self' data: https: https://maps.gstatic.com https://maps.googleapis.com;
+              font-src 'self' data:;
+              connect-src 'self' https://*.supabase.co https://api.elasticemail.com;
+              frame-src 'self' https://www.google.com https://maps.google.com;
+              base-uri 'self';
+              form-action 'self';
+            `.replace(/\s{2,}/g, ' ').trim(),
           },
         ],
       },
@@ -94,7 +107,7 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Redirects for SEO
   async redirects() {
     return [
@@ -110,34 +123,32 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Experimental features for performance
   experimental: {
     scrollRestoration: true,
   },
-  
-  
+
   // Build configuration optimized for deployment
   distDir: '.next',
   generateEtags: true,
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  
+
   // Internationalization
   i18n: {
     locales: ['fr'],
     defaultLocale: 'fr',
   },
-  
+
   // Output configuration for Vercel deployment
   output: 'standalone',
-  
+
   // Trailing slash configuration
   trailingSlash: false,
-  
+
   // Static optimization
   staticPageGenerationTimeout: 60,
-  
-  
+
   // Webpack optimization for production
   webpack: (config, { dev, isServer }) => {
     // Production optimizations

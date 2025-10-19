@@ -64,10 +64,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 pb-12">
+      <div className="max-w-7xl mx-auto px-4 pb-12">
 
         {/* Important Notice */}
-        <div className="max-w-4xl mx-auto mb-6 sm:mb-8">
+        <div className="mb-8">
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg sm:rounded-xl border border-blue-200 p-3 sm:p-4 md:p-6">
             <div className="flex items-start gap-3 sm:gap-4">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
@@ -86,21 +86,43 @@ export default function ContactPage() {
         </div>
 
         {/* Split Screen Layout */}
-        <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Colonne gauche - Informations du centre sélectionné */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="h-[500px] flex flex-col"
+            className="lg:h-[500px] flex flex-col order-2 lg:order-1"
           >
-            {/* Informations du centre sélectionné */}
+            {/* Boutons de sélection des centres */}
+            <div className="flex gap-3 mb-4">
+              <button
+                onClick={() => setSelectedCenter('clichy')}
+                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${selectedCenter === 'clichy'
+                  ? 'bg-blue-600 text-white shadow-lg scale-105'
+                  : 'bg-white/70 text-gray-700 hover:bg-white'
+                  }`}
+              >
+                📍 Clichy
+              </button>
+              <button
+                onClick={() => setSelectedCenter('colombes')}
+                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${selectedCenter === 'colombes'
+                  ? 'bg-purple-600 text-white shadow-lg scale-105'
+                  : 'bg-white/70 text-gray-700 hover:bg-white'
+                  }`}
+              >
+                📍 Colombes
+              </button>
+            </div>
+
+            {/* Informations du centre sélectionné avec animation simple */}
             <motion.div
               key={selectedCenter}
-              initial={false}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="bg-white/70 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6 h-full flex flex-col justify-center"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="bg-white/70 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6 flex-1 flex flex-col justify-center"
             >
               <div className="space-y-4">
                 <div className="flex items-center gap-3 mb-4">
@@ -194,9 +216,9 @@ export default function ContactPage() {
                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(centers[selectedCenter].address + ', ' + centers[selectedCenter].city)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg group mt-4"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-xl group mt-4"
                   >
-                    <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
                     </svg>
                     Obtenir l'itinéraire
@@ -212,7 +234,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:sticky lg:top-24 h-fit"
+            className="lg:sticky lg:top-24 h-fit order-1 lg:order-2"
           >
             <div className="bg-white/70 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 overflow-hidden">
               {/* En-tête */}
@@ -231,74 +253,22 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Google Maps avec zone 92 entourée */}
-              <div className="relative h-[500px] rounded-xl overflow-hidden">
-                {/* Carte centrée sur les Hauts-de-Seine (92) */}
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83962!2d2.2531!3d48.8566!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66fec70fb1d8d%3A0x40b82c3688c9460!2sHauts-de-Seine!5e0!3m2!1sfr!2sfr!4v1609459200000!5m2!1sfr!2sfr"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-full"
-                ></iframe>
-
-
-                {/* Points cliquables superposés - Positions précises sur les adresses */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {/* Point Clichy - 82 Rue Henri Barbusse, 92110 Clichy */}
-                  <button
-                    onClick={() => setSelectedCenter('clichy')}
-                    className={`absolute top-[50%] left-[62%] transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto transition-all duration-300 hover:scale-110 ${selectedCenter === 'clichy' ? 'scale-125' : 'scale-100'
-                      }`}
-                    title="Centre de Clichy - 82 Rue Henri Barbusse"
-                    type="button"
-                  >
-                    <div className="relative">
-                      {/* Marqueur animé */}
-                      <div className="relative">
-                        <div className={`w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-xl transition-all duration-300 ${selectedCenter === 'clichy' ? 'ring-4 ring-blue-300' : ''
-                          }`}>
-                          {selectedCenter === 'clichy' && (
-                            <div className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-75"></div>
-                          )}
-                        </div>
-                      </div>
-                      <div className={`absolute -bottom-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-blue-600 text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-xl font-bold border-2 border-white transition-all duration-300 ${selectedCenter === 'clichy' ? 'opacity-100 scale-100' : 'opacity-80 scale-90'
-                        }`}>
-                        Clichy
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* Point Colombes - 14 Rue de Mantes, 92700 Colombes */}
-                  <button
-                    onClick={() => setSelectedCenter('colombes')}
-                    className={`absolute top-[46%] left-[42%] transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto transition-all duration-300 hover:scale-110 ${selectedCenter === 'colombes' ? 'scale-125' : 'scale-100'
-                      }`}
-                    title="Pro Drive Academy - 14 Rue de Mantes, Colombes"
-                    type="button"
-                  >
-                    <div className="relative">
-                      {/* Marqueur animé */}
-                      <div className="relative">
-                        <div className={`w-8 h-8 bg-purple-600 rounded-full border-4 border-white shadow-xl transition-all duration-300 ${selectedCenter === 'colombes' ? 'ring-4 ring-purple-300' : ''
-                          }`}>
-                          {selectedCenter === 'colombes' && (
-                            <div className="absolute inset-0 rounded-full bg-purple-400 animate-ping opacity-75"></div>
-                          )}
-                        </div>
-                      </div>
-                      <div className={`absolute -bottom-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-xl font-bold border-2 border-white transition-all duration-300 ${selectedCenter === 'colombes' ? 'opacity-100 scale-100' : 'opacity-80 scale-90'
-                        }`}>
-                        Colombes
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
+              {/* Google Maps - Carte dynamique selon le centre sélectionné */}
+              <iframe
+                key={selectedCenter}
+                src={
+                  selectedCenter === 'clichy'
+                    ? "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2622.725844492942!2d2.30719387698572!3d48.90156177133817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66f094592d2c3%3A0x8689d8b070aafcaf!2s82%20Rue%20Henri%20Barbusse%2C%2092110%20Clichy!5e0!3m2!1sfr!2sfr!4v1760903017331!5m2!1sfr!2sfr"
+                    : "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1311.1789205594011!2d2.231577939082856!3d48.90857419283477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66586d6fe25c7%3A0xdc6ecf96e58ac63c!2s14%20Rue%20de%20Mantes%2C%2092700%20Colombes!5e0!3m2!1sfr!2sfr!4v1760903088293!5m2!1sfr!2sfr"
+                }
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-[500px] rounded-xl"
+              ></iframe>
 
             </div>
           </motion.div>
