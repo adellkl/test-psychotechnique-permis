@@ -3,19 +3,34 @@ import Image from 'next/image'
 import ModernHero from './components/ModernHero'
 import FAQ from './components/FAQ'
 import CentersShowcase from './components/CentersShowcase'
+import LocationSelector from './components/LocationSelector'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Test Psychotechnique Permis - Centre Agréé tout départements | Récupération Permis de Conduire",
-  description: "Centre agréé préfecture pour tests psychotechniques du permis de conduire à Clichy. Invalidation, suspension, annulation. Psychologue certifiée ADELI 929334555. Deuxième chance gratuite. RDV immédiat 07 65 56 53 79. Service Île-de-France complet.",
-  keywords: "test psychotechnique permis, centre agréé préfecture, invalidation permis, suspension permis, annulation permis, psychologue ADELI, Clichy, récupération permis conduire, test psychotechnique Clichy, permis invalidé, ligne 13 métro, Île-de-France, Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Hauts-de-Seine 92, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95, Boulogne-Billancourt, Nanterre, Versailles, Évry, Bobigny, Créteil, Cergy, psychologue permis conduire Île-de-France",
+  title: "Test Psychotechnique Permis - Centres Agréés Clichy & Colombes 92 | Récupération Permis",
+  description: "2 centres agréés préfecture pour tests psychotechniques : Clichy (métro ligne 13) et Colombes. Invalidation, suspension, annulation permis. Psychologue ADELI certifiée. Deuxième chance gratuite. RDV rapide 07 65 56 53 79 ou 09 72 13 22 50. Hauts-de-Seine 92.",
+  keywords: "test psychotechnique permis, centre agréé préfecture, test psychotechnique Clichy, test psychotechnique Colombes, Pro Drive Academy, invalidation permis, suspension permis, annulation permis, psychologue ADELI, récupération permis conduire, permis invalidé, métro ligne 13, Hauts-de-Seine 92, 92110 Clichy, 92700 Colombes, test psychotechnique 92, centre agréé Hauts-de-Seine, psychologue permis conduire, Île-de-France, proche Paris",
   openGraph: {
-    title: "Test Psychotechnique Permis - Centre Agréé tout départements",
-    description: "Centre agréé préfecture pour tests psychotechniques. Psychologue certifiée ADELI. Deuxième chance gratuite. À 3min du métro Mairie de Clichy.",
+    title: "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes (92)",
+    description: "Centres agréés préfecture à Clichy et Colombes. Psychologue certifiée ADELI. Deuxième chance gratuite. Métro ligne 13. RDV rapide dans les Hauts-de-Seine.",
     url: "https://test-psychotechnique-permis.com",
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Test Psychotechnique Permis",
   },
   alternates: {
     canonical: "https://test-psychotechnique-permis.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 }
 
@@ -389,58 +404,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Localisation */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-fade-in-up animation-delay-600">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Localisation idéale</h3>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-gray-600 leading-relaxed text-center">
-                  Proche de Paris, situé à <span className="font-semibold text-purple-600">3min du métro Mairie de Clichy</span>, sur la ligne 13 et à <span className="font-semibold text-purple-600">10min à pied de la gare de Clichy-Levallois</span>.
-                </p>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-700">Métro Ligne 13</p>
-                      <p className="text-sm text-gray-600">3 min à pied</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
-                        <path fillRule="evenodd" d="M3 8a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-700">Gare Clichy-Levallois</p>
-                      <p className="text-sm text-gray-600">10 min à pied</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Localisation avec sélection de centre */}
+            <LocationSelector />
           </div>
-        </div>
-      </section>
-
-      {/* Section Nos Centres */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="container mx-auto px-4">
-          <CentersShowcase variant="full" showBookingButton={true} />
         </div>
       </section>
 

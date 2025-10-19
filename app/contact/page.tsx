@@ -102,107 +102,107 @@ export default function ContactPage() {
               transition={{ duration: 0.4, ease: "easeOut" }}
               className="bg-white/70 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6 h-full flex flex-col justify-center"
             >
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-12 h-12 ${selectedCenter === 'clichy' ? 'bg-blue-500' : 'bg-purple-500'} rounded-xl flex items-center justify-center shadow-lg`}>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900">{centers[selectedCenter].name}</h3>
-                      <p className="text-sm text-gray-600">Centre Agréé Préfecture</p>
-                      <p className="text-sm text-purple-600 font-semibold">👩‍⚕️ Psychologue certifiée</p>
-                    </div>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-12 h-12 ${selectedCenter === 'clichy' ? 'bg-blue-500' : 'bg-purple-500'} rounded-xl flex items-center justify-center shadow-lg`}>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
                   </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">{centers[selectedCenter].name}</h3>
+                    <p className="text-sm text-gray-600">Centre Agréé Préfecture</p>
+                    <p className="text-sm text-purple-600 font-semibold">👩‍⚕️ Psychologue certifiée</p>
+                  </div>
+                </div>
+
+                <motion.div
+                  className="space-y-5"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.1
+                      }
+                    }
+                  }}
+                >
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, x: -20 },
+                      visible: { opacity: 1, x: 0 }
+                    }}
+                    className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg"
+                  >
+                    <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-sm">
+                      <p className="font-semibold text-gray-900">{centers[selectedCenter].address}</p>
+                      <p className="text-gray-600">{centers[selectedCenter].city}</p>
+                    </div>
+                  </motion.div>
 
                   <motion.div
-                    className="space-y-5"
-                    initial="hidden"
-                    animate="visible"
                     variants={{
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.1
-                        }
-                      }
+                      hidden: { opacity: 0, x: -20 },
+                      visible: { opacity: 1, x: 0 }
                     }}
+                    className="flex items-center gap-3 p-4 bg-green-50 rounded-lg"
                   >
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, x: -20 },
-                        visible: { opacity: 1, x: 0 }
-                      }}
-                      className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg"
-                    >
-                      <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                      </svg>
-                      <div className="text-sm">
-                        <p className="font-semibold text-gray-900">{centers[selectedCenter].address}</p>
-                        <p className="text-gray-600">{centers[selectedCenter].city}</p>
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, x: -20 },
-                        visible: { opacity: 1, x: 0 }
-                      }}
-                      className="flex items-center gap-3 p-4 bg-green-50 rounded-lg"
-                    >
-                      <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      <a href={`tel:${centers[selectedCenter].phone.replace(/\s/g, '')}`} className="text-xl font-bold text-green-600 hover:text-green-700">
-                        {centers[selectedCenter].phone}
-                      </a>
-                    </motion.div>
-
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, x: -20 },
-                        visible: { opacity: 1, x: 0 }
-                      }}
-                      className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg"
-                    >
-                      <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      <a href={`mailto:${centers[selectedCenter].email}`} className="text-sm text-blue-600 hover:text-blue-700 break-all font-semibold">
-                        {centers[selectedCenter].email}
-                      </a>
-                    </motion.div>
-
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, x: -20 },
-                        visible: { opacity: 1, x: 0 }
-                      }}
-                      className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg"
-                    >
-                      <span className="text-2xl">🚇</span>
-                      <p className="text-base text-gray-700 font-medium">{centers[selectedCenter].metro}</p>
-                    </motion.div>
-
-                    <motion.a
-                      variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        visible: { opacity: 1, y: 0 }
-                      }}
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(centers[selectedCenter].address + ', ' + centers[selectedCenter].city)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg group mt-4"
-                    >
-                      <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
-                      </svg>
-                      Obtenir l'itinéraire
-                    </motion.a>
+                    <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <a href={`tel:${centers[selectedCenter].phone.replace(/\s/g, '')}`} className="text-xl font-bold text-green-600 hover:text-green-700">
+                      {centers[selectedCenter].phone}
+                    </a>
                   </motion.div>
-                </div>
+
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, x: -20 },
+                      visible: { opacity: 1, x: 0 }
+                    }}
+                    className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg"
+                  >
+                    <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <a href={`mailto:${centers[selectedCenter].email}`} className="text-sm text-blue-600 hover:text-blue-700 break-all font-semibold">
+                      {centers[selectedCenter].email}
+                    </a>
+                  </motion.div>
+
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, x: -20 },
+                      visible: { opacity: 1, x: 0 }
+                    }}
+                    className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg"
+                  >
+                    <span className="text-2xl">🚇</span>
+                    <p className="text-base text-gray-700 font-medium">{centers[selectedCenter].metro}</p>
+                  </motion.div>
+
+                  <motion.a
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 }
+                    }}
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(centers[selectedCenter].address + ', ' + centers[selectedCenter].city)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg group mt-4"
+                  >
+                    <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+                    </svg>
+                    Obtenir l'itinéraire
+                  </motion.a>
+                </motion.div>
+              </div>
             </motion.div>
 
           </motion.div>
@@ -244,25 +244,30 @@ export default function ContactPage() {
                   referrerPolicy="no-referrer-when-downgrade"
                   className="w-full h-full"
                 ></iframe>
-                
+
 
                 {/* Points cliquables superposés - Positions précises sur les adresses */}
                 <div className="absolute inset-0 pointer-events-none">
                   {/* Point Clichy - 82 Rue Henri Barbusse, 92110 Clichy */}
                   <button
-                    onClick={() => setSelectedCenter(selectedCenter === 'clichy' ? 'clichy' : 'clichy')}
-                    className="absolute top-[50%] left-[62%] transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto"
+                    onClick={() => setSelectedCenter('clichy')}
+                    className={`absolute top-[50%] left-[62%] transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto transition-all duration-300 hover:scale-110 ${selectedCenter === 'clichy' ? 'scale-125' : 'scale-100'
+                      }`}
                     title="Centre de Clichy - 82 Rue Henri Barbusse"
                     type="button"
                   >
                     <div className="relative">
-                      {/* Marqueur simple et sobre */}
+                      {/* Marqueur animé */}
                       <div className="relative">
-                        <div className="w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-lg">
-                          <div className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-75"></div>
+                        <div className={`w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-xl transition-all duration-300 ${selectedCenter === 'clichy' ? 'ring-4 ring-blue-300' : ''
+                          }`}>
+                          {selectedCenter === 'clichy' && (
+                            <div className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-75"></div>
+                          )}
                         </div>
                       </div>
-                      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-blue-600 text-white text-sm px-3 py-1.5 rounded-lg shadow-xl font-bold border-2 border-white">
+                      <div className={`absolute -bottom-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-blue-600 text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-xl font-bold border-2 border-white transition-all duration-300 ${selectedCenter === 'clichy' ? 'opacity-100 scale-100' : 'opacity-80 scale-90'
+                        }`}>
                         Clichy
                       </div>
                     </div>
@@ -270,19 +275,24 @@ export default function ContactPage() {
 
                   {/* Point Colombes - 14 Rue de Mantes, 92700 Colombes */}
                   <button
-                    onClick={() => setSelectedCenter(selectedCenter === 'colombes' ? 'colombes' : 'colombes')}
-                    className="absolute top-[46%] left-[42%] transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto"
+                    onClick={() => setSelectedCenter('colombes')}
+                    className={`absolute top-[46%] left-[42%] transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto transition-all duration-300 hover:scale-110 ${selectedCenter === 'colombes' ? 'scale-125' : 'scale-100'
+                      }`}
                     title="Pro Drive Academy - 14 Rue de Mantes, Colombes"
                     type="button"
                   >
                     <div className="relative">
-                      {/* Marqueur simple et sobre */}
+                      {/* Marqueur animé */}
                       <div className="relative">
-                        <div className="w-6 h-6 bg-purple-600 rounded-full border-4 border-white shadow-lg">
-                          <div className="absolute inset-0 rounded-full bg-purple-400 animate-ping opacity-75"></div>
+                        <div className={`w-8 h-8 bg-purple-600 rounded-full border-4 border-white shadow-xl transition-all duration-300 ${selectedCenter === 'colombes' ? 'ring-4 ring-purple-300' : ''
+                          }`}>
+                          {selectedCenter === 'colombes' && (
+                            <div className="absolute inset-0 rounded-full bg-purple-400 animate-ping opacity-75"></div>
+                          )}
                         </div>
                       </div>
-                      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-purple-600 text-white text-sm px-3 py-1.5 rounded-lg shadow-xl font-bold border-2 border-white">
+                      <div className={`absolute -bottom-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-xl font-bold border-2 border-white transition-all duration-300 ${selectedCenter === 'colombes' ? 'opacity-100 scale-100' : 'opacity-80 scale-90'
+                        }`}>
                         Colombes
                       </div>
                     </div>

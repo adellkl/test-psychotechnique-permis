@@ -12,14 +12,18 @@ import ConditionalLayout from "./components/ConditionalLayout"
 export const metadata: Metadata = {
   metadataBase: new URL('https://test-psychotechnique-permis.com'),
   title: {
-    default: "Test Psychotechnique Permis - Centre Agréé tout départements | Récupération Permis",
-    template: "%s | Test Psychotechnique Permis Clichy"
+    default: "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes 92 | Récupération Permis",
+    template: "%s | Test Psychotechnique Permis"
   },
-  description: "👨‍⚕️ Centre agréé préfecture pour test psychotechnique permis à Clichy (92). Psychologue certifiée ADELI. Invalidation, suspension, annulation permis. ⭐ 2ème chance gratuite. 📞 07 65 56 53 79. RDV immédiat en ligne. Service Île-de-France : Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Hauts-de-Seine 92, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95. Test psychotechnique Boulogne-Billancourt, Nanterre, Versailles, Évry, Bobigny, Créteil, Cergy.",
+  description: "👨‍⚕️ 2 centres agréés préfecture : Clichy (métro ligne 13, psychologue ADELI, 2ème chance gratuite 📞 07 65 56 53 79) et Pro Drive Academy Colombes (📞 09 72 13 22 50). Invalidation, suspension, annulation permis. RDV rapide Hauts-de-Seine 92. Service Île-de-France : Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95.",
   keywords: [
     "test psychotechnique permis",
     "test psychotechnique Clichy",
+    "test psychotechnique Colombes",
+    "Pro Drive Academy Colombes",
     "centre agréé préfecture",
+    "centre agréé Clichy 92110",
+    "centre agréé Colombes 92700",
     "psychologue ADELI",
     "invalidation permis",
     "suspension permis",
@@ -136,29 +140,29 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     url: "https://test-psychotechnique-permis.com",
-    siteName: "Test Psychotechnique Permis - Centre Agréé tout départements",
-    title: "👨‍⚕️ Test Psychotechnique Permis | Centre Agréé Préfecture Clichy (92)",
-    description: "Centre agréé pour test psychotechnique du permis de conduire à Clichy. Psychologue certifiée ADELI. Invalidation, suspension, annulation. 2ème chance GRATUITE. 📍 82 Rue Henri Barbusse. 📞 07 65 56 53 79",
+    siteName: "Test Psychotechnique Permis - 2 Centres Agréés Hauts-de-Seine",
+    title: "👨‍⚕️ Test Psychotechnique Permis | 2 Centres Agréés Clichy & Colombes (92)",
+    description: "2 centres agréés préfecture dans les Hauts-de-Seine. Clichy : psychologue ADELI, métro ligne 13, 2ème chance GRATUITE 📞 07 65 56 53 79. Colombes : Pro Drive Academy 📞 09 72 13 22 50. Invalidation, suspension, annulation permis.",
     images: [
       {
         url: "/images/logo site .png",
         width: 1200,
         height: 630,
-        alt: "Test Psychotechnique Permis - Centre Agréé Préfecture Clichy",
+        "alt": "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes",
         type: "image/png",
       },
     ],
-    phoneNumbers: ["+33765565379"],
+    phoneNumbers: ["+33765565379", "+33972132250"],
     emails: ["contact@test-psychotechnique-permis.com"],
   },
   twitter: {
     card: "summary_large_image",
     site: "@TestPsychoPermis",
-    title: "👨‍⚕️ Test Psychotechnique Permis | Centre Agréé tout départements",
-    description: "Centre agréé préfecture. Psychologue ADELI. Invalidation/Suspension/Annulation permis. 2ème chance GRATUITE. RDV en ligne. 📍 Clichy (92)",
+    title: "👨‍⚕️ Test Psychotechnique Permis | 2 Centres Agréés Clichy & Colombes 92",
+    description: "2 centres agréés préfecture Hauts-de-Seine. Clichy : psychologue ADELI, 2ème chance GRATUITE. Colombes : Pro Drive Academy. Invalidation/Suspension/Annulation permis. RDV rapide.",
     images: {
       url: "/images/logo site .png",
-      alt: "Test Psychotechnique Permis Clichy",
+      "alt": "Test Psychotechnique Permis Clichy & Colombes",
     },
   },
   alternates: {
@@ -171,11 +175,11 @@ export const metadata: Metadata = {
   classification: "Test Psychotechnique, Permis de Conduire",
   other: {
     "geo.region": "FR-92",
-    "geo.placename": "Clichy",
+    "geo.placename": "Clichy, Colombes",
     "geo.position": "48.9021;2.3068",
     "ICBM": "48.9021, 2.3068",
     "contact": "07 65 56 53 79",
-    "address": "82 Rue Henri Barbusse, 92110 Clichy",
+    "address": "82 Rue Henri Barbusse, 92110 Clichy | 14 Rue de Mantes, 92700 Colombes",
     "rating": "5",
     "price": "90€",
     "availability": "Lundi-Samedi 9h-19h",
@@ -240,19 +244,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "MedicalBusiness",
-              "name": "Test Psychotechnique Permis",
-              "description": "Centre agréé préfecture pour tests psychotechniques du permis de conduire. Service complet Île-de-France : Paris (75), Seine-et-Marne (77), Yvelines (78), Essonne (91), Hauts-de-Seine (92), Seine-Saint-Denis (93), Val-de-Marne (94), Val-d'Oise (95). Test psychotechnique Boulogne-Billancourt, Nanterre, Asnières-sur-Seine, Colombes, Courbevoie, Levallois-Perret, Neuilly-sur-Seine, Puteaux, Rueil-Malmaison, Suresnes, Versailles, Saint-Germain-en-Laye, Mantes-la-Jolie, Sartrouville, Poissy, Conflans-Sainte-Honorine, Houilles, Chatou, Le Chesnay-Rocquencourt, Vélizy-Villacoublay, Montigny-le-Bretonneux, Guyancourt, Trappes, Élancourt, Rambouillet, Meaux, Melun, Fontainebleau, Provins, Torcy, Évry, Corbeil-Essonnes, Massy, Savigny-sur-Orge, Sainte-Geneviève-des-Bois, Viry-Châtillon, Athis-Mons, Palaiseau, Orsay, Les Ulis, Bobigny, Saint-Denis, Montreuil, Aubervilliers, Pantin, Noisy-le-Sec, Rosny-sous-Bois, Villemomble, Bondy, Épinay-sur-Seine, Stains, Pierrefitte-sur-Seine, Créteil, Vitry-sur-Seine, Champigny-sur-Marne, Saint-Maur-des-Fossés, Ivry-sur-Seine, Villejuif, Maisons-Alfort, Alfortville, Cergy, Argenteuil, Sarcelles, Garges-lès-Gonesse, Franconville, Bezons, Ermont, Eaubonne, Saint-Ouen-l'Aumône, Pontoise.",
+              "name": "Test Psychotechnique Permis - 2 Centres Agréés",
+              "description": "2 centres agréés préfecture pour tests psychotechniques du permis de conduire : Clichy (92110) et Pro Drive Academy Colombes (92700). Service complet Île-de-France : Paris (75), Seine-et-Marne (77), Yvelines (78), Essonne (91), Hauts-de-Seine (92), Seine-Saint-Denis (93), Val-de-Marne (94), Val-d'Oise (95). Test psychotechnique Boulogne-Billancourt, Nanterre, Asnières-sur-Seine, Colombes, Courbevoie, Levallois-Perret, Neuilly-sur-Seine, Puteaux, Rueil-Malmaison, Suresnes, Versailles, Saint-Germain-en-Laye, Mantes-la-Jolie, Sartrouville, Poissy, Conflans-Sainte-Honorine, Houilles, Chatou, Le Chesnay-Rocquencourt, Vélizy-Villacoublay, Montigny-le-Bretonneux, Guyancourt, Trappes, Élancourt, Rambouillet, Meaux, Melun, Fontainebleau, Provins, Torcy, Évry, Corbeil-Essonnes, Massy, Savigny-sur-Orge, Sainte-Geneviève-des-Bois, Viry-Châtillon, Athis-Mons, Palaiseau, Orsay, Les Ulis, Bobigny, Saint-Denis, Montreuil, Aubervilliers, Pantin, Noisy-le-Sec, Rosny-sous-Bois, Villemomble, Bondy, Épinay-sur-Seine, Stains, Pierrefitte-sur-Seine, Créteil, Vitry-sur-Seine, Champigny-sur-Marne, Saint-Maur-des-Fossés, Ivry-sur-Seine, Villejuif, Maisons-Alfort, Alfortville, Cergy, Argenteuil, Sarcelles, Garges-lès-Gonesse, Franconville, Bezons, Ermont, Eaubonne, Saint-Ouen-l'Aumône, Pontoise.",
               "url": "https://test-psychotechnique-permis.com",
-              "telephone": "+33765565379",
+              "telephone": ["+33765565379", "+33972132250"],
               "email": "contact@test-psychotechnique-permis.com",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "82 Rue Henri Barbusse",
-                "addressLocality": "Clichy",
-                "postalCode": "92110",
-                "addressCountry": "FR",
-                "addressRegion": "Île-de-France"
-              },
+              "address": [
+                {
+                  "@type": "PostalAddress",
+                  "streetAddress": "82 Rue Henri Barbusse",
+                  "addressLocality": "Clichy",
+                  "postalCode": "92110",
+                  "addressCountry": "FR",
+                  "addressRegion": "Île-de-France"
+                },
+                {
+                  "@type": "PostalAddress",
+                  "streetAddress": "14 Rue de Mantes",
+                  "addressLocality": "Colombes",
+                  "postalCode": "92700",
+                  "addressCountry": "FR",
+                  "addressRegion": "Île-de-France"
+                }
+              ],
               "geo": {
                 "@type": "GeoCoordinates",
                 "latitude": 48.9021,
@@ -371,7 +385,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p>Test psychotechnique permis Essonne, centre agréé Évry, Corbeil-Essonnes, Massy, Savigny-sur-Orge, Sainte-Geneviève-des-Bois, Viry-Châtillon, Athis-Mons, Palaiseau, Orsay, Les Ulis.</p>
 
             <h2>Test Psychotechnique Hauts-de-Seine 92</h2>
-            <p>Test psychotechnique permis Hauts-de-Seine, centre agréé Boulogne-Billancourt, Nanterre, Asnières-sur-Seine, Colombes, Courbevoie, Levallois-Perret, Neuilly-sur-Seine, Puteaux, Rueil-Malmaison, Suresnes.</p>
+            <p>Test psychotechnique permis Hauts-de-Seine, 2 centres agréés : Clichy 92110 (métro ligne 13, psychologue ADELI, 2ème chance gratuite) et Pro Drive Academy Colombes 92700. Service également pour Boulogne-Billancourt, Nanterre, Asnières-sur-Seine, Courbevoie, Levallois-Perret, Neuilly-sur-Seine, Puteaux, Rueil-Malmaison, Suresnes.</p>
 
             <h2>Test Psychotechnique Seine-Saint-Denis 93</h2>
             <p>Test psychotechnique permis Seine-Saint-Denis, centre agréé Bobigny, Saint-Denis, Montreuil, Aubervilliers, Pantin, Noisy-le-Sec, Rosny-sous-Bois, Villemomble, Bondy, Épinay-sur-Seine, Stains, Pierrefitte-sur-Seine.</p>

@@ -62,15 +62,25 @@ function TimeSlotContent() {
     time: '09:00'
   })
 
-  const timeOptions = [
-    '08:00', '08:20', '08:40', '09:00', '09:20', '09:40',
-    '10:00', '10:20', '10:40', '11:00', '11:20', '11:40',
-    '12:00', '12:20', '12:40', '13:00', '13:20', '13:40',
-    '14:00', '14:20', '14:40', '15:00', '15:20', '15:40',
-    '16:00', '16:20', '16:40', '17:00', '17:20', '17:40',
-    '18:00', '18:20', '18:40', '19:00', '19:20', '19:40',
-    '20:00', '20:20', '20:40', '21:00'
-  ]
+  // Générer les options d'horaires de 8h à 21h par intervalles de 20 minutes
+  const generateTimeOptions = (): string[] => {
+    const options: string[] = []
+    const startHour = 8
+    const endHour = 21
+    const intervalMinutes = 20
+    const totalMinutes = (endHour - startHour) * 60
+
+    for (let minutes = 0; minutes <= totalMinutes; minutes += intervalMinutes) {
+      const hour = startHour + Math.floor(minutes / 60)
+      const minute = minutes % 60
+      if (hour > endHour || (hour === endHour && minute > 0)) break
+      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+      options.push(timeString)
+    }
+    return options
+  }
+
+  const timeOptions = generateTimeOptions()
 
   useEffect(() => {
     const adminSession = localStorage.getItem('admin_session')

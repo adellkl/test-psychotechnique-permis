@@ -16,16 +16,19 @@ interface AddSlotModalProps {
 const generateTimeOptions = (intervalMinutes: number): string[] => {
   const options: string[] = []
   const startHour = 8 // 8h du matin
-  const endHour = 21 // 21h (8h du soir)
+  const endHour = 21 // 21h (9h du soir)
   const totalMinutes = (endHour - startHour) * 60
 
   if (intervalMinutes <= 0 || !Number.isFinite(intervalMinutes)) {
     return []
   }
 
-  for (let minutes = 0; minutes < totalMinutes; minutes += intervalMinutes) {
+  // Utiliser <= pour inclure le dernier créneau à 21h00
+  for (let minutes = 0; minutes <= totalMinutes; minutes += intervalMinutes) {
     const hour = startHour + Math.floor(minutes / 60)
     const minute = minutes % 60
+    // Ne pas dépasser 21h00
+    if (hour > endHour || (hour === endHour && minute > 0)) break
     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
     options.push(timeString)
   }

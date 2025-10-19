@@ -119,6 +119,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
     const centerPostalCode = appointmentData.center_postal_code || '92110'
     const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
 
+    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
+
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
@@ -131,7 +133,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
       location: centerName,
       address: fullAddress,
       location_details: centerCity === 'Clichy' ? 'À 3 minutes du métro Mairie de Clichy (Ligne 13)' : 'Proche des transports en commun',
-      contact_phone: '07 65 56 53 79',
+      contact_phone: contactPhone,
       website: 'https://test-psychotechnique-permis.com'
     }
 
@@ -295,6 +297,10 @@ export async function sendAppointmentReminder(appointmentData: {
   email: string
   appointment_date: string
   appointment_time: string
+  center_name?: string
+  center_address?: string
+  center_city?: string
+  center_postal_code?: string
 }) {
   try {
     const template = await getEmailTemplate('appointment_reminder_client')
@@ -306,15 +312,22 @@ export async function sendAppointmentReminder(appointmentData: {
       day: 'numeric'
     })
 
+    const centerName = appointmentData.center_name || 'Centre Psychotechnique Permis Expert'
+    const centerAddress = appointmentData.center_address || '82 Rue Henri Barbusse'
+    const centerCity = appointmentData.center_city || 'Clichy'
+    const centerPostalCode = appointmentData.center_postal_code || '92110'
+    const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
+    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
+
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
-      location: 'Centre Psychotechnique Permis Expert',
-      address: '82 Rue Henri Barbusse, 92110 Clichy',
-      location_details: 'À 3 minutes du métro Mairie de Clichy (Ligne 13)',
-      contact_phone: '07 65 56 53 79'
+      location: centerName,
+      address: fullAddress,
+      location_details: centerCity === 'Clichy' ? 'À 3 minutes du métro Mairie de Clichy (Ligne 13)' : 'Proche des transports en commun',
+      contact_phone: contactPhone
     }
 
     const htmlContent = replaceTemplateVariables(template.html_content, variables)
@@ -344,6 +357,7 @@ export async function sendAppointmentCancellation(appointmentData: {
   appointment_date: string
   appointment_time: string
   reason?: string
+  center_city?: string
 }) {
   try {
     const template = await getEmailTemplate('appointment_cancellation_client')
@@ -355,13 +369,16 @@ export async function sendAppointmentCancellation(appointmentData: {
       day: 'numeric'
     })
 
+    const centerCity = appointmentData.center_city || 'Clichy'
+    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
+
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
       reason: appointmentData.reason || 'Non spécifiée',
-      contact_phone: '07 65 56 53 79',
+      contact_phone: contactPhone,
       website: 'https://test-psychotechnique-permis.com'
     }
 
@@ -392,6 +409,10 @@ export async function sendConfirmationReminder(appointmentData: {
   appointment_date: string
   appointment_time: string
   appointment_id: string
+  center_name?: string
+  center_address?: string
+  center_city?: string
+  center_postal_code?: string
 }) {
   try {
     console.log(`📧 [REMINDER] Envoi rappel de confirmation à: ${appointmentData.email}`)
@@ -411,14 +432,21 @@ export async function sendConfirmationReminder(appointmentData: {
       .update(`${appointmentData.appointment_id}-${appointmentData.email}`)
       .digest('hex')
 
+    const centerName = appointmentData.center_name || 'Centre Psychotechnique Permis Expert'
+    const centerAddress = appointmentData.center_address || '82 Rue Henri Barbusse'
+    const centerCity = appointmentData.center_city || 'Clichy'
+    const centerPostalCode = appointmentData.center_postal_code || '92110'
+    const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
+    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
+
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
-      location: 'Centre Psychotechnique Permis Expert',
-      address: '82 Rue Henri Barbusse, 92110 Clichy',
-      contact_phone: '07 65 56 53 79',
+      location: centerName,
+      address: fullAddress,
+      contact_phone: contactPhone,
       website: 'https://test-psychotechnique-permis.com',
       appointment_id: appointmentData.appointment_id,
       confirmation_token: confirmationToken
