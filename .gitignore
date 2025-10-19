@@ -103,9 +103,13 @@ verify-*.js
 # SQL files
 *.sql
 
-# Markdown documentation files
+# Markdown documentation files - TOUS sauf README.md
 *.md
 !README.md
+
+# Netlify
+netlify.toml
+.netlify/
 
 # Credentials and sensitive files
 SECURITY_CREDENTIALS.md
@@ -113,9 +117,24 @@ SETUP_INSTRUCTIONS.txt
 README_SECURITY.txt
 SECURITE_COMPLETE.txt
 CONFIGURATION_EMAIL_FINALE.txt
+DEPLOIEMENT*.txt
+HANDOVER.pdf
+CODE_*.txt
+CRON-*.txt
+ECOSYSTEME_*.txt
+GUIDE_*.txt
+MIGRATION_*.txt
 .env.local.backup
+
+# Scripts sensibles
+check-all-admins.js
+reset-admin-account.js
+get-admin-password.js
+create-single-admin.sql
+delete-all-logs.js
 
 # Rapports de validation
 VALIDATION_*.md
 RAPPORT_*.md
 SECURITY_*.md
+DIAGNOSTIC_*.md
