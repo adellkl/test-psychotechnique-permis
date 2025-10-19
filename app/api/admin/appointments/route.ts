@@ -1,13 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../../lib/supabase'
+import { requireAdmin } from '../../../../lib/adminAuth'
+import { sanitizeString } from '../../../../lib/validation'
+import { getRateLimitKey } from '../../../../lib/security'
 
 // GET - Fetch appointments with filters
 export async function GET(request: NextRequest) {
   try {
+    // Sécurité : Authentification admin requise
+    const authResult = await requireAdmin(request, {
+      rateLimit: { maxRequests: 30, windowMs: 60000 }
+    })
+    
+    if (authResult instanceof NextResponse) return authResult
+
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
+
+    // Validation et sanitization des paramètres
+    const validStatuses = ['all', 'confirmed', 'completed', 'cancelled', 'no_show']
+    const sanitizedStatus = status && validStatuses.includes(status) ? status : 'all'
 
     let query = supabase
       .from('appointments')
@@ -15,8 +29,8 @@ export async function GET(request: NextRequest) {
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true })
 
-    if (status && status !== 'all') {
-      query = query.eq('status', status)
+    if (sanitizedStatus !== 'all') {
+      query = query.eq('status', sanitizedStatus)
     }
     if (startDate) {
       query = query.gte('appointment_date', startDate)
@@ -40,6 +54,14 @@ export async function GET(request: NextRequest) {
 // PUT - Update appointment status
 export async function PUT(request: NextRequest) {
   try {
+    // Sécurité : Authentification admin requise
+    const authResult = await requireAdmin(request, {
+      rateLimit: { maxRequests: 20, windowMs: 60000 }
+    })
+    
+    if (authResult instanceof NextResponse) return authResult
+    const { admin } = authResult
+
     const body = await request.json()
     const { id, status, admin_notes } = body
 
@@ -47,13 +69,20 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Validation du statut
+    const validStatuses = ['confirmed', 'completed', 'cancelled', 'no_show']
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+    }
+
+    // Sanitization
     const updateData: any = { 
       status, 
       updated_at: new Date().toISOString() 
     }
     
     if (admin_notes !== undefined) {
-      updateData.admin_notes = admin_notes
+      updateData.admin_notes = sanitizeString(admin_notes)
     }
 
     const { data, error } = await supabase
@@ -66,6 +95,34 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Si le statut est "cancelled", envoyer un email au client
+    if (status === 'cancelled' && data && data[0]) {
+      try {
+        const appointment = data[0]
+        const { sendAppointmentCancellation } = await import('../../../../lib/emailService')
+        
+        await sendAppointmentCancellation({
+          first_name: appointment.first_name,
+          last_name: appointment.last_name,
+          email: appointment.email,
+          appointment_date: appointment.appointment_date,
+          appointment_time: appointment.appointment_time,
+          reason: admin_notes || 'Annulation par le centre',
+          center_city: appointment.center_city
+        })
+        
+        console.log('✅ Email d\'annulation envoyé au client:', appointment.email)
+      } catch (emailError) {
+        console.error('❌ Erreur envoi email annulation:', emailError)
+        // On ne bloque pas la mise à jour même si l'email échoue
+      }
+    }
+
+    // Log de l'action
+    const ip = getRateLimitKey(request)
+    const { logAdminAction } = await import('../../../../lib/adminAuth')
+    await logAdminAction(admin.id, 'UPDATE_APPOINTMENT', `Updated appointment ${id} to status ${status}`, ip)
+
     return NextResponse.json({ appointment: data[0] })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -75,11 +132,26 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete appointment and free up the slot
 export async function DELETE(request: NextRequest) {
   try {
+    // Sécurité : Authentification admin requise avec permissions élevées
+    const authResult = await requireAdmin(request, {
+      requireRole: ['super_admin', 'admin'],
+      rateLimit: { maxRequests: 10, windowMs: 60000 }
+    })
+    
+    if (authResult instanceof NextResponse) return authResult
+    const { admin } = authResult
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
     if (!id) {
       return NextResponse.json({ error: 'Appointment ID is required' }, { status: 400 })
+    }
+
+    // Validation UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(id)) {
+      return NextResponse.json({ error: 'Invalid appointment ID format' }, { status: 400 })
     }
 
     // Récupérer les infos du rendez-vous avant de le supprimer
@@ -104,7 +176,6 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Libérer le créneau UNIQUEMENT si le rendez-vous était annulé (cancelled)
-    // Si terminé (completed), le créneau reste occupé et ne réapparaît pas
     if (appointment && appointment.status === 'cancelled') {
       const slotTime = appointment.appointment_time.includes(':') 
         ? appointment.appointment_time 
@@ -116,6 +187,11 @@ export async function DELETE(request: NextRequest) {
         .eq('date', appointment.appointment_date)
         .eq('start_time', slotTime)
     }
+
+    // Log de l'action
+    const ip = getRateLimitKey(request)
+    const { logAdminAction } = await import('../../../../lib/adminAuth')
+    await logAdminAction(admin.id, 'DELETE_APPOINTMENT', `Deleted appointment ${id}`, ip)
 
     return NextResponse.json({ message: 'Appointment deleted and slot freed successfully' })
   } catch (error) {

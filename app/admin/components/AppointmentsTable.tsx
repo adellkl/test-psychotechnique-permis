@@ -606,7 +606,7 @@ export default function AppointmentsTable({
       {deleteAppointmentId && (() => {
         const appointment = appointments.find(apt => apt.id === deleteAppointmentId)
         return (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh', margin: 0 }}>
             <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -690,7 +690,7 @@ export default function AppointmentsTable({
 
       {/* Bulk Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh', margin: 0 }}>
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">

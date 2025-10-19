@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 interface ConfirmDialogProps {
   isOpen: boolean
   title: string
@@ -21,6 +23,17 @@ export default function ConfirmDialog({
   onCancel,
   type = 'warning'
 }: ConfirmDialogProps) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const colors = {
@@ -44,7 +57,7 @@ export default function ConfirmDialog({
   const colorScheme = colors[type]
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] animate-fadeIn">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] animate-fadeIn" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh', margin: 0 }}>
       <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-scaleIn">
         <div className="p-6">
           <div className="flex items-start gap-4 mb-4">

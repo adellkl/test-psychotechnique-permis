@@ -213,29 +213,35 @@ function DashboardContent() {
       onConfirm: async () => {
         setConfirmDialog(null)
         try {
-          const { error } = await supabase
-            .from('appointments')
-            .update({ status })
-            .eq('id', id)
-
-          if (error) throw error
+          // Utiliser l'API sécurisée au lieu de Supabase direct
+          const adminSession = localStorage.getItem('admin_session')
           
-          // Si le statut est "annulé", envoyer un email au client
-          if (status === 'cancelled') {
-            try {
-              await sendAppointmentCancellation({
-                first_name: appointment.first_name,
-                last_name: appointment.last_name,
-                email: appointment.email,
-                appointment_date: appointment.appointment_date,
-                appointment_time: appointment.appointment_time,
-                reason: 'Annulé par l\'administrateur'
-              })
-              console.log('✅ Email d\'annulation envoyé au client')
-            } catch (emailError) {
-              console.error('❌ Erreur envoi email annulation client:', emailError)
-              // On continue même si l'email échoue
-            }
+          if (!adminSession) {
+            throw new Error('Session expirée. Veuillez vous reconnecter.')
+          }
+          
+          const sessionData = JSON.parse(adminSession)
+          console.log('📤 Envoi requête PUT avec session:', sessionData)
+          
+          const response = await fetch('/api/admin/appointments', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-session': adminSession
+            },
+            body: JSON.stringify({
+              id,
+              status,
+              admin_notes: status === 'cancelled' ? 'Annulé par l\'administrateur' : undefined
+            })
+          })
+
+          console.log('📥 Réponse API:', response.status)
+
+          if (!response.ok) {
+            const data = await response.json()
+            console.error('❌ Erreur API:', data)
+            throw new Error(data.error || 'Erreur lors de la mise à jour')
           }
           
           await fetchAppointments()

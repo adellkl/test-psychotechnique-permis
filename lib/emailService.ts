@@ -113,13 +113,27 @@ export async function sendAppointmentConfirmation(appointmentData: {
       .update(`${appointmentData.appointment_id}-${appointmentData.email}`)
       .digest('hex')
 
-    const centerName = appointmentData.center_name || 'Centre Psychotechnique Permis Expert'
-    const centerAddress = appointmentData.center_address || '82 Rue Henri Barbusse'
     const centerCity = appointmentData.center_city || 'Clichy'
-    const centerPostalCode = appointmentData.center_postal_code || '92110'
+    
+    // Informations selon le centre (template unifié)
+    let centerName, centerAddress, centerPostalCode, contactPhone, metroInfo
+    
+    if (centerCity === 'Colombes') {
+      centerName = 'Test Psychotechnique Permis - Colombes'
+      centerAddress = '14 Rue de Mantes, Pro Drive Academy'
+      centerPostalCode = '92700'
+      contactPhone = '09 72 13 22 50'
+      metroInfo = 'Proche des transports en commun'
+    } else {
+      // Clichy par défaut
+      centerName = 'Test Psychotechnique Permis - Clichy'
+      centerAddress = '82 Rue Henri Barbusse'
+      centerPostalCode = '92110'
+      contactPhone = '07 65 56 53 79'
+      metroInfo = 'Ligne 13 - Mairie de Clichy'
+    }
+    
     const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
-
-    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
 
     const variables = {
       first_name: appointmentData.first_name,
@@ -132,7 +146,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
       confirmation_token: confirmationToken,
       location: centerName,
       address: fullAddress,
-      location_details: centerCity === 'Clichy' ? 'À 3 minutes du métro Mairie de Clichy (Ligne 13)' : 'Proche des transports en commun',
+      metro_info: metroInfo,
       contact_phone: contactPhone,
       website: 'https://test-psychotechnique-permis.com'
     }
@@ -312,12 +326,27 @@ export async function sendAppointmentReminder(appointmentData: {
       day: 'numeric'
     })
 
-    const centerName = appointmentData.center_name || 'Centre Psychotechnique Permis Expert'
-    const centerAddress = appointmentData.center_address || '82 Rue Henri Barbusse'
     const centerCity = appointmentData.center_city || 'Clichy'
-    const centerPostalCode = appointmentData.center_postal_code || '92110'
+    
+    // Informations selon le centre (template unifié)
+    let centerName, centerAddress, centerPostalCode, contactPhone, locationDetails
+    
+    if (centerCity === 'Colombes') {
+      centerName = 'Test Psychotechnique Permis - Colombes'
+      centerAddress = '14 Rue de Mantes, Pro Drive Academy'
+      centerPostalCode = '92700'
+      contactPhone = '09 72 13 22 50'
+      locationDetails = 'Proche des transports en commun'
+    } else {
+      // Clichy par défaut
+      centerName = 'Test Psychotechnique Permis - Clichy'
+      centerAddress = '82 Rue Henri Barbusse'
+      centerPostalCode = '92110'
+      contactPhone = '07 65 56 53 79'
+      locationDetails = 'Ligne 13 - Mairie de Clichy'
+    }
+    
     const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
-    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
 
     const variables = {
       first_name: appointmentData.first_name,
@@ -326,8 +355,9 @@ export async function sendAppointmentReminder(appointmentData: {
       appointment_time: appointmentData.appointment_time,
       location: centerName,
       address: fullAddress,
-      location_details: centerCity === 'Clichy' ? 'À 3 minutes du métro Mairie de Clichy (Ligne 13)' : 'Proche des transports en commun',
-      contact_phone: contactPhone
+      location_details: locationDetails,
+      contact_phone: contactPhone,
+      phone: contactPhone
     }
 
     const htmlContent = replaceTemplateVariables(template.html_content, variables)
@@ -379,6 +409,7 @@ export async function sendAppointmentCancellation(appointmentData: {
       appointment_time: appointmentData.appointment_time,
       reason: appointmentData.reason || 'Non spécifiée',
       contact_phone: contactPhone,
+      phone: contactPhone,
       website: 'https://test-psychotechnique-permis.com'
     }
 
@@ -432,7 +463,7 @@ export async function sendConfirmationReminder(appointmentData: {
       .update(`${appointmentData.appointment_id}-${appointmentData.email}`)
       .digest('hex')
 
-    const centerName = appointmentData.center_name || 'Centre Psychotechnique Permis Expert'
+    const centerName = appointmentData.center_name || 'Test Psychotechnique Permis'
     const centerAddress = appointmentData.center_address || '82 Rue Henri Barbusse'
     const centerCity = appointmentData.center_city || 'Clichy'
     const centerPostalCode = appointmentData.center_postal_code || '92110'
@@ -490,7 +521,7 @@ export async function sendCancellationNotificationToAdmin(appointmentData: {
       day: 'numeric'
     })
 
-    const subject = `❌ Annulation - ${appointmentData.first_name} ${appointmentData.last_name}`
+    const subject = `Annulation - ${appointmentData.first_name} ${appointmentData.last_name}`
 
     const html = `
 <!DOCTYPE html>
@@ -498,65 +529,107 @@ export async function sendCancellationNotificationToAdmin(appointmentData: {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Rendez-vous annulé</title>
+    <style type="text/css">
+        body, table, td, p, h1, h2, h3, h4 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header rouge -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 30px; text-align: center;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 24px;">❌ Rendez-vous Annulé</h1>
+                        <td style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); padding: 40px 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                                Rendez-vous annulé
+                            </h1>
+                            <p style="margin: 10px 0 0 0; color: #fecaca; font-size: 16px; font-weight: 500;">Notification Admin</p>
                         </td>
                     </tr>
+                    
+                    <!-- Contenu -->
                     <tr>
-                        <td style="padding: 30px;">
-                            <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                                <p style="margin: 0; color: #991b1b; font-size: 14px;">
-                                    <strong>⚠️ Un client a annulé son rendez-vous</strong>
+                        <td style="padding: 40px 30px;">
+                            <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin-bottom: 30px;">
+                                <p style="margin: 0; color: #991b1b; font-size: 14px; line-height: 1.6;">
+                                    <strong>Un client a annulé son rendez-vous</strong>
                                 </p>
                             </div>
                             
-                            <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px;">Détails du rendez-vous annulé</h2>
+                            <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 22px; font-weight: 600;">
+                                Détails du rendez-vous annulé
+                            </h2>
                             
-                            <table width="100%" cellpadding="10" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; margin-bottom: 20px;">
+                            <!-- Section Informations -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-radius: 12px; border: 2px solid #ef4444; margin-bottom: 30px;">
                                 <tr>
-                                    <td style="color: #374151; font-weight: 600;">👤 Client</td>
-                                    <td style="color: #1f2937; text-align: right;">${appointmentData.first_name} ${appointmentData.last_name}</td>
-                                </tr>
-                                <tr style="border-top: 1px solid #e5e7eb;">
-                                    <td style="color: #374151; font-weight: 600;">📧 Email</td>
-                                    <td style="color: #1f2937; text-align: right;"><a href="mailto:${appointmentData.email}" style="color: #2563eb; text-decoration: none;">${appointmentData.email}</a></td>
-                                </tr>
-                                <tr style="border-top: 1px solid #e5e7eb;">
-                                    <td style="color: #374151; font-weight: 600;">📱 Téléphone</td>
-                                    <td style="color: #1f2937; text-align: right;"><a href="tel:${appointmentData.phone}" style="color: #2563eb; text-decoration: none;">${appointmentData.phone || 'Non renseigné'}</a></td>
-                                </tr>
-                                <tr style="border-top: 1px solid #e5e7eb;">
-                                    <td style="color: #374151; font-weight: 600;">📅 Date</td>
-                                    <td style="color: #1f2937; text-align: right; font-weight: 700;">${formattedDate}</td>
-                                </tr>
-                                <tr style="border-top: 1px solid #e5e7eb;">
-                                    <td style="color: #374151; font-weight: 600;">⏰ Heure</td>
-                                    <td style="color: #1f2937; text-align: right; font-weight: 700; font-size: 18px;">${appointmentData.appointment_time}</td>
+                                    <td style="padding: 25px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 0;">
+                                            <tr>
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Client</td>
+                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; font-weight: 600;">${appointmentData.first_name} ${appointmentData.last_name}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #fca5a5;">
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">Email</td>
+                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">
+                                                    <a href="mailto:${appointmentData.email}" style="color: #2563eb; text-decoration: none;">${appointmentData.email}</a>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #fca5a5;">
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">Téléphone</td>
+                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">
+                                                    <a href="tel:${appointmentData.phone}" style="color: #2563eb; text-decoration: none;">${appointmentData.phone || 'Non renseigné'}</a>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #fca5a5;">
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">Date</td>
+                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; font-weight: 700;">${formattedDate}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #fca5a5;">
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">Heure</td>
+                                                <td style="color: #1f2937; font-size: 16px; font-weight: 700; padding: 8px 0; text-align: right;">${appointmentData.appointment_time}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
                                 </tr>
                             </table>
                             
-                            <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-top: 20px;">
-                                <p style="margin: 0; color: #1e40af; font-size: 14px;">
-                                    <strong>💡 Information :</strong> Ce créneau est maintenant disponible pour d'autres clients.
+                            <!-- Information -->
+                            <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+                                <p style="margin: 0; color: #1e40af; font-size: 14px; line-height: 1.6;">
+                                    <strong>Information :</strong> Ce créneau est maintenant disponible pour d'autres clients.
                                 </p>
                             </div>
+                            
+                            <!-- Bouton -->
+                            <table width="100%" style="margin-bottom: 20px;">
+                                <tr>
+                                    <td align="center" style="padding: 10px 0;">
+                                        <a href="https://test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; padding: 14px 32px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);">
+                                            Voir le Dashboard Admin
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
+                    
+                    <!-- Footer -->
                     <tr>
-                        <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-                            <a href="https://test-psychotechnique-permis.com/admin/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600;">
-                                Voir le Dashboard Admin
-                            </a>
+                        <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0; color: #9ca3af; font-size: 14px;">
+                                <strong>Test Psychotechnique Permis</strong><br>
+                                Notification automatique
+                            </p>
                         </td>
                     </tr>
+                    
                 </table>
             </td>
         </tr>
@@ -565,7 +638,8 @@ export async function sendCancellationNotificationToAdmin(appointmentData: {
 </html>`
 
     const text = `
-❌ RENDEZ-VOUS ANNULÉ
+RENDEZ-VOUS ANNULÉ
+Notification Admin
 
 Un client a annulé son rendez-vous :
 
@@ -575,8 +649,10 @@ Téléphone: ${appointmentData.phone || 'Non renseigné'}
 Date: ${formattedDate}
 Heure: ${appointmentData.appointment_time}
 
-Ce créneau est maintenant disponible pour d'autres clients.
-Connectez-vous au dashboard admin pour voir les détails.
+Information : Ce créneau est maintenant disponible pour d'autres clients.
+
+Connectez-vous au dashboard admin pour voir les détails :
+https://test-psychotechnique-permis.com/admin/dashboard
 `
 
     console.log(`📤 [ADMIN-CANCEL] Envoi via Elastic Email...`)
@@ -603,7 +679,7 @@ export async function testEmailConfiguration() {
     const info = await sendEmailWithElasticEmail({
       from: process.env.FROM_EMAIL || 'contact@test-psychotechnique-permis.com',
       to: process.env.ADMIN_EMAIL || 'sebtifatiha170617@gmail.com',
-      subject: 'Test Email Configuration - Permis Expert',
+      subject: 'Test Email Configuration - Test Psychotechnique Permis',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2563eb;">Configuration Email Testée ✅</h2>

@@ -53,16 +53,89 @@ export async function GET(request: NextRequest) {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Rendez-vous introuvable</title>
           <style>
-            body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-            .container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); text-align: center; max-width: 500px; }
-            h1 { color: #ef4444; margin-bottom: 20px; }
-            p { color: #6b7280; line-height: 1.6; }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; 
+              display: flex; 
+              justify-content: center; 
+              align-items: center; 
+              min-height: 100vh; 
+              background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); 
+              padding: 20px;
+            }
+            .container { 
+              background: white; 
+              padding: 50px 40px; 
+              border-radius: 20px; 
+              box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+              text-align: center; 
+              max-width: 600px; 
+              width: 100%;
+            }
+            .icon {
+              font-size: 80px;
+              margin-bottom: 24px;
+            }
+            h1 { 
+              color: #ef4444; 
+              margin-bottom: 16px; 
+              font-size: 32px;
+              font-weight: 700;
+              line-height: 1.2;
+            }
+            p { 
+              color: #6b7280; 
+              line-height: 1.7; 
+              font-size: 17px;
+              margin-bottom: 30px;
+            }
+            .btn {
+              display: inline-block;
+              background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+              color: white;
+              padding: 16px 36px;
+              border-radius: 12px;
+              text-decoration: none;
+              font-weight: 700;
+              font-size: 17px;
+              transition: all 0.3s;
+              box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            }
+            .btn:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+            }
+            @media (max-width: 640px) {
+              body { padding: 15px; }
+              .container { 
+                padding: 35px 25px;
+                border-radius: 16px;
+              }
+              .icon { font-size: 64px; margin-bottom: 20px; }
+              h1 { font-size: 26px; margin-bottom: 12px; }
+              p { font-size: 15px; margin-bottom: 25px; }
+              .btn {
+                width: 100%;
+                padding: 14px 24px;
+                font-size: 16px;
+              }
+            }
+            @media (max-width: 400px) {
+              .container { padding: 28px 20px; }
+              .icon { font-size: 56px; }
+              h1 { font-size: 23px; }
+              p { font-size: 14px; }
+            }
           </style>
         </head>
         <body>
           <div class="container">
-            <h1>❌ Rendez-vous introuvable</h1>
+            <div class="icon">❌</div>
+            <h1>Rendez-vous introuvable</h1>
             <p>Ce rendez-vous n'existe pas ou a été supprimé.</p>
+            <a href="https://test-psychotechnique-permis.com/prendre-rendez-vous" class="btn">
+              Prendre rendez-vous
+            </a>
           </div>
         </body>
         </html>`,
@@ -195,7 +268,7 @@ export async function GET(request: NextRequest) {
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -204,59 +277,143 @@ export async function GET(request: NextRequest) {
           }
           .card { 
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
             width: 100%;
-            padding: 40px;
+            padding: 50px 40px;
             text-align: center;
           }
-          .icon { font-size: 64px; margin-bottom: 20px; }
-          h1 { color: #1f2937; font-size: 28px; margin-bottom: 12px; }
-          .message { color: #6b7280; font-size: 16px; line-height: 1.6; margin-bottom: 30px; }
+          .icon { 
+            font-size: 80px; 
+            margin-bottom: 24px;
+            animation: scaleIn 0.5s ease-out;
+          }
+          @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+          }
+          h1 { 
+            color: #1f2937; 
+            font-size: 32px; 
+            margin-bottom: 16px;
+            font-weight: 700;
+            line-height: 1.2;
+          }
+          .message { 
+            color: #6b7280; 
+            font-size: 17px; 
+            line-height: 1.7; 
+            margin-bottom: 35px;
+          }
           .info-box {
-            background: #f3f4f6;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 35px;
             text-align: left;
           }
           .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #bfdbfe;
           }
           .info-row:last-child { border-bottom: none; }
-          .info-label { color: #6b7280; font-size: 14px; }
-          .info-value { color: #1f2937; font-weight: 600; font-size: 14px; }
+          .info-label { 
+            color: #1e40af; 
+            font-size: 15px;
+            font-weight: 600;
+          }
+          .info-value { 
+            color: #1f2937; 
+            font-weight: 700; 
+            font-size: 15px;
+          }
           .btn {
             display: inline-block;
-            background: #2563eb;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
-            padding: 14px 28px;
-            border-radius: 8px;
+            padding: 16px 36px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 17px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+          }
+          .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+          }
+          .contact {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 15px;
+          }
+          .contact a { 
+            color: #2563eb; 
             text-decoration: none;
             font-weight: 600;
-            font-size: 16px;
-            transition: background 0.3s;
           }
-          .btn:hover { background: #1d4ed8; }
-          .contact {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-            color: #6b7280;
-            font-size: 14px;
-          }
-          .contact a { color: #2563eb; text-decoration: none; }
           .contact a:hover { text-decoration: underline; }
+          
           @media (max-width: 640px) {
-            .card { padding: 30px 20px; }
-            h1 { font-size: 24px; }
-            .icon { font-size: 48px; }
-            .info-row { flex-direction: column; gap: 4px; }
-            .info-value { text-align: left; }
+            body { padding: 15px; }
+            .card { 
+              padding: 35px 25px;
+              border-radius: 16px;
+            }
+            h1 { 
+              font-size: 26px;
+              margin-bottom: 12px;
+            }
+            .icon { 
+              font-size: 64px;
+              margin-bottom: 20px;
+            }
+            .message {
+              font-size: 15px;
+              margin-bottom: 28px;
+            }
+            .info-box {
+              padding: 20px 18px;
+              margin-bottom: 28px;
+            }
+            .info-row { 
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 6px;
+              padding: 10px 0;
+            }
+            .info-value { 
+              text-align: left;
+              font-size: 14px;
+            }
+            .info-label {
+              font-size: 14px;
+            }
+            .btn {
+              width: 100%;
+              padding: 14px 24px;
+              font-size: 16px;
+            }
+            .contact {
+              margin-top: 28px;
+              padding-top: 20px;
+              font-size: 14px;
+            }
+          }
+          
+          @media (max-width: 400px) {
+            .card { padding: 28px 20px; }
+            h1 { font-size: 23px; }
+            .icon { font-size: 56px; }
+            .message { font-size: 14px; }
           }
         </style>
       </head>
