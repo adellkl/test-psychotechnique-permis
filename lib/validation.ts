@@ -32,6 +32,8 @@ export function isValidFutureDate(dateString: string): boolean {
   const date = new Date(dateString)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+  date.setHours(0, 0, 0, 0)
+  // Accepter aujourd'hui et les dates futures (jusqu'à 1 an)
   return date >= today && date <= new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
 }
 

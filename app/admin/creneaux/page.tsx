@@ -173,16 +173,25 @@ function TimeSlotContent() {
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('available_slots')
         .insert([{
           date: newSlot.date,
           start_time: newSlot.time,
           end_time: endTime,
-          is_available: true
+          is_available: true,
+          center_id: '11111111-1111-1111-1111-111111111111'
         }])
+        .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        setToast({
+          type: 'error',
+          message: `Erreur: ${error.message}`
+        })
+        return
+      }
 
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
@@ -194,9 +203,17 @@ function TimeSlotContent() {
         date: format(new Date(), 'yyyy-MM-dd'),
         time: '09:00'
       })
+      setToast({
+        type: 'success',
+        message: 'Créneau créé avec succès!'
+      })
       fetchTimeSlots()
     } catch (error) {
       console.error('Error adding time slot:', error)
+      setToast({
+        type: 'error',
+        message: 'Erreur lors de la création du créneau'
+      })
     }
   }
 
@@ -223,11 +240,24 @@ function TimeSlotContent() {
     }
 
     try {
-      const { error } = await supabase
-        .from('available_slots')
-        .insert(slotsToAdd)
+      const slotsWithCenter = slotsToAdd.map(slot => ({
+        ...slot,
+        center_id: '11111111-1111-1111-1111-111111111111'
+      }))
 
-      if (error) throw error
+      const { data, error } = await supabase
+        .from('available_slots')
+        .insert(slotsWithCenter)
+        .select()
+
+      if (error) {
+        console.error('Supabase error:', error)
+        setToast({
+          type: 'error',
+          message: `Erreur: ${error.message}`
+        })
+        return
+      }
 
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
@@ -235,9 +265,17 @@ function TimeSlotContent() {
       )
 
       setShowAddForm(false)
+      setToast({
+        type: 'success',
+        message: `${slotsToAdd.length} créneaux créés avec succès!`
+      })
       fetchTimeSlots()
     } catch (error) {
       console.error('Error adding multiple slots:', error)
+      setToast({
+        type: 'error',
+        message: 'Erreur lors de la création des créneaux'
+      })
     }
   }
 
@@ -269,11 +307,24 @@ function TimeSlotContent() {
     }
 
     try {
-      const { error } = await supabase
-        .from('available_slots')
-        .insert(slotsToAdd)
+      const slotsWithCenter = slotsToAdd.map(slot => ({
+        ...slot,
+        center_id: '11111111-1111-1111-1111-111111111111'
+      }))
 
-      if (error) throw error
+      const { data, error } = await supabase
+        .from('available_slots')
+        .insert(slotsWithCenter)
+        .select()
+
+      if (error) {
+        console.error('Supabase error:', error)
+        setToast({
+          type: 'error',
+          message: `Erreur: ${error.message}`
+        })
+        return
+      }
 
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
@@ -282,12 +333,16 @@ function TimeSlotContent() {
 
       setShowAddForm(false)
       fetchTimeSlots()
-      setNotification({ type: 'success', message: `${slotsToAdd.length} créneaux créés avec succès!` })
-      setTimeout(() => setNotification(null), 3000)
+      setToast({
+        type: 'success',
+        message: `${slotsToAdd.length} créneaux créés avec succès!`
+      })
     } catch (error) {
       console.error('Error adding bulk slots:', error)
-      setNotification({ type: 'error', message: 'Erreur lors de la création en masse' })
-      setTimeout(() => setNotification(null), 3000)
+      setToast({
+        type: 'error',
+        message: 'Erreur lors de la création en masse'
+      })
     }
   }
 
