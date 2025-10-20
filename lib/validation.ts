@@ -19,8 +19,10 @@ export function isValidEmail(email: string): boolean {
 }
 
 export function isValidPhone(phone: string): boolean {
-  const phoneRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/
-  return phoneRegex.test(phone.replace(/\s/g, ''))
+  // Accepter les formats: 06 12 34 56 78, 0612345678, +33 6 12 34 56 78, +33612345678
+  const cleaned = phone.replace(/\s/g, '')
+  const phoneRegex = /^(?:(?:\+|00)33|0)[1-9](?:\d{8})$/
+  return phoneRegex.test(cleaned)
 }
 
 export function isValidName(name: string): boolean {

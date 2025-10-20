@@ -37,10 +37,39 @@ export default function RendezVous() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+    const { name, value } = e.target
+    
+    // Format automatique du téléphone
+    if (name === 'phone') {
+      // Supprimer tous les caractères non numériques sauf le +
+      let cleaned = value.replace(/[^0-9+]/g, '')
+      
+      // Formater avec des espaces tous les 2 chiffres
+      if (cleaned.startsWith('+33')) {
+        cleaned = cleaned.substring(3)
+        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
+        setFormData({
+          ...formData,
+          [name]: '+33 ' + formatted
+        })
+      } else if (cleaned.startsWith('0')) {
+        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
+        setFormData({
+          ...formData,
+          [name]: formatted
+        })
+      } else {
+        setFormData({
+          ...formData,
+          [name]: value
+        })
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -252,16 +281,22 @@ export default function RendezVous() {
                       ref={continueButtonRef}
                       onClick={() => {
                         setStep(2)
+                        // Scroll immédiat vers le haut de la page
+                        window.scrollTo({
+                          top: 0,
+                          behavior: 'smooth'
+                        })
+                        // Puis scroll vers la section après le rendu
                         setTimeout(() => {
                           if (personalInfoRef.current) {
                             const elementPosition = personalInfoRef.current.getBoundingClientRect().top + window.pageYOffset
-                            const offsetPosition = elementPosition - 100
+                            const offsetPosition = elementPosition - 120
                             window.scrollTo({
                               top: offsetPosition,
                               behavior: 'smooth'
                             })
                           }
-                        }, 100)
+                        }, 300)
                       }}
                       disabled={!selectedDate || !selectedTime}
                       className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
