@@ -122,11 +122,11 @@ export default function APropos() {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-purple-600 font-bold">•</span>
-                      <span><strong>Téléphone :</strong> 09 72 13 22 50</span>
+                      <span><strong>Téléphone :</strong> 07 65 56 53 79</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-purple-600 font-bold">•</span>
-                      <span><strong>Email :</strong> reservation@mon-permis-auto.com</span>
+                      <span><strong>Email :</strong> contact@test-psychotechnique-permis.com</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-purple-600 font-bold">•</span>

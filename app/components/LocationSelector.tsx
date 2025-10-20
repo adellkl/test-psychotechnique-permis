@@ -39,12 +39,12 @@ const centers = [
       {
         icon: 'phone',
         title: 'Téléphone',
-        detail: '09 72 13 22 50'
+        detail: '07 65 56 53 79'
       },
       {
         icon: 'email',
         title: 'Email',
-        detail: 'reservation@mon-permis-auto.com'
+        detail: 'contact@test-psychotechnique-permis.com'
       }
     ]
   }

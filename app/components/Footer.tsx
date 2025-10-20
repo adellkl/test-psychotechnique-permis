@@ -127,8 +127,8 @@ export default function Footer() {
                     <address className="not-italic">
                       14 Rue de Mantes<br />
                       92700 Colombes<br />
-                      Tél: 09 72 13 22 50<br />
-                      Email: reservation@mon-permis-auto.com
+                      Tél: 07 65 56 53 79<br />
+                      Email: contact@test-psychotechnique-permis.com
                     </address>
                   </div>
                 </div>

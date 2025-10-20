@@ -99,7 +99,7 @@ export default function SlotsCalendar({
         const bookedCount = daySlots.filter(slot => slot.is_booked).length
         
         return (
-          <div key={index} className={`bg-white rounded-2xl shadow-lg border overflow-hidden transform hover:scale-105 transition-all duration-300 ${
+          <div key={index} className={`bg-white rounded-2xl shadow-lg border overflow-hidden ${
             isPastDay ? 'opacity-50 border-gray-300' : 'border-gray-200'
           }`}>
             {/* Day Header */}
@@ -204,14 +204,22 @@ export default function SlotsCalendar({
                         {!slot.is_booked && (
                           <button
                             onClick={() => onToggleAvailability(slot.id, slot.is_available)}
-                            className={`flex-1 px-2 py-2.5 rounded-lg transition-all font-bold text-xs shadow-md whitespace-nowrap ${
+                            className={`px-2.5 py-2.5 rounded-lg transition-all shadow-md flex items-center justify-center flex-shrink-0 ${
                               slot.is_available 
                                 ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white' 
                                 : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
                             }`}
-                            title={slot.is_available ? 'Désactiver' : 'Activer'}
+                            title={slot.is_available ? 'Désactiver (SVJ)' : 'Activer'}
                           >
-                            {slot.is_available ? 'Désactiver' : 'Activer'}
+                            {slot.is_available ? (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            )}
                           </button>
                         )}
                         <button

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     default: "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes 92 | Récupération Permis",
     template: "%s | Test Psychotechnique Permis"
   },
-  description: "👨‍⚕️ 2 centres agréés préfecture : Clichy (métro ligne 13, psychologue ADELI, 2ème chance gratuite 📞 07 65 56 53 79) et Pro Drive Academy Colombes (📞 09 72 13 22 50). Invalidation, suspension, annulation permis. RDV rapide Hauts-de-Seine 92. Service Île-de-France : Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95.",
+  description: "👨‍⚕️ 2 centres agréés préfecture : Clichy (métro ligne 13, psychologue ADELI, 2ème chance gratuite) et Pro Drive Academy Colombes. Contact : 📞 07 65 56 53 79 - ✉️ contact@test-psychotechnique-permis.com. Invalidation, suspension, annulation permis. RDV rapide Hauts-de-Seine 92. Service Île-de-France : Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95.",
   keywords: [
     "test psychotechnique permis",
     "test psychotechnique Clichy",
@@ -142,7 +142,7 @@ export const metadata: Metadata = {
     url: "https://test-psychotechnique-permis.com",
     siteName: "Test Psychotechnique Permis - 2 Centres Agréés Hauts-de-Seine",
     title: "👨‍⚕️ Test Psychotechnique Permis | 2 Centres Agréés Clichy & Colombes (92)",
-    description: "2 centres agréés préfecture dans les Hauts-de-Seine. Clichy : psychologue ADELI, métro ligne 13, 2ème chance GRATUITE 📞 07 65 56 53 79. Colombes : Pro Drive Academy 📞 09 72 13 22 50. Invalidation, suspension, annulation permis.",
+    description: "2 centres agréés préfecture à Clichy et Colombes. Psychologue certifiée ADELI. Deuxième chance GRATUITE. Contact : 📞 07 65 56 53 79 - ✉️ contact@test-psychotechnique-permis.com. Invalidation, suspension, annulation permis.",
     images: [
       {
         url: "/images/logo site .png",
@@ -152,7 +152,7 @@ export const metadata: Metadata = {
         type: "image/png",
       },
     ],
-    phoneNumbers: ["+33765565379", "+33972132250"],
+    phoneNumbers: ["+33765565379"],
     emails: ["contact@test-psychotechnique-permis.com"],
   },
   twitter: {

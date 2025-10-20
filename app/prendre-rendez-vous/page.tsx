@@ -58,20 +58,6 @@ export default function RendezVous() {
   const handleSlotSelect = (date: string, time: string) => {
     setSelectedDate(date)
     setSelectedTime(time)
-    
-    // Scroll léger juste en dessous de la sélection pour voir le bouton Continuer (mobile uniquement)
-    if (window.innerWidth < 1024) { // Seulement sur mobile/tablette (< 1024px)
-      setTimeout(() => {
-        if (continueButtonRef.current) {
-          const elementPosition = continueButtonRef.current.getBoundingClientRect().top + window.pageYOffset
-          const offsetPosition = elementPosition - 250
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          })
-        }
-      }, 300)
-    }
   }
 
   const scrollToTop = () => {
@@ -178,22 +164,6 @@ export default function RendezVous() {
 
       setSuccess(true)
       setStep(3)
-      
-      // Scroll vers la section "Rendez-vous Confirmé" après un court délai (mobile uniquement)
-      if (window.innerWidth < 1024) { // Seulement sur mobile/tablette (< 1024px)
-        setTimeout(() => {
-          // Chercher le h2 "Rendez-vous Confirmé"
-          const successTitle = document.querySelector('h2')
-          if (successTitle && successTitle.textContent?.includes('Rendez-vous Confirmé')) {
-            const elementPosition = successTitle.getBoundingClientRect().top + window.pageYOffset
-            const offsetPosition = elementPosition - 80 // Scroll pour voir le titre et le début du résumé
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            })
-          }
-        }, 200)
-      }
 
       fetch('/api/send-appointment-emails', {
         method: 'POST',
@@ -424,22 +394,17 @@ export default function RendezVous() {
                       ref={continueButtonRef}
                       onClick={() => {
                         setStep(2)
-                        // Scroll immédiat vers le haut de la page
-                        window.scrollTo({
-                          top: 0,
-                          behavior: 'smooth'
-                        })
-                        // Puis scroll vers la section après le rendu
-                        setTimeout(() => {
+                        // Scroll immédiat vers la section "Vos informations personnelles"
+                        requestAnimationFrame(() => {
                           if (personalInfoRef.current) {
                             const elementPosition = personalInfoRef.current.getBoundingClientRect().top + window.pageYOffset
-                            const offsetPosition = elementPosition - 120
+                            const offsetPosition = elementPosition - 100
                             window.scrollTo({
                               top: offsetPosition,
                               behavior: 'smooth'
                             })
                           }
-                        }, 300)
+                        })
                       }}
                       disabled={!selectedDate || !selectedTime}
                       className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
@@ -620,7 +585,6 @@ export default function RendezVous() {
                         type="button"
                         onClick={() => {
                           setStep(1)
-                          scrollToTop()
                         }}
                         className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-50 hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
                       >
@@ -845,7 +809,10 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 0 */}
-                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 1 ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
+                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded transition-all duration-700 ease-in-out origin-left ${step >= 1 ? 'scale-x-100' : 'scale-x-0'}`}></div>
+                  </div>
 
                   {/* Step 1 */}
                   <div className="flex flex-col items-center">
@@ -860,7 +827,10 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 1 */}
-                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
+                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded transition-all duration-700 ease-in-out origin-left ${step >= 2 ? 'scale-x-100' : 'scale-x-0'}`}></div>
+                  </div>
 
                   {/* Step 2 */}
                   <div className="flex flex-col items-center">
@@ -876,8 +846,10 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 2 */}
-                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 3 ? 'bg-gradient-to-r from-blue-500 to-emerald-500' : 'bg-gray-200'
-                    }`}></div>
+                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
+                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-emerald-500 rounded transition-all duration-700 ease-in-out origin-left ${step >= 3 ? 'scale-x-100' : 'scale-x-0'}`}></div>
+                  </div>
 
                   {/* Step 3 */}
                   <div className="flex flex-col items-center">
@@ -915,7 +887,10 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 0 */}
-                  <div className={`w-0.5 h-8 ml-5 mb-6 transition-all duration-500 ${step >= 1 ? 'bg-gradient-to-b from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className="relative w-0.5 h-8 ml-5 mb-6">
+                    <div className="absolute inset-0 bg-gray-200"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-600 transition-all duration-700 ease-in-out origin-top ${step >= 1 ? 'scale-y-100' : 'scale-y-0'}`}></div>
+                  </div>
 
                   {/* Step 1 */}
                   <div className="flex items-center mb-6">
@@ -936,7 +911,10 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 1 */}
-                  <div className={`w-0.5 h-8 ml-5 mb-6 transition-all duration-500 ${step >= 2 ? 'bg-gradient-to-b from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className="relative w-0.5 h-8 ml-5 mb-6">
+                    <div className="absolute inset-0 bg-gray-200"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-600 transition-all duration-700 ease-in-out origin-top ${step >= 2 ? 'scale-y-100' : 'scale-y-0'}`}></div>
+                  </div>
 
                   {/* Step 2 */}
                   <div className="flex items-center mb-6">
@@ -956,9 +934,11 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  {/* Connector */}
-                  <div className={`w-0.5 h-8 ml-5 mb-6 transition-all duration-500 ${step >= 3 ? 'bg-gradient-to-b from-green-500 to-emerald-500' : 'bg-gray-200'
-                    }`}></div>
+                  {/* Connector 2 */}
+                  <div className="relative w-0.5 h-8 ml-5 mb-6">
+                    <div className="absolute inset-0 bg-gray-200"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-emerald-500 transition-all duration-700 ease-in-out origin-top ${step >= 3 ? 'scale-y-100' : 'scale-y-0'}`}></div>
+                  </div>
 
                   {/* Step 3 */}
                   <div className="flex items-center">

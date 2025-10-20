@@ -23,8 +23,8 @@ export default function ContactPage() {
       name: 'Pro Drive Academy',
       address: '14 Rue de Mantes',
       city: '92700 Colombes',
-      phone: '09 72 13 22 50',
-      email: 'reservation@mon-permis-auto.com',
+      phone: '07 65 56 53 79',
+      email: 'contact@test-psychotechnique-permis.com',
       metro: 'Proche des transports en commun',
       lat: 48.9225,
       lng: 2.2531

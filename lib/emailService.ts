@@ -122,7 +122,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
       centerName = 'Test Psychotechnique Permis - Colombes'
       centerAddress = '14 Rue de Mantes, Pro Drive Academy'
       centerPostalCode = '92700'
-      contactPhone = '09 72 13 22 50'
+      contactPhone = '07 65 56 53 79'
       metroInfo = 'Proche des transports en commun'
     } else {
       // Clichy par défaut
@@ -148,6 +148,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
       address: fullAddress,
       metro_info: metroInfo,
       contact_phone: contactPhone,
+      contact_email: 'contact@test-psychotechnique-permis.com',
       website: 'https://test-psychotechnique-permis.com'
     }
 
@@ -335,7 +336,7 @@ export async function sendAppointmentReminder(appointmentData: {
       centerName = 'Test Psychotechnique Permis - Colombes'
       centerAddress = '14 Rue de Mantes, Pro Drive Academy'
       centerPostalCode = '92700'
-      contactPhone = '09 72 13 22 50'
+      contactPhone = '07 65 56 53 79'
       locationDetails = 'Proche des transports en commun'
     } else {
       // Clichy par défaut
@@ -357,6 +358,7 @@ export async function sendAppointmentReminder(appointmentData: {
       address: fullAddress,
       location_details: locationDetails,
       contact_phone: contactPhone,
+      contact_email: 'contact@test-psychotechnique-permis.com',
       phone: contactPhone
     }
 
@@ -400,7 +402,7 @@ export async function sendAppointmentCancellation(appointmentData: {
     })
 
     const centerCity = appointmentData.center_city || 'Clichy'
-    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
+    const contactPhone = '07 65 56 53 79'
 
     const variables = {
       first_name: appointmentData.first_name,
@@ -409,6 +411,7 @@ export async function sendAppointmentCancellation(appointmentData: {
       appointment_time: appointmentData.appointment_time,
       reason: appointmentData.reason || 'Non spécifiée',
       contact_phone: contactPhone,
+      contact_email: 'contact@test-psychotechnique-permis.com',
       phone: contactPhone,
       website: 'https://test-psychotechnique-permis.com'
     }
@@ -468,7 +471,7 @@ export async function sendConfirmationReminder(appointmentData: {
     const centerCity = appointmentData.center_city || 'Clichy'
     const centerPostalCode = appointmentData.center_postal_code || '92110'
     const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
-    const contactPhone = centerCity === 'Colombes' ? '09 72 13 22 50' : '07 65 56 53 79'
+    const contactPhone = '07 65 56 53 79'
 
     const variables = {
       first_name: appointmentData.first_name,
@@ -478,6 +481,7 @@ export async function sendConfirmationReminder(appointmentData: {
       location: centerName,
       address: fullAddress,
       contact_phone: contactPhone,
+      contact_email: 'contact@test-psychotechnique-permis.com',
       website: 'https://test-psychotechnique-permis.com',
       appointment_id: appointmentData.appointment_id,
       confirmation_token: confirmationToken

@@ -35,8 +35,8 @@ const centers = [
     code: '92700',
     title: 'À propos de Pro Drive Academy - Test psychotechnique à Colombes (92700)',
     address: '14 Rue de Mantes, 92700 Colombes',
-    phone: '09 72 13 22 50',
-    email: 'reservation@mon-permis-auto.com',
+    phone: '07 65 56 53 79',
+    email: 'contact@test-psychotechnique-permis.com',
     color: 'purple',
     description: `Situé au 14 Rue de Mantes à Colombes (92700), Pro Drive Academy est un centre agréé spécialisé dans les tests psychotechniques pour le permis de conduire. Nous accompagnons les conducteurs souhaitant récupérer leur permis suspendu, annulé ou invalidé, ainsi que ceux devant renouveler leur aptitude à la conduite.`,
     description2: `Nos tests sont réalisés dans un environnement professionnel, calme et bienveillant, par des experts agréés, afin de garantir une évaluation fiable et rapide de vos capacités.`,
@@ -48,8 +48,8 @@ const centers = [
     ],
     contact: {
       address: '14 Rue de Mantes, 92700 Colombes',
-      phone: '09 72 13 22 50',
-      email: 'reservation@mon-permis-auto.com'
+      phone: '07 65 56 53 79',
+      email: 'contact@test-psychotechnique-permis.com'
     }
   }
 ]

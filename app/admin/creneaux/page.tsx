@@ -112,7 +112,7 @@ function TimeSlotContent() {
         .select('*')
         .gte('date', startDate)
         .lte('date', endDate)
-      
+
       if (selectedCenterId) {
         query = query.eq('center_id', selectedCenterId)
       }
@@ -130,7 +130,7 @@ function TimeSlotContent() {
         .gte('appointment_date', startDate)
         .lte('appointment_date', endDate)
         .in('status', ['confirmed', 'completed'])
-      
+
       if (selectedCenterId) {
         appointmentsQuery = appointmentsQuery.eq('center_id', selectedCenterId)
       }
@@ -587,6 +587,36 @@ function TimeSlotContent() {
             </div>
           </div>
 
+          {/* Légende des actions */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md border border-gray-200 p-4 mb-6">
+            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Légende des actions
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="flex items-center gap-2 bg-white rounded-lg p-2">
+                <svg className="w-5 h-5 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <span className="text-xs text-gray-700"><strong>Désactiver</strong> (SVJ)</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white rounded-lg p-2">
+                <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-xs text-gray-700"><strong>Activer</strong> le créneau</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white rounded-lg p-2">
+                <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span className="text-xs text-gray-700"><strong>Supprimer</strong> le créneau</span>
+              </div>
+            </div>
+          </div>
+
           {/* Calendar or List View */}
           {loading ? (
             <div className="flex justify-center py-12">
@@ -641,24 +671,31 @@ function TimeSlotContent() {
                           {slot.client_name || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-3">
                             {!slot.is_booked && (
                               <button
                                 onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${slot.is_available
-                                  ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                                  : 'bg-green-100 text-green-800 hover:bg-green-200'
-                                  }`}
+                                className={`group relative p-1.5 rounded-lg transition-all ${slot.is_available ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'}`}
+                                title={slot.is_available ? 'Désactiver (SVJ)' : 'Activer le créneau'}
                               >
-                                {slot.is_available ? 'Désactiver' : 'Activer'}
+                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  {slot.is_available ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 715.636 5.636m12.728 12.728L5.636 5.636" />
+                                  ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  )}
+                                </svg>
                               </button>
                             )}
                             <button
                               onClick={() => setDeleteConfirmId(slot.id)}
                               disabled={slot.is_booked}
-                              className="px-3 py-1 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
+                              className="group relative p-1.5 rounded-lg transition-all bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Supprimer le créneau"
                             >
-                              Supprimer
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
                             </button>
                           </div>
                         </td>
@@ -741,22 +778,27 @@ function TimeSlotContent() {
                       )}
 
                       {/* Actions */}
-                      <div className="flex gap-2 pt-2">
+                      <div className="flex gap-3 pt-2 justify-center">
                         <button
                           onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                          className={`flex-1 px-3 py-3 rounded-lg text-sm font-bold transition-all shadow-md whitespace-nowrap ${slot.is_available
-                            ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600'
-                            : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
-                            }`}
+                          className={`p-3 rounded-lg transition-all shadow-md ${slot.is_available ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'}`}
+                          title={slot.is_available ? 'Désactiver (SVJ)' : 'Activer le créneau'}
                         >
-                          {slot.is_available ? 'Désactiver' : 'Activer'}
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {slot.is_available ? (
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            ) : (
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            )}
+                          </svg>
                         </button>
                         <button
                           onClick={() => setDeleteConfirmId(slot.id)}
                           disabled={slot.is_booked}
-                          className="px-3 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center justify-center shadow-md flex-shrink-0"
+                          className="p-3 rounded-lg transition-all shadow-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Supprimer le créneau"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>

@@ -98,25 +98,38 @@ function DashboardContent() {
         }
       }
       
-      // Calculer la date du jour pour les RDV d'aujourd'hui
+      // Calculer la date et l'heure actuelles pour les RDV d'aujourd'hui
       const now = new Date()
       const today = now.toISOString().split('T')[0]
+      const currentTime = now.toTimeString().slice(0, 5) // Format HH:MM
       
       // Filtrer les RDV d'aujourd'hui AVANT la mise à jour automatique
-      let todayApts = (data || []).filter(apt => apt.appointment_date === today)
+      // Exclure les RDV dont l'heure est déjà passée
+      let todayApts = (data || []).filter(apt => {
+        if (apt.appointment_date !== today) return false
+        // Si l'heure du RDV est passée, ne pas l'afficher
+        if (apt.appointment_time < currentTime) return false
+        return true
+      })
       if (selectedCenterId) {
         todayApts = todayApts.filter(apt => apt.center_id === selectedCenterId)
       }
       setTodayAppointments(todayApts)
       
-      // Auto-marquer uniquement les rendez-vous des jours PRÉCÉDENTS comme "terminé"
-      // Les RDV d'aujourd'hui ne sont jamais marqués automatiquement
+      // Auto-marquer les rendez-vous passés comme "terminé"
+      // Inclut les RDV d'aujourd'hui dont l'heure est déjà passée
       const appointmentsToUpdate: string[] = []
       
       data?.forEach(apt => {
-        // Si le rendez-vous est confirmé et la date est AVANT aujourd'hui (pas aujourd'hui)
-        if (apt.status === 'confirmed' && apt.appointment_date < today) {
-          appointmentsToUpdate.push(apt.id)
+        if (apt.status === 'confirmed') {
+          // RDV des jours précédents
+          if (apt.appointment_date < today) {
+            appointmentsToUpdate.push(apt.id)
+          }
+          // RDV d'aujourd'hui dont l'heure est passée
+          else if (apt.appointment_date === today && apt.appointment_time < currentTime) {
+            appointmentsToUpdate.push(apt.id)
+          }
         }
       })
       
@@ -137,8 +150,12 @@ function DashboardContent() {
         setAppointments(updatedData || [])
         setFilteredAppointments(updatedData || [])
         
-        // Recalculer les RDV d'aujourd'hui après mise à jour
-        let refreshedTodayApts = (updatedData || []).filter(apt => apt.appointment_date === today)
+        // Recalculer les RDV d'aujourd'hui après mise à jour (exclure ceux dont l'heure est passée)
+        let refreshedTodayApts = (updatedData || []).filter(apt => {
+          if (apt.appointment_date !== today) return false
+          if (apt.appointment_time < currentTime) return false
+          return true
+        })
         if (selectedCenterId) {
           refreshedTodayApts = refreshedTodayApts.filter(apt => apt.center_id === selectedCenterId)
         }
