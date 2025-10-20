@@ -59,17 +59,19 @@ export default function RendezVous() {
     setSelectedDate(date)
     setSelectedTime(time)
     
-    // Scroll léger juste en dessous de la sélection pour voir le bouton Continuer
-    setTimeout(() => {
-      if (continueButtonRef.current) {
-        const elementPosition = continueButtonRef.current.getBoundingClientRect().top + window.pageYOffset
-        const offsetPosition = elementPosition - 250 // Plus d'espace pour ne pas voir la FAQ
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        })
-      }
-    }, 300)
+    // Scroll léger juste en dessous de la sélection pour voir le bouton Continuer (mobile uniquement)
+    if (window.innerWidth < 1024) { // Seulement sur mobile/tablette (< 1024px)
+      setTimeout(() => {
+        if (continueButtonRef.current) {
+          const elementPosition = continueButtonRef.current.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 250
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          })
+        }
+      }, 300)
+    }
   }
 
   const scrollToTop = () => {
@@ -177,18 +179,21 @@ export default function RendezVous() {
       setSuccess(true)
       setStep(3)
       
-      // Scroll vers le titre "Rendez-vous Confirmé" après un court délai
-      setTimeout(() => {
-        const successSection = document.querySelector('h2')
-        if (successSection && successSection.textContent?.includes('Rendez-vous Confirmé')) {
-          const elementPosition = successSection.getBoundingClientRect().top + window.pageYOffset
-          const offsetPosition = elementPosition - 100
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          })
-        }
-      }, 100)
+      // Scroll vers la section "Rendez-vous Confirmé" après un court délai (mobile uniquement)
+      if (window.innerWidth < 1024) { // Seulement sur mobile/tablette (< 1024px)
+        setTimeout(() => {
+          // Chercher le h2 "Rendez-vous Confirmé"
+          const successTitle = document.querySelector('h2')
+          if (successTitle && successTitle.textContent?.includes('Rendez-vous Confirmé')) {
+            const elementPosition = successTitle.getBoundingClientRect().top + window.pageYOffset
+            const offsetPosition = elementPosition - 80 // Scroll pour voir le titre et le début du résumé
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            })
+          }
+        }, 200)
+      }
 
       fetch('/api/send-appointment-emails', {
         method: 'POST',
