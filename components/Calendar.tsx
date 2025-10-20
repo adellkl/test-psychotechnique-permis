@@ -9,6 +9,7 @@ interface CalendarProps {
   onSlotSelect: (date: string, time: string) => void
   selectedDate?: string
   selectedTime?: string
+  centerId?: string
 }
 
 interface CalendarDay {
@@ -18,7 +19,7 @@ interface CalendarDay {
   isCurrentMonth: boolean
 }
 
-export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: CalendarProps) {
+export default function Calendar({ onSlotSelect, selectedDate, selectedTime, centerId }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDateState, setSelectedDateState] = useState<Date | null>(null)
   const [selectedTimeState, setSelectedTimeState] = useState<string | null>(null)
