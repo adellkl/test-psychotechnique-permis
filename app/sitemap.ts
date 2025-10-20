@@ -18,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
-      url: `${baseUrl}/rendez-vous`,
+      url: `${baseUrl}/prendre-rendez-vous`,
       lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.95,

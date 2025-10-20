@@ -43,16 +43,16 @@ export default function APropos() {
 
           <div className="grid lg:grid-cols-2 gap-8 mb-12">
             {/* Centre Clichy */}
-            <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl shadow-lg border-2 border-blue-200">
+            <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">Centre de Clichy</h3>
-                  <p className="text-sm text-blue-600 font-semibold">92110 - Hauts-de-Seine</p>
+                  <p className="text-sm text-gray-600 font-semibold">92110 - Hauts-de-Seine</p>
                 </div>
               </div>
 
@@ -61,30 +61,30 @@ export default function APropos() {
                   Situé à <strong>Clichy en Île-de-France</strong>, notre centre de test psychotechnique se situe dans une zone bien desservie par le métro, le transilien et les bus. Proche de Paris, venez passer votre test rapidement et facilement.
                 </p>
 
-                <div className="bg-white p-4 rounded-xl border border-blue-200">
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-semibold text-gray-900 mb-3">📍 Informations pratiques</h4>
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-600 font-bold">•</span>
+                      <span className="text-slate-700 font-bold">•</span>
                       <span><strong>Adresse :</strong> 82 Rue Henri Barbusse, 92110 Clichy</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-600 font-bold">•</span>
+                      <span className="text-slate-700 font-bold">•</span>
                       <span><strong>Téléphone :</strong> 07 65 56 53 79</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-600 font-bold">•</span>
+                      <span className="text-slate-700 font-bold">•</span>
                       <span><strong>Métro :</strong> Ligne 13 - Mairie de Clichy (3 min à pied)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-600 font-bold">•</span>
+                      <span className="text-slate-700 font-bold">•</span>
                       <span><strong>Gare :</strong> Clichy-Levallois (10 min à pied)</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
-                  <p className="text-sm font-semibold text-emerald-900 mb-2">
+                <div className="bg-gray-50 border-l-4 border-slate-700 p-4 rounded-r-lg">
+                  <p className="text-sm font-semibold text-gray-900 mb-2">
                     ✨ Deuxième chance gratuite
                   </p>
                   <p className="text-sm text-gray-700">
@@ -95,16 +95,16 @@ export default function APropos() {
             </div>
 
             {/* Centre Colombes */}
-            <div className="bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl shadow-lg border-2 border-purple-200">
+            <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">Pro Drive Academy</h3>
-                  <p className="text-sm text-purple-600 font-semibold">92700 Colombes - Hauts-de-Seine</p>
+                  <p className="text-sm text-gray-600 font-semibold">92700 Colombes - Hauts-de-Seine</p>
                 </div>
               </div>
 
@@ -113,30 +113,30 @@ export default function APropos() {
                   Situé à <strong>Colombes</strong>, Pro Drive Academy est un centre agréé spécialisé dans les tests psychotechniques. Environnement professionnel et bienveillant pour une évaluation fiable et rapide.
                 </p>
 
-                <div className="bg-white p-4 rounded-xl border border-purple-200">
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-semibold text-gray-900 mb-3">📍 Informations pratiques</h4>
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li className="flex items-start gap-2">
-                      <span className="text-purple-600 font-bold">•</span>
+                      <span className="text-slate-700 font-bold">•</span>
                       <span><strong>Adresse :</strong> 14 Rue de Mantes, 92700 Colombes</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-purple-600 font-bold">•</span>
+                      <span className="text-slate-700 font-bold">•</span>
                       <span><strong>Téléphone :</strong> 07 65 56 53 79</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-purple-600 font-bold">•</span>
+                      <span className="text-slate-700 font-bold">•</span>
                       <span><strong>Email :</strong> contact@test-psychotechnique-permis.com</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-purple-600 font-bold">•</span>
-                      <span><strong>Accès :</strong> Bien desservi par les transports en commun</span>
+                      <span className="text-slate-700 font-bold">•</span>
+                      <span><strong>Accès :</strong> Proche du T2 arrêt Jacqueline Auriol (5 min)</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-                  <p className="text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gray-50 border-l-4 border-slate-700 p-4 rounded-r-lg">
+                  <p className="text-sm font-semibold text-gray-900 mb-2">
                     ⚡ Service rapide
                   </p>
                   <p className="text-sm text-gray-700">
@@ -147,7 +147,7 @@ export default function APropos() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-gray-50 to-blue-50 p-8 rounded-2xl border border-gray-200">
+          <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-sm">
             <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
               Permis annulé, invalidé ou suspendu ?
             </h3>
@@ -201,7 +201,7 @@ export default function APropos() {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute top-4 right-4 bg-blue-600 text-white p-3 rounded-lg shadow-lg">
+              <div className="absolute top-4 right-4 bg-slate-800 text-white p-3 rounded-lg shadow-lg">
                 <div className="text-center">
                   <div className="font-bold">ADELI</div>
                   <div className="text-xs">929334555</div>
@@ -214,8 +214,8 @@ export default function APropos() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-3 h-3 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -225,8 +225,8 @@ export default function APropos() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-3 h-3 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -236,8 +236,8 @@ export default function APropos() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-3 h-3 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>

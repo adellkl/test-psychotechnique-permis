@@ -167,7 +167,7 @@ export default function Navigation() {
             </li>
             <li className="ml-4">
               <Link
-                href="/rendez-vous"
+                href="/prendre-rendez-vous"
                 className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors ${isHomePage && !scrolled ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
               >
@@ -370,7 +370,7 @@ export default function Navigation() {
 
                   {/* Bouton Prendre rendez-vous */}
                   <Link
-                    href="/rendez-vous"
+                    href="/prendre-rendez-vous"
                     onClick={toggleMenu}
                     className="flex items-center justify-center gap-2.5 w-full px-5 py-4 mt-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-500/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                   >

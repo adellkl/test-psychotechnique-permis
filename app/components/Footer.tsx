@@ -95,7 +95,7 @@ export default function Footer() {
                 <li><Link href="/suspension-permis" className="text-gray-300 hover:text-white transition-colors">Suspension du permis</Link></li>
                 <li><Link href="/annulation-permis" className="text-gray-300 hover:text-white transition-colors">Annulation du permis</Link></li>
                 <li><Link href="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link></li>
-                <li><Link href="/rendez-vous" className="font-medium transition-colors hover:opacity-80" style={{ color: 'var(--secondary-teal)' }}>Prendre rendez-vous</Link></li>
+                <li><Link href="/prendre-rendez-vous" className="font-medium transition-colors hover:opacity-80" style={{ color: 'var(--secondary-teal)' }}>Prendre rendez-vous</Link></li>
               </ul>
             </div>
 

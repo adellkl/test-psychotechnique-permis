@@ -246,7 +246,7 @@ export default function ModernHero() {
                 transition={{ duration: 0.2 }}
               >
                 <Link
-                  href="/rendez-vous"
+                  href="/prendre-rendez-vous"
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl font-semibold text-sm sm:text-base hover:bg-white/20 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

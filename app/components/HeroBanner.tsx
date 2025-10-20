@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export default function HeroBanner() {
   return (
-    <section className="relative bg-white overflow-hidden min-h-screen flex items-center">
+    <section className="relative bg-white overflow-hidden h-screen flex items-center">
       {/* Background Pattern */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-blue-50"></div>
@@ -55,7 +55,7 @@ export default function HeroBanner() {
               </Link>
 
               <Link
-                href="/rendez-vous"
+                href="/prendre-rendez-vous"
                 className="group flex items-center justify-center gap-2 lg:gap-3 px-6 py-3 lg:px-8 lg:py-4 bg-white text-blue-600 border-2 border-blue-600 rounded-lg lg:rounded-xl font-semibold text-base lg:text-lg hover:bg-blue-50 transition-all duration-300 w-full sm:w-auto"
               >
                 <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="currentColor" viewBox="0 0 20 20">

@@ -285,7 +285,7 @@ export default function HomePage() {
           {/* CTA Principal */}
           <div className="text-center mt-8 sm:mt-12 animate-smooth-bounce animation-delay-800">
             <Link
-              href="/rendez-vous"
+              href="/prendre-rendez-vous"
               className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3.5 sm:px-10 sm:py-5 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-xl sm:rounded-2xl font-bold text-base sm:text-xl hover:from-blue-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl w-full sm:w-auto max-w-sm sm:max-w-none mx-auto"
             >
               <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
