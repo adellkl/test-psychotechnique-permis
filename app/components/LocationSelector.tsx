@@ -125,18 +125,19 @@ export default function LocationSelector() {
       </div>
 
       {/* Sélecteur de centre */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-row gap-2 sm:gap-3 mb-6">
         {centers.map((center, index) => (
           <button
             key={center.id}
             onClick={() => setSelectedCenter(index)}
-            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform ${
+            className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-xl font-semibold text-xs sm:text-base transition-all duration-300 transform ${
               selectedCenter === index
                 ? `${colorClasses[center.color as keyof typeof colorClasses].button} text-white shadow-lg scale-105`
                 : `${colorClasses[center.color as keyof typeof colorClasses].buttonInactive}`
             }`}
           >
-            {center.name}
+            <span className="hidden sm:inline">{center.name}</span>
+            <span className="sm:hidden">{center.name.replace('Centre de ', '')}</span>
           </button>
         ))}
       </div>

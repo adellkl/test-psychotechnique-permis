@@ -201,7 +201,7 @@ export default function APropos() {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute top-4 right-4 bg-blue-600 text-white p-3 rounded-lg">
+              <div className="absolute top-4 right-4 bg-blue-600 text-white p-3 rounded-lg shadow-lg">
                 <div className="text-center">
                   <div className="font-bold">ADELI</div>
                   <div className="text-xs">929334555</div>
@@ -265,36 +265,36 @@ export default function APropos() {
             </p>
           </div>
 
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-12">
             {/* 1ère étape */}
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-              <div className="flex items-start gap-6">
-                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-slate-700 font-bold text-lg">1</span>
+            <div className="bg-white p-4 sm:p-8 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-slate-700 font-bold text-base sm:text-lg">1</span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">1ère étape</h3>
-                  <p className="text-gray-700 mb-4">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">1ère étape</h3>
+                  <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
                     L'entretien individuel doit permettre d'aborder les points suivants :
                   </p>
-                  <ul className="space-y-3 text-gray-700">
-                    <li className="flex items-start gap-3">
+                  <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span>La situation du conducteur (son histoire, sa situation familiale et professionnelle, sa santé, son hygiène de vie)</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span>Les raisons de la sanction qui l'ont mené à une invalidation, une suspension ou une annulation du permis de conduire</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span>Ses usages d'un véhicule motorisé (enjeux professionnels, personnels et sociaux)</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span>Une confrontation aux faits, ayant justifié la sanction</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span>Sa motivation à une réhabilitation</span>
                     </li>
@@ -304,26 +304,26 @@ export default function APropos() {
             </div>
 
             {/* 2ème étape */}
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-              <div className="flex items-start gap-6">
-                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-slate-700 font-bold text-lg">2</span>
+            <div className="bg-white p-4 sm:p-8 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-slate-700 font-bold text-base sm:text-lg">2</span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">2ème étape</h3>
-                  <p className="text-gray-700 mb-4">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">2ème étape</h3>
+                  <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
                     Les tests psychotechniques doivent en outre permettre l'exploration de divers champs de l'activité psychomotrice en lien avec la conduite tels que :
                   </p>
-                  <ul className="space-y-3 text-gray-700">
-                    <li className="flex items-start gap-3">
+                  <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span><strong>Les capacités visuo-attentionnelles</strong> (Capacités visuelles)</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span><strong>La vitesse de traitement</strong> de l'information et la vitesse de réaction</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2 sm:gap-3">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
                       <span><strong>La capacité de coordination</strong> des mouvements et les fonctions exécutives d'inhibition</span>
                     </li>

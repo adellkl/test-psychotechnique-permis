@@ -95,6 +95,11 @@ export default function AboutCenterSelector() {
           ))}
         </div>
 
+        {/* Titre principal - Prend toute la largeur */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 lg:mb-12 leading-tight text-center lg:text-left">
+          {currentCenter.title}
+        </h1>
+
         {/* Contenu du centre sélectionné - Responsive */}
         <div
           key={currentCenter.id}
@@ -102,9 +107,6 @@ export default function AboutCenterSelector() {
         >
           {/* Colonne texte */}
           <div className="order-2 lg:order-1">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-              {currentCenter.title}
-            </h1>
 
             <div className="space-y-4 sm:space-y-6">
               <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
@@ -189,7 +191,7 @@ export default function AboutCenterSelector() {
                 priority
               />
             </div>
-            <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-white p-3 sm:p-4 rounded-xl shadow-lg">
+            <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-white p-3 sm:p-4 rounded-xl shadow-lg z-10">
               <div className="text-center">
                 <div className="text-xl sm:text-2xl font-bold text-blue-600">90€</div>
                 <div className="text-xs sm:text-sm text-gray-600">Test complet</div>
@@ -198,14 +200,17 @@ export default function AboutCenterSelector() {
           </div>
         </div>
 
-        {/* Indicateurs - Responsive */}
+        {/* Indicateurs de pagination - Visible sur tous les formats */}
         <div className="flex justify-center gap-2 mt-8 sm:mt-12">
           {centers.map((_, index) => (
             <button
               key={index}
               onClick={() => setSelectedCenter(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${selectedCenter === index ? 'w-8 bg-blue-600' : 'w-2 bg-gray-300'
-                }`}
+              className={`h-2 rounded-full transition-all duration-300 hover:scale-110 ${
+                selectedCenter === index 
+                  ? 'w-8 bg-blue-600 shadow-md' 
+                  : 'w-2 bg-gray-300 hover:bg-gray-400'
+              }`}
               aria-label={`Sélectionner le centre ${index + 1}`}
             />
           ))}

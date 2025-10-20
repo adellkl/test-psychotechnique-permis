@@ -34,33 +34,9 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Hero Section Moderne */}
-      <section className="relative pt-24 pb-12 overflow-hidden">
-        {/* Particules décoratives */}
-        <motion.div
-          className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full"
-          animate={{ y: [0, -20, 0], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute top-40 right-20 w-3 h-3 bg-indigo-400 rounded-full"
-          animate={{ y: [0, 30, 0], opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-        />
-        <motion.div
-          className="absolute bottom-20 left-1/4 w-2.5 h-2.5 bg-purple-400 rounded-full"
-          animate={{ y: [0, -25, 0], opacity: [0.4, 0.9, 0.4] }}
-          transition={{ duration: 6, repeat: Infinity, delay: 2 }}
-        />
-
+      <section className="relative pt-24 pb-12">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto"
-          >
-
-          </motion.div>
+          <div className="h-4"></div>
         </div>
       </section>
 
@@ -116,12 +92,13 @@ export default function ContactPage() {
               </button>
             </div>
 
-            {/* Informations du centre sélectionné avec animation simple */}
+            {/* Informations du centre sélectionné avec animation améliorée */}
             <motion.div
               key={selectedCenter}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="bg-white/70 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6 flex-1 flex flex-col justify-center"
             >
               <div className="space-y-4">
@@ -146,7 +123,8 @@ export default function ContactPage() {
                   variants={{
                     visible: {
                       transition: {
-                        staggerChildren: 0.1
+                        staggerChildren: 0.08,
+                        delayChildren: 0.1
                       }
                     }
                   }}
@@ -208,21 +186,38 @@ export default function ContactPage() {
                     <p className="text-base text-gray-700 font-medium">{centers[selectedCenter].metro}</p>
                   </motion.div>
 
-                  <motion.a
+                  <motion.div
                     variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0 }
+                      hidden: { opacity: 0, y: 20, scale: 0.95 },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        transition: {
+                          type: "spring",
+                          stiffness: 200,
+                          damping: 15
+                        }
+                      }
                     }}
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(centers[selectedCenter].address + ', ' + centers[selectedCenter].city)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-xl group mt-4"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <svg className="w-5 h-5 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
-                    </svg>
-                    Obtenir l'itinéraire
-                  </motion.a>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(centers[selectedCenter].address + ', ' + centers[selectedCenter].city)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all text-base font-bold flex items-center justify-center gap-3 shadow-lg hover:shadow-2xl group"
+                    >
+                      <svg className="w-6 h-6 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+                      </svg>
+                      <span className="group-hover:tracking-wide transition-all duration-300">Obtenir l'itinéraire</span>
+                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </a>
+                  </motion.div>
                 </motion.div>
               </div>
             </motion.div>
@@ -267,6 +262,7 @@ export default function ContactPage() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
+                title={`Carte Google Maps - ${centers[selectedCenter].name}`}
                 className="w-full h-[500px] rounded-xl"
               ></iframe>
 

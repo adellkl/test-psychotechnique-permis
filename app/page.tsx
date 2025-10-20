@@ -97,16 +97,14 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-                <div className="relative h-48 rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-
-                  </div>
-                  <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900">
+                <div className="relative h-48 rounded-lg overflow-hidden bg-transparent flex items-center justify-center">
+                  <Image
+                    src="/Illustrations/Subway-bro.svg"
+                    alt="Illustration métro - Accès centre test psychotechnique"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900 z-10">
                     📍 Clichy - Ligne 13
                   </div>
                 </div>
@@ -127,16 +125,14 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-                <div className="relative h-32 rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
-                      </svg>
-                    </div>
-                    <p className="text-emerald-800 font-semibold text-sm">Paiement sécurisé</p>
-                  </div>
-                  <div className="absolute top-3 right-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                <div className="relative h-32 rounded-lg overflow-hidden bg-transparent flex items-center justify-center">
+                  <Image
+                    src="/Illustrations/Cash Payment-bro.svg"
+                    alt="Illustration paiement sur place"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute top-3 right-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg z-10">
                     90€
                   </div>
                 </div>
