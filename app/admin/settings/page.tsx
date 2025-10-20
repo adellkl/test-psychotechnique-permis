@@ -10,7 +10,7 @@ function AdminSettingsContent() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
-  
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -227,7 +227,7 @@ function AdminSettingsContent() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="06 12 34 56 78"
+                  placeholder="06 ** ** ** **"
                 />
               </div>
 
@@ -352,9 +352,9 @@ function AdminSettingsContent() {
               </svg>
               Zone de danger
             </h2>
-            
+
             <p className="text-gray-600 mb-4">Actions irréversibles</p>
-            
+
             <button
               onClick={logout}
               className="px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"

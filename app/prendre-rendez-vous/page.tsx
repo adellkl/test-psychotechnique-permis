@@ -59,11 +59,11 @@ export default function RendezVous() {
     setSelectedDate(date)
     setSelectedTime(time)
     
-    // Scroll vers le bouton Continuer après sélection du créneau
+    // Scroll léger juste en dessous de la sélection pour voir le bouton Continuer
     setTimeout(() => {
       if (continueButtonRef.current) {
         const elementPosition = continueButtonRef.current.getBoundingClientRect().top + window.pageYOffset
-        const offsetPosition = elementPosition - 150
+        const offsetPosition = elementPosition - 250 // Plus d'espace pour ne pas voir la FAQ
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
@@ -176,7 +176,19 @@ export default function RendezVous() {
 
       setSuccess(true)
       setStep(3)
-      scrollToTop()
+      
+      // Scroll vers le titre "Rendez-vous Confirmé" après un court délai
+      setTimeout(() => {
+        const successSection = document.querySelector('h2')
+        if (successSection && successSection.textContent?.includes('Rendez-vous Confirmé')) {
+          const elementPosition = successSection.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          })
+        }
+      }, 100)
 
       fetch('/api/send-appointment-emails', {
         method: 'POST',
