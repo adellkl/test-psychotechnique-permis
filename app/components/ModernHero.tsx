@@ -63,7 +63,7 @@ export default function ModernHero() {
   const itemTransition = useMemo(() => ({ duration: 0.4 }), [])
 
   return (
-    <section className="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 overflow-hidden h-screen flex items-center justify-center pt-20">
+    <section className="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 overflow-hidden min-h-screen flex items-center justify-center pt-24 sm:pt-20">
       {/* Overlay to hide content below */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent z-10"></div>
       {/* Animated Grid Background */}
@@ -142,19 +142,19 @@ export default function ModernHero() {
         />
       ))}
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full h-full flex items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full h-full flex items-center py-8 sm:py-0">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid lg:grid-cols-2 gap-12 items-center text-left"
+          className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center text-left w-full"
         >
           {/* Left Content */}
-          <div className="space-y-8 z-10">
+          <div className="space-y-6 sm:space-y-8 z-10">
             {/* Title */}
-            <motion.div variants={itemVariants} className="space-y-4">
+            <motion.div variants={itemVariants} className="space-y-3 sm:space-y-4">
               <motion.h1
-                className="text-3xl sm:text-5xl lg:text-7xl font-bold leading-tight"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold leading-tight"
                 style={{
                   background: 'linear-gradient(to right, #fff, #93c5fd)',
                   WebkitBackgroundClip: 'text',
@@ -192,9 +192,21 @@ export default function ModernHero() {
                 </motion.span>
               </motion.h1>
 
+              {/* Badge 2 Centres */}
+              <motion.div
+                variants={itemVariants}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-400/30 rounded-full backdrop-blur-sm"
+              >
+                <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-blue-300 font-semibold text-sm">2 Centres : Clichy & Colombes</span>
+              </motion.div>
+
               <motion.p
                 variants={itemVariants}
-                className="text-base sm:text-lg lg:text-xl text-gray-300 max-w-2xl"
+                className="text-sm sm:text-base lg:text-lg xl:text-xl text-gray-300 max-w-2xl"
               >
                 En cas d'échec, une deuxième chance vous sera accordée{' '}
                 <span className="font-bold text-emerald-400">gratuitement !</span>
@@ -204,16 +216,16 @@ export default function ModernHero() {
             {/* CTA Buttons */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start"
+              className="flex flex-col sm:flex-row gap-3 justify-start"
             >
-              <motion.div 
-                whileHover={{ scale: 1.05 }} 
+              <motion.div
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
               >
                 <Link
                   href="tel:0765565379"
-                  className="group relative inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold text-base sm:text-lg overflow-hidden shadow-lg shadow-blue-500/50"
+                  className="group relative inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold text-sm sm:text-base overflow-hidden shadow-lg shadow-blue-500/50"
                 >
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-300"
@@ -228,14 +240,14 @@ export default function ModernHero() {
                 </Link>
               </motion.div>
 
-              <motion.div 
-                whileHover={{ scale: 1.05 }} 
+              <motion.div
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
               >
                 <Link
                   href="/rendez-vous"
-                  className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl font-semibold text-base sm:text-lg hover:bg-white/20 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl font-semibold text-sm sm:text-base hover:bg-white/20 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
@@ -248,35 +260,35 @@ export default function ModernHero() {
             {/* Mobile Info Pills */}
             <motion.div
               variants={itemVariants}
-              className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8"
+              className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3"
             >
-              <div className="flex items-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full">
+              <div className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full">
                 <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-white text-sm font-medium">Clichy (92)</span>
+                <span className="text-white text-xs sm:text-sm font-medium">Clichy (92)</span>
               </div>
 
-              <a href="tel:0765565379" className="flex items-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 transition-colors">
+              <a href="tel:0765565379" className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 transition-colors">
                 <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                <span className="text-white text-sm font-medium">07 65 56 53 79</span>
+                <span className="text-white text-xs sm:text-sm font-medium">07 65 56 53 79</span>
               </a>
 
-              <a href="mailto:contact@test-psychotechnique-permis.com" className="flex items-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 transition-colors sm:col-span-2">
+              <a href="mailto:contact@test-psychotechnique-permis.com" className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 transition-colors sm:col-span-2">
                 <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                <span className="text-white text-sm font-medium">contact@test-psychotechnique-permis.com</span>
+                <span className="text-white text-xs sm:text-sm font-medium truncate">contact@test-psychotechnique-permis.com</span>
               </a>
 
-              <div className="flex items-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full sm:col-span-2">
+              <div className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full sm:col-span-2">
                 <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                 </svg>
-                <span className="text-white text-sm font-medium">Lun-Sam 9h-19h</span>
+                <span className="text-white text-xs sm:text-sm font-medium">Lun-Sam 9h-19h</span>
               </div>
             </motion.div>
 
@@ -351,7 +363,7 @@ export default function ModernHero() {
                 }}
                 transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
               />
-              
+
               {/* Particules côté droit */}
               <motion.div
                 className="absolute -top-6 right-16 w-2 h-2 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"
@@ -403,7 +415,7 @@ export default function ModernHero() {
                 }}
                 transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
               />
-              
+
               {/* Particules en haut et en bas */}
               <motion.div
                 className="absolute -top-10 left-1/2 w-2 h-2 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50"
@@ -534,7 +546,7 @@ export default function ModernHero() {
                             <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                             </svg>
-                            <p className="text-sm text-gray-700">06 12 34 56 78</p>
+                            <p className="text-sm text-gray-700">06 ** ** ** **</p>
                           </div>
                         </div>
                       </div>

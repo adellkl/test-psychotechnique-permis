@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useCenterContext } from '../context/CenterContext'
 
 interface SidebarProps {
   activeSection: string
@@ -12,14 +13,10 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeSection, onSectionChange, adminName, onLogout, isCollapsed: externalIsCollapsed, setIsCollapsed: externalSetIsCollapsed }: SidebarProps) {
-  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut en desktop)
-  const [internalIsCollapsed, setInternalIsCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('admin_sidebar_collapsed')
-      return saved ? JSON.parse(saved) : false // Ouvert par défaut
-    }
-    return false
-  })
+  const { centers, selectedCenterId, setSelectedCenterId, loadingCenters } = useCenterContext()
+  
+  // Toujours ouvert par défaut, ignorer localStorage
+  const [internalIsCollapsed, setInternalIsCollapsed] = useState(false)
 
   const isCollapsed = externalIsCollapsed !== undefined ? externalIsCollapsed : internalIsCollapsed
   const setIsCollapsed = (collapsed: boolean) => {
@@ -28,10 +25,7 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
     } else {
       setInternalIsCollapsed(collapsed)
     }
-    // Sauvegarder la préférence dans localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
-    }
+    // Ne plus sauvegarder dans localStorage pour garder toujours ouvert
   }
 
   const menuItems = [
@@ -43,6 +37,16 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       )
+    },
+    {
+      id: 'completed',
+      label: 'RDV Terminés',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      href: '/admin/completed'
     },
     {
       id: 'slots',
@@ -114,6 +118,48 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
             </button>
           </div>
         </div>
+
+        {/* Sélecteur de Centre */}
+        {!loadingCenters && centers.length > 0 && !isCollapsed && (
+          <div className="p-4 border-b border-blue-700">
+            <label className="block text-xs font-bold text-blue-200 mb-3 uppercase tracking-wider flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Centre actif
+            </label>
+            <div className="relative">
+              <select
+                value={selectedCenterId || ''}
+                onChange={(e) => setSelectedCenterId(e.target.value)}
+                className="w-full px-4 py-3.5 bg-gradient-to-br from-blue-800 via-blue-700 to-blue-800 border-2 border-blue-500/50 rounded-xl text-white font-semibold text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all cursor-pointer appearance-none"
+                style={{ paddingRight: '2.5rem' }}
+              >
+                {centers.map((center) => (
+                  <option key={center.id} value={center.id} className="bg-blue-900 font-semibold py-2 text-white">
+                    📍 {center.name}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+            <div className="mt-3 px-3 py-2 bg-blue-900/50 rounded-lg border border-blue-600/30">
+              <div className="flex items-center gap-2">
+                <svg className="w-3.5 h-3.5 text-blue-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                <p className="text-xs text-blue-200 font-medium">
+                  {centers.find(c => c.id === selectedCenterId)?.city}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

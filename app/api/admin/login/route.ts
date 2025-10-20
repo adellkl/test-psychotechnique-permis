@@ -1,46 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '../../../../lib/supabase-server'
-import * as bcrypt from 'bcryptjs'
+import { validateAdminPassword, generateSessionToken, logAdminAction } from '../../../../lib/adminAuth'
+import { getRateLimitKey, checkRateLimit, securityMiddleware } from '../../../../lib/security'
+import { sanitizeString, isValidEmail } from '../../../../lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
+    // Sécurité : Rate limiting strict sur login (3 tentatives par 5 minutes par IP)
+    const ip = getRateLimitKey(request)
+    const { allowed } = checkRateLimit(`admin-login:${ip}`, 3, 300000)
+    
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Trop de tentatives de connexion. Veuillez réessayer dans 5 minutes.' },
+        { status: 429 }
+      )
+    }
+
+    // Sécurité : Validation de l'origine
+    const securityCheck = securityMiddleware(request, { validateOrigin: true })
+    if (securityCheck) return securityCheck
+
     const { email, password } = await request.json()
 
+    // Validation des entrées
     if (!email || !password) {
       return NextResponse.json({ error: 'Email et mot de passe requis' }, { status: 400 })
     }
 
-    // Récupérer l'admin
-    const { data: admin, error: fetchError } = await supabaseServer
-      .from('admins')
-      .select('*')
-      .eq('email', email.toLowerCase())
-      .single()
-
-    if (fetchError || !admin) {
-      console.error('Admin not found:', fetchError)
-      return NextResponse.json({ error: 'Email ou mot de passe incorrect' }, { status: 401 })
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Email invalide' }, { status: 400 })
     }
 
-    // Vérifier que le mot de passe existe
-    if (!admin.password_hash) {
-      console.error('Password hash is missing for admin:', admin.email)
-      return NextResponse.json({ error: 'Compte non configuré. Utilisez le script setup-admin.js' }, { status: 500 })
+    if (password.length < 6) {
+      return NextResponse.json({ error: 'Mot de passe invalide' }, { status: 400 })
     }
 
-    // Comparer le mot de passe avec bcrypt
-    const isPasswordValid = await bcrypt.compare(password, admin.password_hash)
+    // Sanitization
+    const sanitizedEmail = sanitizeString(email).toLowerCase().trim()
 
-    if (!isPasswordValid) {
-      return NextResponse.json({ error: 'Email ou mot de passe incorrect' }, { status: 401 })
+    // Validation du mot de passe avec protection timing attack
+    const { valid, admin, error } = await validateAdminPassword(sanitizedEmail, password)
+
+    if (!valid || !admin) {
+      // Log de la tentative échouée
+      await logAdminAction('unknown', 'LOGIN_FAILED', `Failed login attempt for ${sanitizedEmail}`, ip)
+      
+      return NextResponse.json({ 
+        error: error || 'Email ou mot de passe incorrect' 
+      }, { status: 401 })
     }
+
+    // Génération d'un token de session
+    const sessionToken = generateSessionToken()
+
+    // Log de la connexion réussie
+    await logAdminAction(admin.id, 'LOGIN_SUCCESS', `Successful login from ${ip}`, ip)
 
     // Retourner les données admin (sans le mot de passe)
-    const { password_hash: _, password: __, ...adminData } = admin
-
     return NextResponse.json({ 
       success: true, 
-      admin: adminData
+      admin,
+      sessionToken
     })
   } catch (error) {
     console.error('Login error:', error)

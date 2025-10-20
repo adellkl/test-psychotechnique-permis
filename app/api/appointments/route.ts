@@ -1,10 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
 import { sendAppointmentConfirmation, sendAppointmentNotificationToAdmin } from '../../../lib/emailService'
+import { validateAppointmentForm, sanitizeString } from '../../../lib/validation'
+import { securityMiddleware, getRateLimitKey, checkRateLimit } from '../../../lib/security'
 
 // POST - Create new appointment
 export async function POST(request: NextRequest) {
   try {
+    // Sécurité : Rate limiting (5 requêtes par minute par IP)
+    const ip = getRateLimitKey(request)
+    const { allowed } = checkRateLimit(ip, 5, 60000)
+    
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Trop de tentatives. Veuillez réessayer dans quelques instants.' },
+        { status: 429 }
+      )
+    }
+
+    // Sécurité : Validation de l'origine
+    const securityCheck = securityMiddleware(request, { validateOrigin: true })
+    if (securityCheck) return securityCheck
+
     const body = await request.json()
     const {
       first_name,
@@ -19,9 +36,34 @@ export async function POST(request: NextRequest) {
       client_notes
     } = body
 
-    // Validate required fields
-    if (!first_name || !last_name || !email || !phone || !appointment_date || !appointment_time || !test_type || !reason) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    // Validation complète des données
+    const validation = validateAppointmentForm({
+      firstName: first_name,
+      lastName: last_name,
+      email,
+      phone,
+      reason,
+      notes: client_notes,
+      date: appointment_date,
+      time: appointment_time
+    })
+
+    if (!validation.isValid) {
+      return NextResponse.json({ 
+        error: 'Données invalides', 
+        details: validation.errors 
+      }, { status: 400 })
+    }
+
+    // Sanitization des données
+    const sanitizedData = {
+      first_name: sanitizeString(first_name),
+      last_name: sanitizeString(last_name),
+      email: email.toLowerCase().trim(),
+      phone: phone.replace(/\s/g, ''),
+      test_type: sanitizeString(test_type),
+      reason: sanitizeString(reason),
+      client_notes: client_notes ? sanitizeString(client_notes) : null
     }
 
     // Check if slot is still available
@@ -53,21 +95,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'This time slot is already booked' }, { status: 400 })
     }
 
-    // Create the appointment
+    // Create the appointment avec données sanitizées
     const appointmentData = {
-      first_name,
-      last_name,
-      email,
-      phone,
+      first_name: sanitizedData.first_name,
+      last_name: sanitizedData.last_name,
+      email: sanitizedData.email,
+      phone: sanitizedData.phone,
       appointment_date,
       appointment_time,
-      duration_minutes: 40, // 40 minutes
-      test_type,
-      reason,
+      duration_minutes: 40,
+      test_type: sanitizedData.test_type,
+      reason: sanitizedData.reason,
       is_second_chance,
-      status: 'confirmed', // Confirmé automatiquement par défaut
-      client_notes: client_notes || null,
-      center_id: '11111111-1111-1111-1111-111111111111', // Centre par défaut (Clichy)
+      status: 'confirmed',
+      client_notes: sanitizedData.client_notes,
+      center_id: '11111111-1111-1111-1111-111111111111',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
@@ -82,7 +124,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: createError.message }, { status: 500 })
     }
 
-    // Notifications désactivées - table supprimée de la base de données
+    // Notifications désactivées - table supprimée
     console.log('📧 Envoi des emails de confirmation...')
     console.log('📧 Configuration:', {
       ADMIN_EMAIL: process.env.ADMIN_EMAIL,

@@ -36,7 +36,11 @@ export async function POST(request: NextRequest) {
       appointment_time: appointmentData.appointment_time,
       reason: appointmentData.reason ? sanitizeString(appointmentData.reason) : '',
       appointment_id: appointmentData.appointment_id,
-      created_at: appointmentData.created_at
+      created_at: appointmentData.created_at,
+      center_name: appointmentData.center_name ? sanitizeString(appointmentData.center_name) : 'Centre de Clichy',
+      center_address: appointmentData.center_address ? sanitizeString(appointmentData.center_address) : '82 Rue Henri Barbusse',
+      center_city: appointmentData.center_city ? sanitizeString(appointmentData.center_city) : 'Clichy',
+      center_postal_code: appointmentData.center_postal_code ? sanitizeString(appointmentData.center_postal_code) : '92110'
     }
 
     console.log('📧 Sending emails for appointment:', {

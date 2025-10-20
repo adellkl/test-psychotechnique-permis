@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../../lib/supabase'
-import { validateSlotCreation, sanitizeString, isValidFutureDate, isValidTime } from '../../../../lib/validation'
+import { validateSlotCreation, sanitizeString, isValidTime } from '../../../../lib/validation'
+import { requireAdmin } from '../../../../lib/adminAuth'
+import { getRateLimitKey } from '../../../../lib/security'
 
-// GET - Fetch available slots
+// GET - Fetch available slots (public, pas besoin d'auth)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -34,18 +36,25 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create new slot
+// POST - Create new slot (admin uniquement)
 export async function POST(request: NextRequest) {
   try {
+    // Sécurité : Authentification admin requise
+    const authResult = await requireAdmin(request, {
+      rateLimit: { maxRequests: 20, windowMs: 60000 }
+    })
+    
+    if (authResult instanceof NextResponse) return authResult
+    const { admin } = authResult
+
     const body = await request.json()
     const { date, start_time, end_time, is_available = true } = body
 
-    // Validate required fields
     if (!date || !start_time || !end_time) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Validate date and time
+    // Validation
     const validation = validateSlotCreation({ date, time: start_time })
     if (!validation.isValid) {
       return NextResponse.json({ 
@@ -54,12 +63,11 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Additional validation for end_time
     if (!isValidTime(end_time)) {
       return NextResponse.json({ error: 'Invalid end time format' }, { status: 400 })
     }
 
-    // Sanitize inputs (dates and times are already validated)
+    // Sanitization
     const sanitizedDate = sanitizeString(date)
     const sanitizedStartTime = sanitizeString(start_time)
     const sanitizedEndTime = sanitizeString(end_time)
@@ -71,6 +79,7 @@ export async function POST(request: NextRequest) {
         start_time: sanitizedStartTime,
         end_time: sanitizedEndTime,
         is_available,
+        center_id: '11111111-1111-1111-1111-111111111111',
         max_appointments: 1
       }])
       .select()
@@ -79,15 +88,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Log de l'action
+    const ip = getRateLimitKey(request)
+    const { logAdminAction } = await import('../../../../lib/adminAuth')
+    await logAdminAction(admin.id, 'CREATE_SLOT', `Created slot for ${sanitizedDate} at ${sanitizedStartTime}`, ip)
+
     return NextResponse.json({ slot: data[0] }, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// PUT - Update slot
+// PUT - Update slot (admin uniquement)
 export async function PUT(request: NextRequest) {
   try {
+    // Sécurité : Authentification admin requise
+    const authResult = await requireAdmin(request, {
+      rateLimit: { maxRequests: 20, windowMs: 60000 }
+    })
+    
+    if (authResult instanceof NextResponse) return authResult
+    const { admin } = authResult
+
     const body = await request.json()
     const { id, is_available } = body
 
@@ -95,12 +117,12 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 })
     }
 
-    // Validate ID format (should be UUID)
-    if (typeof id !== 'string' || id.length < 10) {
+    // Validation UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(id)) {
       return NextResponse.json({ error: 'Invalid slot ID format' }, { status: 400 })
     }
 
-    // Validate is_available is boolean
     if (typeof is_available !== 'boolean') {
       return NextResponse.json({ error: 'is_available must be a boolean' }, { status: 400 })
     }
@@ -115,15 +137,29 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Log de l'action
+    const ip = getRateLimitKey(request)
+    const { logAdminAction } = await import('../../../../lib/adminAuth')
+    await logAdminAction(admin.id, 'UPDATE_SLOT', `Updated slot ${id} availability to ${is_available}`, ip)
+
     return NextResponse.json({ slot: data[0] })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// DELETE - Delete slot
+// DELETE - Delete slot (admin uniquement avec permissions élevées)
 export async function DELETE(request: NextRequest) {
   try {
+    // Sécurité : Authentification admin requise avec permissions élevées
+    const authResult = await requireAdmin(request, {
+      requireRole: ['super_admin', 'admin'],
+      rateLimit: { maxRequests: 10, windowMs: 60000 }
+    })
+    
+    if (authResult instanceof NextResponse) return authResult
+    const { admin } = authResult
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
@@ -131,8 +167,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 })
     }
 
-    // Validate ID format
-    if (id.length < 10) {
+    // Validation UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(id)) {
       return NextResponse.json({ error: 'Invalid slot ID format' }, { status: 400 })
     }
 
@@ -144,6 +181,11 @@ export async function DELETE(request: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
+    // Log de l'action
+    const ip = getRateLimitKey(request)
+    const { logAdminAction } = await import('../../../../lib/adminAuth')
+    await logAdminAction(admin.id, 'DELETE_SLOT', `Deleted slot ${id}`, ip)
 
     return NextResponse.json({ message: 'Slot deleted successfully' })
   } catch (error) {

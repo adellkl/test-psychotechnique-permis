@@ -9,6 +9,7 @@ interface CalendarProps {
   onSlotSelect: (date: string, time: string) => void
   selectedDate?: string
   selectedTime?: string
+  centerId?: string
 }
 
 interface CalendarDay {
@@ -18,7 +19,7 @@ interface CalendarDay {
   isCurrentMonth: boolean
 }
 
-export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: CalendarProps) {
+export default function Calendar({ onSlotSelect, selectedDate, selectedTime, centerId }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDateState, setSelectedDateState] = useState<Date | null>(null)
   const [selectedTimeState, setSelectedTimeState] = useState<string | null>(null)
@@ -29,7 +30,7 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
 
   useEffect(() => {
     fetchAvailableSlots()
-  }, [currentDate, viewMode])
+  }, [currentDate, viewMode, centerId])
 
   const fetchAvailableSlots = async () => {
     try {
@@ -37,7 +38,8 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
       const startDate = format(startOfMonth(currentDate), 'yyyy-MM-dd')
       const endDate = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
-      const response = await fetch(`/api/available-slots?startDate=${startDate}&endDate=${endDate}`)
+      const centerParam = centerId ? `&centerId=${centerId}` : ''
+      const response = await fetch(`/api/available-slots?startDate=${startDate}&endDate=${endDate}${centerParam}`)
       if (!response.ok) {
         throw new Error('Failed to fetch available slots')
       }
@@ -219,10 +221,10 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime }: C
                           onClick={() => handleSlotClick(slot.date, slot.start_time)}
                           disabled={slot.isPending}
                           className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${selectedDate === slot.date && selectedTime === slot.start_time
-                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
-                              : slot.isPending
-                                ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
-                                : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
+                            : slot.isPending
+                              ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
+                              : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
                             }`}
                         >
                           <div className="flex items-center justify-center gap-2">

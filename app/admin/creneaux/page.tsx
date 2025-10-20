@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
+import type { Center } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
+import { useCenterContext } from '../context/CenterContext'
 import Sidebar from '../components/Sidebar'
 import SlotsCalendar from '../components/SlotsCalendar'
 import AddSlotModal from '../components/AddSlotModal'
@@ -22,6 +24,7 @@ interface TimeSlot {
   appointment_id?: string
   client_name?: string
   booking_status?: string
+  center_id?: string
 }
 
 export default function TimeSlotManagement() {
@@ -33,13 +36,13 @@ export default function TimeSlotManagement() {
 }
 
 function TimeSlotContent() {
+  const { selectedCenterId } = useCenterContext()
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(true)
   const [admin, setAdmin] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddForm, setShowAddForm] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  // Notifications UI removed
   const [notification, setNotification] = useState<null | { type: 'success' | 'error', message: string }>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
@@ -53,28 +56,31 @@ function TimeSlotContent() {
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('admin_sidebar_collapsed')
-      return saved ? JSON.parse(saved) : false
-    }
-    return false
-  })
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [newSlot, setNewSlot] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
     time: '09:00'
   })
 
-  const timeOptions = [
-    '08:00', '08:20', '08:40', '09:00', '09:20', '09:40',
-    '10:00', '10:20', '10:40', '11:00', '11:20', '11:40',
-    '12:00', '12:20', '12:40', '13:00', '13:20', '13:40',
-    '14:00', '14:20', '14:40', '15:00', '15:20', '15:40',
-    '16:00', '16:20', '16:40', '17:00', '17:20', '17:40',
-    '18:00', '18:20', '18:40', '19:00', '19:20', '19:40',
-    '20:00', '20:20', '20:40', '21:00'
-  ]
+  // Générer les options d'horaires de 8h à 21h par intervalles de 20 minutes
+  const generateTimeOptions = (): string[] => {
+    const options: string[] = []
+    const startHour = 8
+    const endHour = 21
+    const intervalMinutes = 20
+    const totalMinutes = (endHour - startHour) * 60
+
+    for (let minutes = 0; minutes <= totalMinutes; minutes += intervalMinutes) {
+      const hour = startHour + Math.floor(minutes / 60)
+      const minute = minutes % 60
+      if (hour > endHour || (hour === endHour && minute > 0)) break
+      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+      options.push(timeString)
+    }
+    return options
+  }
+
+  const timeOptions = generateTimeOptions()
 
   useEffect(() => {
     const adminSession = localStorage.getItem('admin_session')
@@ -89,8 +95,10 @@ function TimeSlotContent() {
   }, [])
 
   useEffect(() => {
-    fetchTimeSlots()
-  }, [selectedDate])
+    if (selectedCenterId) {
+      fetchTimeSlots()
+    }
+  }, [selectedDate, selectedCenterId])
 
   const fetchTimeSlots = async () => {
     try {
@@ -98,22 +106,36 @@ function TimeSlotContent() {
       const startDate = format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
       const endDate = format(addDays(startOfWeek(selectedDate, { weekStartsOn: 1 }), 6), 'yyyy-MM-dd')
 
-      const { data: slots, error: slotsError } = await supabase
+      // Filtrer par centre sélectionné
+      let query = supabase
         .from('available_slots')
         .select('*')
         .gte('date', startDate)
         .lte('date', endDate)
+      
+      if (selectedCenterId) {
+        query = query.eq('center_id', selectedCenterId)
+      }
+
+      const { data: slots, error: slotsError } = await query
         .order('date')
         .order('start_time')
 
       if (slotsError) throw slotsError
 
-      const { data: appointments, error: appointmentsError } = await supabase
+      // Filtrer les rendez-vous par centre également
+      let appointmentsQuery = supabase
         .from('appointments')
-        .select('id, appointment_date, appointment_time, first_name, last_name, status')
+        .select('id, appointment_date, appointment_time, first_name, last_name, status, center_id')
         .gte('appointment_date', startDate)
         .lte('appointment_date', endDate)
         .in('status', ['confirmed', 'completed'])
+      
+      if (selectedCenterId) {
+        appointmentsQuery = appointmentsQuery.eq('center_id', selectedCenterId)
+      }
+
+      const { data: appointments, error: appointmentsError } = await appointmentsQuery
 
       if (appointmentsError) throw appointmentsError
 
@@ -173,25 +195,17 @@ function TimeSlotContent() {
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('available_slots')
         .insert([{
           date: newSlot.date,
           start_time: newSlot.time,
           end_time: endTime,
           is_available: true,
-          center_id: '11111111-1111-1111-1111-111111111111'
+          center_id: selectedCenterId
         }])
-        .select()
 
-      if (error) {
-        console.error('Supabase error:', error)
-        setToast({
-          type: 'error',
-          message: `Erreur: ${error.message}`
-        })
-        return
-      }
+      if (error) throw error
 
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
@@ -203,17 +217,9 @@ function TimeSlotContent() {
         date: format(new Date(), 'yyyy-MM-dd'),
         time: '09:00'
       })
-      setToast({
-        type: 'success',
-        message: 'Créneau créé avec succès!'
-      })
       fetchTimeSlots()
     } catch (error) {
       console.error('Error adding time slot:', error)
-      setToast({
-        type: 'error',
-        message: 'Erreur lors de la création du créneau'
-      })
     }
   }
 
@@ -235,29 +241,17 @@ function TimeSlotContent() {
         date: dateStr,
         start_time: newSlot.time,
         end_time: endTime,
-        is_available: true
+        is_available: true,
+        center_id: selectedCenterId
       })
     }
 
     try {
-      const slotsWithCenter = slotsToAdd.map(slot => ({
-        ...slot,
-        center_id: '11111111-1111-1111-1111-111111111111'
-      }))
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('available_slots')
-        .insert(slotsWithCenter)
-        .select()
+        .insert(slotsToAdd)
 
-      if (error) {
-        console.error('Supabase error:', error)
-        setToast({
-          type: 'error',
-          message: `Erreur: ${error.message}`
-        })
-        return
-      }
+      if (error) throw error
 
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
@@ -265,17 +259,9 @@ function TimeSlotContent() {
       )
 
       setShowAddForm(false)
-      setToast({
-        type: 'success',
-        message: `${slotsToAdd.length} créneaux créés avec succès!`
-      })
       fetchTimeSlots()
     } catch (error) {
       console.error('Error adding multiple slots:', error)
-      setToast({
-        type: 'error',
-        message: 'Erreur lors de la création des créneaux'
-      })
     }
   }
 
@@ -301,30 +287,18 @@ function TimeSlotContent() {
           date: dateStr,
           start_time: time,
           end_time: endTime,
-          is_available: true
-        })
+          is_available: true,
+          center_id: selectedCenterId || '11111111-1111-1111-1111-111111111111'
+        } as any)
       })
     }
 
     try {
-      const slotsWithCenter = slotsToAdd.map(slot => ({
-        ...slot,
-        center_id: '11111111-1111-1111-1111-111111111111'
-      }))
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('available_slots')
-        .insert(slotsWithCenter)
-        .select()
+        .insert(slotsToAdd)
 
-      if (error) {
-        console.error('Supabase error:', error)
-        setToast({
-          type: 'error',
-          message: `Erreur: ${error.message}`
-        })
-        return
-      }
+      if (error) throw error
 
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
@@ -333,16 +307,12 @@ function TimeSlotContent() {
 
       setShowAddForm(false)
       fetchTimeSlots()
-      setToast({
-        type: 'success',
-        message: `${slotsToAdd.length} créneaux créés avec succès!`
-      })
+      setNotification({ type: 'success', message: `${slotsToAdd.length} créneaux créés avec succès!` })
+      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error adding bulk slots:', error)
-      setToast({
-        type: 'error',
-        message: 'Erreur lors de la création en masse'
-      })
+      setNotification({ type: 'error', message: 'Erreur lors de la création en masse' })
+      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -468,11 +438,7 @@ function TimeSlotContent() {
         adminName={admin?.full_name || 'Admin'}
         onLogout={() => setShowLogoutConfirm(true)}
         isCollapsed={sidebarCollapsed}
-        setIsCollapsed={(collapsed) => {
-          setSidebarCollapsed(collapsed)
-          // Sauvegarder la préférence
-          localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
-        }}
+        setIsCollapsed={setSidebarCollapsed}
       />
 
       <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
@@ -804,15 +770,17 @@ function TimeSlotContent() {
         </main>
       </div>
 
-      <AddSlotModal
-        isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        newSlot={newSlot}
-        setNewSlot={setNewSlot}
-        onAddSingle={addTimeSlot}
-        onAddMultiple={addMultipleSlots}
-        onAddBulk={addBulkSlots}
-      />
+      {selectedCenterId && (
+        <AddSlotModal
+          isOpen={showAddForm}
+          onClose={() => setShowAddForm(false)}
+          newSlot={newSlot}
+          setNewSlot={setNewSlot}
+          onAddSingle={addTimeSlot}
+          onAddMultiple={addMultipleSlots}
+          onAddBulk={addBulkSlots}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (

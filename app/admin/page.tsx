@@ -13,9 +13,25 @@ export default function AdminLogin() {
   const [rememberMe, setRememberMe] = useState(false)
   const [savePassword, setSavePassword] = useState(false)
 
-  // Récupérer la liste des admins au chargement
+  // Récupérer la liste des admins et les préférences sauvegardées au chargement
   useEffect(() => {
     fetchAvailableAdmins()
+
+    // Charger les identifiants sauvegardés
+    const savedEmail = localStorage.getItem('admin_saved_email')
+    const savedPassword = localStorage.getItem('admin_saved_password')
+    const wasRemembered = localStorage.getItem('admin_remember_me') === 'true'
+
+    if (savedEmail) {
+      setEmail(savedEmail)
+      setSavePassword(true)
+    }
+    if (savedPassword) {
+      setPassword(savedPassword)
+    }
+    if (wasRemembered) {
+      setRememberMe(true)
+    }
   }, [])
 
   const fetchAvailableAdmins = async () => {
@@ -65,11 +81,17 @@ export default function AdminLogin() {
       if (rememberMe) {
         localStorage.setItem('admin_remember_me', 'true')
         localStorage.setItem('admin_session_timestamp', Date.now().toString())
+      } else {
+        localStorage.removeItem('admin_remember_me')
+        localStorage.removeItem('admin_session_timestamp')
       }
 
       if (savePassword) {
         localStorage.setItem('admin_saved_email', email.toLowerCase().trim())
         localStorage.setItem('admin_saved_password', password)
+      } else {
+        localStorage.removeItem('admin_saved_email')
+        localStorage.removeItem('admin_saved_password')
       }
 
       // Rediriger vers le dashboard
@@ -83,14 +105,14 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center py-6 sm:py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 sm:w-80 sm:h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
-      <div className="w-full max-w-md relative z-10">
+      <div className="w-full max-w-md mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl sm:rounded-3xl shadow-2xl mb-4 sm:mb-6 transform hover:scale-110 transition-transform duration-300">
@@ -102,7 +124,7 @@ export default function AdminLogin() {
             Espace Administrateur
           </h1>
           <p className="text-blue-200 text-xs sm:text-sm px-4">
-            Centre de Test Psychotechnique - Clichy
+            Centre de Test Psychotechnique - Clichy et Colombes
           </p>
         </div>
 
@@ -196,34 +218,46 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
+            <div className="space-y-3">
+              <label className="relative flex items-center p-3 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-all cursor-pointer group bg-gradient-to-r from-blue-50/50 to-transparent hover:from-blue-50 hover:to-blue-50/30">
                 <input
                   id="rememberMe"
                   name="rememberMe"
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors"
+                  className="h-5 w-5 text-blue-600 focus:ring-2 focus:ring-blue-500 border-2 border-gray-300 rounded-md transition-all cursor-pointer"
                 />
-                <label htmlFor="rememberMe" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Rester connecté
-                </label>
-              </div>
+                <div className="ml-3 flex-1">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span className="text-sm font-bold text-gray-800">Rester connecté</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">Maintenir la session active pendant 30 jours</p>
+                </div>
+              </label>
 
-              <div className="flex items-center space-x-3">
+              <label className="relative flex items-center p-3 rounded-xl border-2 border-gray-200 hover:border-purple-300 transition-all cursor-pointer group bg-gradient-to-r from-purple-50/50 to-transparent hover:from-purple-50 hover:to-purple-50/30">
                 <input
                   id="savePassword"
                   name="savePassword"
                   type="checkbox"
                   checked={savePassword}
                   onChange={(e) => setSavePassword(e.target.checked)}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded transition-colors"
+                  className="h-5 w-5 text-purple-600 focus:ring-2 focus:ring-purple-500 border-2 border-gray-300 rounded-md transition-all cursor-pointer"
                 />
-                <label htmlFor="savePassword" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Se souvenir de mes identifiants
-                </label>
-              </div>
+                <div className="ml-3 flex-1">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                    <span className="text-sm font-bold text-gray-800">Se souvenir de mes identifiants</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">Pré-remplir email et mot de passe à la prochaine connexion</p>
+                </div>
+              </label>
             </div>
 
             <button

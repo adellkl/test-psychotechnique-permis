@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { CenterProvider } from '../context/CenterContext'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -83,7 +84,11 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     return null // Router will redirect
   }
 
-  return <>{children}</>
+  return (
+    <CenterProvider>
+      {children}
+    </CenterProvider>
+  )
 }
 
 export const useAdmin = () => {

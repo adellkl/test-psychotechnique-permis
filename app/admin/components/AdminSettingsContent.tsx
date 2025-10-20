@@ -57,8 +57,17 @@ export default function AdminSettingsContent() {
     setLoading(true)
 
     try {
-      const storedPassword = localStorage.getItem('admin_password') || 'admin123'
-      if (formData.currentPassword !== storedPassword) {
+      // Vérifier le mot de passe via l'API
+      const verifyResponse = await fetch('/api/admin/verify-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: adminData?.email,
+          password: formData.currentPassword
+        })
+      })
+
+      if (!verifyResponse.ok) {
         throw new Error('Mot de passe actuel incorrect')
       }
 
@@ -116,12 +125,35 @@ export default function AdminSettingsContent() {
     setLoading(true)
 
     try {
-      const storedPassword = localStorage.getItem('admin_password') || 'admin123'
-      if (formData.currentPassword !== storedPassword) {
+      // Vérifier le mot de passe actuel via l'API
+      const verifyResponse = await fetch('/api/admin/verify-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: adminData?.email,
+          password: formData.currentPassword
+        })
+      })
+
+      if (!verifyResponse.ok) {
         throw new Error('Mot de passe actuel incorrect')
       }
 
-      localStorage.setItem('admin_password', formData.newPassword)
+      // Mettre à jour le mot de passe via l'API
+      const updateResponse = await fetch('/api/admin/update-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: adminData?.email,
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword
+        })
+      })
+
+      if (!updateResponse.ok) {
+        const data = await updateResponse.json()
+        throw new Error(data.error || 'Erreur lors du changement de mot de passe')
+      }
       
       await logAdminActivity(
         AdminLogger.ACTIONS.UPDATE,

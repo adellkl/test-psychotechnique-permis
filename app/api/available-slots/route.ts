@@ -10,18 +10,26 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
+    const centerId = searchParams.get('centerId')
 
     if (!startDate || !endDate) {
       return NextResponse.json({ error: 'Start date and end date are required' }, { status: 400 })
     }
 
     // Get available slots that are not booked
-    const { data: slots, error: slotsError } = await supabase
+    let query = supabase
       .from('available_slots')
       .select('*')
       .gte('date', startDate)
       .lte('date', endDate)
       .eq('is_available', true)
+
+    // Filter by center if centerId is provided
+    if (centerId) {
+      query = query.eq('center_id', centerId)
+    }
+
+    const { data: slots, error: slotsError } = await query
       .order('date')
       .order('start_time')
 
@@ -32,12 +40,19 @@ export async function GET(request: NextRequest) {
     // Get existing appointments to check which slots are already booked
     // Only confirmed and completed appointments block the slot
     // Cancelled, pending, and no_show appointments free up the slot
-    const { data: appointments, error: appointmentsError } = await supabase
+    let appointmentsQuery = supabase
       .from('appointments')
-      .select('appointment_date, appointment_time, status')
+      .select('appointment_date, appointment_time, status, center_id')
       .gte('appointment_date', startDate)
       .lte('appointment_date', endDate)
       .in('status', ['confirmed', 'completed'])
+
+    // Filter appointments by center if centerId is provided
+    if (centerId) {
+      appointmentsQuery = appointmentsQuery.eq('center_id', centerId)
+    }
+
+    const { data: appointments, error: appointmentsError } = await appointmentsQuery
 
     if (appointmentsError) {
       return NextResponse.json({ error: appointmentsError.message }, { status: 500 })

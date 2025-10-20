@@ -7,9 +7,19 @@ export function sanitizeString(input: string): string {
   if (!input) return ''
   return input
     .trim()
+    // Protection XSS - Suppression des balises HTML et scripts
     .replace(/[<>]/g, '')
     .replace(/javascript:/gi, '')
     .replace(/on\w+=/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/file:/gi, '')
+    // Protection contre les injections SQL
+    .replace(/['";\\]/g, '')
+    .replace(/--/g, '')
+    .replace(/\/\*/g, '')
+    .replace(/\*\//g, '')
+    // Limitation de longueur
     .substring(0, 500)
 }
 
