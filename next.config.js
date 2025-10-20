@@ -106,17 +106,8 @@ const nextConfig = {
   generateEtags: true,
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   
-  // Internationalization
-  i18n: {
-    locales: ['fr'],
-    defaultLocale: 'fr',
-  },
-  
   // Trailing slash configuration
   trailingSlash: false,
-  
-  // Static optimization
-  staticPageGenerationTimeout: 60,
   
   
   // Webpack optimization for production

@@ -1,0 +1,32 @@
+# Fichiers de cache et temporaires
+.next/cache
+node_modules
+.git
+
+# Fichiers de build locaux
+build-output.txt
+*.log
+
+# Fichiers de test
+test-*.js
+*-test.js
+
+# Documentation
+*.md
+!README.md
+
+# Scripts
+scripts/
+reset-admin-account.js
+get-admin-password.js
+check-all-admins.js
+test-supabase-connection.js
+test-resend.js
+
+# Fichiers SQL
+*.sql
+
+# Fichiers sensibles (déjà dans .gitignore mais par sécurité)
+.env.local
+.env.production
+.env
