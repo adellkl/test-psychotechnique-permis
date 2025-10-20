@@ -112,9 +112,6 @@ const nextConfig = {
     defaultLocale: 'fr',
   },
   
-  // Output configuration for Vercel deployment
-  output: 'standalone',
-  
   // Trailing slash configuration
   trailingSlash: false,
   
