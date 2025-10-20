@@ -41,6 +41,7 @@ function DashboardContent() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null)
+  const [newAppointmentsCount, setNewAppointmentsCount] = useState(0)
 
   useEffect(() => {
     const adminSession = localStorage.getItem('admin_session')
@@ -58,11 +59,21 @@ function DashboardContent() {
 
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
     fetchAppointments()
+
+    // Rafraîchissement automatique toutes les 30 secondes (en mode silencieux)
+    const intervalId = setInterval(() => {
+      fetchAppointments(true)
+    }, 30000)
+
+    // Nettoyage de l'intervalle au démontage
+    return () => clearInterval(intervalId)
   }, [selectedCenterId]) // Recharger quand le centre change
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (silent = false) => {
     try {
-      setLoading(true)
+      if (!silent) {
+        setLoading(true)
+      }
       
       // Récupérer TOUS les rendez-vous sans filtre de centre
       const { data, error } = await supabase
@@ -72,6 +83,20 @@ function DashboardContent() {
         .order('appointment_time', { ascending: false })
 
       if (error) throw error
+      
+      // Détecter les nouveaux rendez-vous
+      if (silent && data) {
+        const currentIds = new Set(appointments.map(apt => apt.id))
+        const newAppointments = data.filter(apt => !currentIds.has(apt.id))
+        
+        if (newAppointments.length > 0) {
+          setNewAppointmentsCount(prev => prev + newAppointments.length)
+          setToast({
+            type: 'info',
+            message: `🔔 ${newAppointments.length} nouveau${newAppointments.length > 1 ? 'x' : ''} rendez-vous !`
+          })
+        }
+      }
       
       // Calculer la date du jour pour les RDV d'aujourd'hui
       const now = new Date()
@@ -125,7 +150,9 @@ function DashboardContent() {
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {
-      setLoading(false)
+      if (!silent) {
+        setLoading(false)
+      }
     }
   }
 
