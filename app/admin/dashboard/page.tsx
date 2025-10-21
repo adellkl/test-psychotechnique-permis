@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import type { Appointment } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
-import { useCenterContext } from '../context/CenterContext'
 import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
 import Sidebar from '../components/Sidebar'
 import AppointmentsTable from '../components/AppointmentsTable'
 import AdminSettingsContent from '../components/AdminSettingsContent'
 import SearchBar, { SearchFilters } from '../components/SearchBar'
+import NotificationsPanel from '../components/NotificationsPanel'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Toast from '../components/Toast'
 import { sendAppointmentCancellation } from '../../../lib/emailService'
@@ -23,7 +23,6 @@ export default function AdminDashboard() {
 }
 
 function DashboardContent() {
-  const { selectedCenterId, centers } = useCenterContext()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
@@ -39,9 +38,14 @@ function DashboardContent() {
     type?: 'danger' | 'warning' | 'info'
   } | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('admin_sidebar_collapsed')
+      return saved ? JSON.parse(saved) : false
+    }
+    return false
+  })
   const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null)
-  const [newAppointmentsCount, setNewAppointmentsCount] = useState(0)
 
   useEffect(() => {
     const adminSession = localStorage.getItem('admin_session')
@@ -59,23 +63,11 @@ function DashboardContent() {
 
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
     fetchAppointments()
+  }, [])
 
-    // Rafraîchissement automatique toutes les 30 secondes (en mode silencieux)
-    const intervalId = setInterval(() => {
-      fetchAppointments(true)
-    }, 30000)
-
-    // Nettoyage de l'intervalle au démontage
-    return () => clearInterval(intervalId)
-  }, [selectedCenterId]) // Recharger quand le centre change
-
-  const fetchAppointments = async (silent = false) => {
+  const fetchAppointments = async () => {
     try {
-      if (!silent) {
-        setLoading(true)
-      }
-      
-      // Récupérer TOUS les rendez-vous sans filtre de centre
+      setLoading(true)
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
@@ -84,56 +76,27 @@ function DashboardContent() {
 
       if (error) throw error
       
-      // Détecter les nouveaux rendez-vous
-      if (silent && data) {
-        const currentIds = new Set(appointments.map(apt => apt.id))
-        const newAppointments = data.filter(apt => !currentIds.has(apt.id))
-        
-        if (newAppointments.length > 0) {
-          setNewAppointmentsCount(prev => prev + newAppointments.length)
-          setToast({
-            type: 'info',
-            message: `🔔 ${newAppointments.length} nouveau${newAppointments.length > 1 ? 'x' : ''} rendez-vous !`
-          })
-        }
-      }
-      
-      // Calculer la date et l'heure actuelles pour les RDV d'aujourd'hui
+      // Auto-marquer les rendez-vous passés comme "terminé"
       const now = new Date()
       const today = now.toISOString().split('T')[0]
-      const currentTime = now.toTimeString().slice(0, 5) // Format HH:MM
+      const currentTime = now.toTimeString().slice(0, 5) // HH:MM
       
-      // Filtrer les RDV d'aujourd'hui AVANT la mise à jour automatique
-      // Exclure les RDV dont l'heure est déjà passée
-      let todayApts = (data || []).filter(apt => {
-        if (apt.appointment_date !== today) return false
-        // Si l'heure du RDV est passée, ne pas l'afficher
-        if (apt.appointment_time < currentTime) return false
-        return true
-      })
-      if (selectedCenterId) {
-        todayApts = todayApts.filter(apt => apt.center_id === selectedCenterId)
-      }
-      setTodayAppointments(todayApts)
-      
-      // Auto-marquer les rendez-vous passés comme "terminé"
-      // Inclut les RDV d'aujourd'hui dont l'heure est déjà passée
       const appointmentsToUpdate: string[] = []
       
       data?.forEach(apt => {
+        // Si le rendez-vous est confirmé et la date/heure est passée
         if (apt.status === 'confirmed') {
-          // RDV des jours précédents
-          if (apt.appointment_date < today) {
-            appointmentsToUpdate.push(apt.id)
-          }
-          // RDV d'aujourd'hui dont l'heure est passée
-          else if (apt.appointment_date === today && apt.appointment_time < currentTime) {
+          const aptDate = apt.appointment_date
+          const aptTime = apt.appointment_time.slice(0, 5)
+          
+          // Si la date est avant aujourd'hui, ou si c'est aujourd'hui mais l'heure est passée
+          if (aptDate < today || (aptDate === today && aptTime < currentTime)) {
             appointmentsToUpdate.push(apt.id)
           }
         }
       })
       
-      // Mettre à jour les rendez-vous des jours précédents en masse
+      // Mettre à jour les rendez-vous passés en masse
       if (appointmentsToUpdate.length > 0) {
         await supabase
           .from('appointments')
@@ -150,84 +113,70 @@ function DashboardContent() {
         setAppointments(updatedData || [])
         setFilteredAppointments(updatedData || [])
         
-        // Recalculer les RDV d'aujourd'hui après mise à jour (exclure ceux dont l'heure est passée)
-        let refreshedTodayApts = (updatedData || []).filter(apt => {
-          if (apt.appointment_date !== today) return false
-          if (apt.appointment_time < currentTime) return false
-          return true
-        })
-        if (selectedCenterId) {
-          refreshedTodayApts = refreshedTodayApts.filter(apt => apt.center_id === selectedCenterId)
-        }
-        setTodayAppointments(refreshedTodayApts)
+        const todayApts = (updatedData || []).filter(apt => apt.appointment_date === today)
+        setTodayAppointments(todayApts)
       } else {
         setAppointments(data || [])
         setFilteredAppointments(data || [])
+        
+        const todayApts = (data || []).filter(apt => apt.appointment_date === today)
+        setTodayAppointments(todayApts)
       }
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {
-      if (!silent) {
-        setLoading(false)
-      }
+      setLoading(false)
     }
   }
 
   useEffect(() => {
-    let filtered = appointments
-
-    // Filtrer par centre sélectionné
-    if (selectedCenterId) {
-      filtered = filtered.filter(apt => apt.center_id === selectedCenterId)
-    }
-
-    // Exclure les rendez-vous terminés de la liste principale
-    filtered = filtered.filter(apt => apt.status !== 'completed')
-
-    // Filter by search
     if (!searchFilters || !searchFilters.searchTerm) {
       if (searchFilters?.dateFrom || searchFilters?.dateTo) {
-        filtered = filtered.filter(apt => {
+        const filtered = appointments.filter(apt => {
           const aptDate = apt.appointment_date
           const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
           const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
           return fromMatch && toMatch
         })
+        setFilteredAppointments(filtered)
+      } else {
+        setFilteredAppointments(appointments)
       }
-    } else {
-      const term = searchFilters.searchTerm.toLowerCase()
-      filtered = filtered.filter(apt => {
-        const aptDate = apt.appointment_date
-        const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
-        const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
-
-        if (!fromMatch || !toMatch) return false
-
-        const fullName = `${apt.first_name} ${apt.last_name}`.toLowerCase()
-
-        switch (searchFilters.searchField) {
-          case 'name':
-            return fullName.includes(term)
-          case 'email':
-            return apt.email.toLowerCase().includes(term)
-          case 'phone':
-            return apt.phone?.toLowerCase().includes(term)
-          case 'date':
-            return apt.appointment_date.includes(term)
-          case 'all':
-          default:
-            return (
-              fullName.includes(term) ||
-              apt.email.toLowerCase().includes(term) ||
-              apt.phone?.toLowerCase().includes(term) ||
-              apt.appointment_date.includes(term)
-            )
-        }
-      })
+      return
     }
 
+    const term = searchFilters.searchTerm.toLowerCase()
+    const filtered = appointments.filter(apt => {
+      const aptDate = apt.appointment_date
+      const fromMatch = !searchFilters.dateFrom || aptDate >= searchFilters.dateFrom
+      const toMatch = !searchFilters.dateTo || aptDate <= searchFilters.dateTo
+
+      if (!fromMatch || !toMatch) return false
+
+      const fullName = `${apt.first_name} ${apt.last_name}`.toLowerCase()
+
+      switch (searchFilters.searchField) {
+        case 'name':
+          return fullName.includes(term)
+        case 'email':
+          return apt.email.toLowerCase().includes(term)
+        case 'phone':
+          return apt.phone?.toLowerCase().includes(term)
+        case 'date':
+          return apt.appointment_date.includes(term)
+        case 'all':
+        default:
+          return (
+            fullName.includes(term) ||
+            apt.email.toLowerCase().includes(term) ||
+            apt.phone?.toLowerCase().includes(term) ||
+            apt.appointment_date.includes(term)
+          )
+      }
+    })
+
     setFilteredAppointments(filtered)
-  }, [searchFilters, appointments, selectedCenterId])
+  }, [searchFilters, appointments])
 
   const handleSearch = (filters: SearchFilters) => {
     setSearchFilters(filters)
@@ -257,35 +206,29 @@ function DashboardContent() {
       onConfirm: async () => {
         setConfirmDialog(null)
         try {
-          // Utiliser l'API sécurisée au lieu de Supabase direct
-          const adminSession = localStorage.getItem('admin_session')
-          
-          if (!adminSession) {
-            throw new Error('Session expirée. Veuillez vous reconnecter.')
-          }
-          
-          const sessionData = JSON.parse(adminSession)
-          console.log('📤 Envoi requête PUT avec session:', sessionData)
-          
-          const response = await fetch('/api/admin/appointments', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-admin-session': adminSession
-            },
-            body: JSON.stringify({
-              id,
-              status,
-              admin_notes: status === 'cancelled' ? 'Annulé par l\'administrateur' : undefined
-            })
-          })
+          const { error } = await supabase
+            .from('appointments')
+            .update({ status })
+            .eq('id', id)
 
-          console.log('📥 Réponse API:', response.status)
-
-          if (!response.ok) {
-            const data = await response.json()
-            console.error('❌ Erreur API:', data)
-            throw new Error(data.error || 'Erreur lors de la mise à jour')
+          if (error) throw error
+          
+          // Si le statut est "annulé", envoyer un email au client
+          if (status === 'cancelled') {
+            try {
+              await sendAppointmentCancellation({
+                first_name: appointment.first_name,
+                last_name: appointment.last_name,
+                email: appointment.email,
+                appointment_date: appointment.appointment_date,
+                appointment_time: appointment.appointment_time,
+                reason: 'Annulé par l\'administrateur'
+              })
+              console.log('✅ Email d\'annulation envoyé au client')
+            } catch (emailError) {
+              console.error('❌ Erreur envoi email annulation client:', emailError)
+              // On continue même si l'email échoue
+            }
           }
           
           await fetchAppointments()
@@ -373,39 +316,27 @@ function DashboardContent() {
         adminName={admin?.full_name || 'Admin'}
         onLogout={handleLogoutClick}
         isCollapsed={sidebarCollapsed}
-        setIsCollapsed={setSidebarCollapsed}
+        setIsCollapsed={(collapsed) => {
+          setSidebarCollapsed(collapsed)
+          localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
+        }}
       />
 
       <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 pt-16 lg:pt-0">
           <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex-1">
+              <div>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                   {activeSection === 'appointments' && 'Gestion des rendez-vous'}
                   {activeSection === 'settings' && 'Paramètres du compte'}
                 </h1>
-                <div className="flex items-center gap-2 mt-2">
-                  <p className="text-sm sm:text-base text-gray-600">
-                    Bienvenue, {admin?.full_name}
-                  </p>
-                  {selectedCenterId && centers.length > 0 && (
-                    <>
-                      <span className="text-gray-400">•</span>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 rounded-lg">
-                        <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span className="text-xs font-semibold text-blue-700">
-                          {centers.find(c => c.id === selectedCenterId)?.name}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
+                <p className="text-sm sm:text-base text-gray-600 mt-1">
+                  Bienvenue, {admin?.full_name}
+                </p>
               </div>
               <div className="flex items-center gap-3 ml-auto">
+                <NotificationsPanel />
               </div>
             </div>
           </div>
@@ -529,9 +460,7 @@ function DashboardContent() {
               )}
 
               <div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">Tous les rendez-vous</h2>
-                </div>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Tous les rendez-vous</h2>
                 <AppointmentsTable
                   appointments={filteredAppointments}
                   onUpdateStatus={updateAppointmentStatus}

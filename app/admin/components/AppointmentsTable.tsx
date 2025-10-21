@@ -26,6 +26,7 @@ export default function AppointmentsTable({
   const [deleteAppointmentId, setDeleteAppointmentId] = useState<string | null>(null)
   const [emailAppointmentId, setEmailAppointmentId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
 
   const filteredAppointments = appointments.filter(apt => {
     const matchesFilter = filter === 'all' || apt.status === filter
@@ -251,8 +252,8 @@ export default function AppointmentsTable({
       )}
 
       {/* Desktop Table - Hidden on mobile */}
-      <div className="hidden lg:block">
-        <table className="w-full divide-y divide-gray-200">
+      <div className="hidden lg:block overflow-x-auto">
+        <table className="w-full divide-y divide-gray-200 min-w-max">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-4 text-left">
@@ -263,25 +264,25 @@ export default function AppointmentsTable({
                   className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Client
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Contact
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date & Heure
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Motif
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Notes Client
+              <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Notes
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Statut
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -299,7 +300,7 @@ export default function AppointmentsTable({
                   animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`
                 }}
               >
-                <td className="px-6 py-4">
+                <td className="px-3 py-3">
                   <input
                     type="checkbox"
                     checked={selectedAppointments.has(appointment.id)}
@@ -307,67 +308,80 @@ export default function AppointmentsTable({
                     className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 py-3 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-xs">
                       {appointment.first_name[0]}{appointment.last_name[0]}
                     </div>
-                    <div className="ml-3">
+                    <div className="ml-2">
                       <div className="text-sm font-medium text-gray-900">
                         {appointment.first_name} {appointment.last_name}
                       </div>
                       {appointment.is_second_chance && (
                         <div className="text-xs text-orange-600 font-medium">
-                          2ème chance
+                          2ème
                         </div>
                       )}
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{appointment.email}</div>
-                  <div className="text-sm text-gray-500">{appointment.phone}</div>
+                <td className="px-3 py-3 whitespace-nowrap">
+                  <div className="text-xs text-gray-900">{appointment.email}</div>
+                  <div className="text-xs text-gray-500">{appointment.phone}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
+                <td className="px-3 py-3 whitespace-nowrap">
+                  <div className="text-xs font-medium text-gray-900">
                     {new Date(appointment.appointment_date).toLocaleDateString('fr-FR', {
-                      weekday: 'short',
                       day: '2-digit',
                       month: 'short'
                     })}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-xs text-gray-500">
                     {appointment.appointment_time.slice(0, 5)}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900 capitalize">
+                <td className="px-3 py-3 whitespace-nowrap">
+                  <div className="text-xs text-gray-900 capitalize">
                     {appointment.reason}
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-600 max-w-xs">
-                    {appointment.client_notes && appointment.client_notes.trim() !== '' ? (
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
-                        <p className="text-xs text-gray-700 line-clamp-2" title={appointment.client_notes}>
-                          {appointment.client_notes}
-                        </p>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400 text-xs italic">Aucune note</span>
-                    )}
-                  </div>
+                <td className="px-3 py-3 max-w-[150px]">
+                  {appointment.client_notes && appointment.client_notes.trim() !== '' ? (
+                    <button
+                      onClick={() => {
+                        const newExpanded = new Set(expandedNotes)
+                        if (newExpanded.has(appointment.id)) {
+                          newExpanded.delete(appointment.id)
+                        } else {
+                          newExpanded.add(appointment.id)
+                        }
+                        setExpandedNotes(newExpanded)
+                      }}
+                      className="bg-yellow-50 border border-yellow-200 rounded px-2 py-1 hover:bg-yellow-100 transition-colors text-left w-full"
+                    >
+                      <p className={`text-xs text-gray-700 ${expandedNotes.has(appointment.id) ? '' : 'line-clamp-2'}`}>
+                        {appointment.client_notes}
+                      </p>
+                      {appointment.client_notes.length > 50 && (
+                        <span className="text-xs text-blue-600 font-medium mt-1 block">
+                          {expandedNotes.has(appointment.id) ? '▲ Réduire' : '▼ Voir plus'}
+                        </span>
+                      )}
+                    </button>
+                  ) : (
+                    <span className="text-gray-400 text-xs italic">-</span>
+                  )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(appointment.status)}`}>
+                <td className="px-3 py-3 whitespace-nowrap">
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(appointment.status)}`}>
                     {getStatusLabel(appointment.status)}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td className="px-3 py-3 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setEmailAppointmentId(appointment.id)}
-                      className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors"
+                      className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-1 rounded transition-colors"
                       title="Envoyer un email"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,7 +392,7 @@ export default function AppointmentsTable({
                       <>
                         <button
                           onClick={() => onUpdateStatus(appointment.id, 'completed')}
-                          className="text-green-600 hover:text-green-900 hover:bg-green-50 px-3 py-1 rounded-lg transition-colors"
+                          className="text-green-600 hover:text-green-900 hover:bg-green-50 p-1 rounded transition-colors"
                           title="Marquer comme terminé"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -387,7 +401,7 @@ export default function AppointmentsTable({
                         </button>
                         <button
                           onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
-                          className="text-red-600 hover:text-red-900 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors"
+                          className="text-red-600 hover:text-red-900 hover:bg-red-50 p-1 rounded transition-colors"
                           title="Annuler"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -399,7 +413,7 @@ export default function AppointmentsTable({
                     {appointment.status === 'cancelled' && (
                       <button
                         onClick={() => onUpdateStatus(appointment.id, 'confirmed')}
-                        className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-1 rounded transition-colors"
                         title="Restaurer"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -408,8 +422,8 @@ export default function AppointmentsTable({
                       </button>
                     )}
                     <button
-                      onClick={() => setDeleteAppointmentId(appointment.id)}
-                      className="text-gray-400 hover:text-red-600 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors"
+                      onClick={() => onDelete(appointment.id)}
+                      className="text-red-600 hover:text-red-900 hover:bg-red-50 p-1 rounded transition-colors"
                       title="Supprimer"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

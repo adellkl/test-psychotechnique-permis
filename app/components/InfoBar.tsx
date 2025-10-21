@@ -18,25 +18,12 @@ export default function InfoBar() {
             }`} suppressHydrationWarning>
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex flex-col sm:flex-row items-center justify-between py-2 sm:py-3 gap-2 sm:gap-0">
-                    {/* Centres */}
-                    <div className="flex items-center gap-3 sm:gap-6 flex-wrap justify-center sm:justify-start">
-                        {/* Clichy */}
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <span className="text-slate-400 text-xs sm:text-sm font-medium">Clichy</span>
-                            <a href="tel:0765565379" className="text-white hover:text-blue-400 text-xs sm:text-sm font-semibold transition-colors">
-                                07 65 56 53 79
-                            </a>
-                        </div>
-
-                        <div className="w-px h-4 bg-slate-700 hidden sm:block"></div>
-
-                        {/* Colombes */}
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <span className="text-slate-400 text-xs sm:text-sm font-medium">Colombes</span>
-                            <a href="tel:0765565379" className="text-white hover:text-blue-400 text-xs sm:text-sm font-semibold transition-colors">
-                                07 65 56 53 79
-                            </a>
-                        </div>
+                    {/* Centre */}
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <span className="text-slate-400 text-xs sm:text-sm font-medium">Clichy</span>
+                        <a href="tel:0765565379" className="text-white hover:text-blue-400 text-xs sm:text-sm font-semibold transition-colors">
+                            07 65 56 53 79
+                        </a>
                     </div>
 
                     {/* Horaires */}

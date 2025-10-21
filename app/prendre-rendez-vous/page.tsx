@@ -9,20 +9,8 @@ import Link from 'next/link'
 import FAQ from '../components/FAQ'
 import { validateAppointmentForm, sanitizeFormData, checkRateLimit } from '../../lib/validation'
 
-interface Center {
-  id: string
-  name: string
-  address: string
-  city: string
-  postal_code: string
-  phone: string
-  email: string
-}
-
 export default function RendezVous() {
-  const [step, setStep] = useState(0) // 0 = sélection centre, 1 = calendrier, 2 = infos, 3 = confirmation
-  const [selectedCenter, setSelectedCenter] = useState<Center | null>(null)
-  const [centers, setCenters] = useState<Center[]>([])
+  const [step, setStep] = useState(1) // 1 = calendrier, 2 = infos, 3 = confirmation
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
   const [formData, setFormData] = useState({
@@ -39,22 +27,6 @@ export default function RendezVous() {
   const continueButtonRef = useRef<HTMLButtonElement>(null)
   const personalInfoRef = useRef<HTMLDivElement>(null)
 
-  // Charger les centres au montage du composant
-  useEffect(() => {
-    const fetchCenters = async () => {
-      const { data, error } = await supabase
-        .from('centers')
-        .select('*')
-        .eq('is_active', true)
-        .order('name')
-      
-      if (data && !error) {
-        setCenters(data)
-      }
-    }
-    fetchCenters()
-  }, [])
-
   const handleSlotSelect = (date: string, time: string) => {
     setSelectedDate(date)
     setSelectedTime(time)
@@ -65,39 +37,10 @@ export default function RendezVous() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    
-    // Format automatique du téléphone
-    if (name === 'phone') {
-      // Supprimer tous les caractères non numériques sauf le +
-      let cleaned = value.replace(/[^0-9+]/g, '')
-      
-      // Formater avec des espaces tous les 2 chiffres
-      if (cleaned.startsWith('+33')) {
-        cleaned = cleaned.substring(3)
-        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
-        setFormData({
-          ...formData,
-          [name]: '+33 ' + formatted
-        })
-      } else if (cleaned.startsWith('0')) {
-        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
-        setFormData({
-          ...formData,
-          [name]: formatted
-        })
-      } else {
-        setFormData({
-          ...formData,
-          [name]: value
-        })
-      }
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      })
-    }
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -153,7 +96,7 @@ export default function RendezVous() {
             status: 'confirmed',
             test_type: sanitizedData.reason,
             duration_minutes: 40,
-            center_id: selectedCenter?.id
+            center_id: '11111111-1111-1111-1111-111111111111' // Centre Clichy par défaut
           }
         ])
         .select()
@@ -164,6 +107,7 @@ export default function RendezVous() {
 
       setSuccess(true)
       setStep(3)
+      scrollToTop()
 
       fetch('/api/send-appointment-emails', {
         method: 'POST',
@@ -180,10 +124,10 @@ export default function RendezVous() {
           reason: sanitizedData.reason,
           appointment_id: appointment?.id,
           created_at: appointment?.created_at,
-          center_name: selectedCenter?.name,
-          center_address: selectedCenter?.address,
-          center_city: selectedCenter?.city,
-          center_postal_code: selectedCenter?.postal_code
+          center_name: 'Centre Clichy',
+          center_address: '82 Rue Henri Barbusse',
+          center_city: 'Clichy',
+          center_postal_code: '92110'
         }),
       }).then(async (emailResponse) => {
         if (!emailResponse.ok) {
@@ -205,12 +149,6 @@ export default function RendezVous() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleCenterSelect = (center: Center) => {
-    setSelectedCenter(center)
-    setStep(1)
-    scrollToTop()
   }
 
   const formatSelectedDateTime = () => {
@@ -254,7 +192,7 @@ export default function RendezVous() {
               Réservation Test Psychotechnique Permis
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
-              Prenez rendez-vous pour votre test psychotechnique dans l'un de nos centres agréés. Réservation en ligne rapide et sécurisée.
+              Prenez rendez-vous pour votre test psychotechnique dans notre centre agréé à Clichy. Réservation en ligne rapide et sécurisée.
             </p>
           </div>
 
@@ -262,88 +200,9 @@ export default function RendezVous() {
           <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
             {/* Left Panel - Content */}
             <div className="flex-1 order-2 lg:order-1">
-              {/* Step 0: Centre Selection */}
-              {step === 0 && (
-                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Choisissez votre centre</h2>
-                    <p className="text-gray-600">Sélectionnez le centre le plus proche de chez vous pour votre test psychotechnique.</p>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {centers.map((center) => (
-                      <button
-                        key={center.id}
-                        onClick={() => {
-                          setSelectedCenter(center)
-                          setStep(1)
-                        }}
-                        className="text-left p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all duration-300 group"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{center.name}</h3>
-                            <p className="text-sm text-gray-600 mb-1">{center.address}</p>
-                            <p className="text-sm text-gray-600 mb-2">{center.postal_code} {center.city}</p>
-                            <div className="flex items-center gap-2 text-sm text-blue-600 font-medium">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                              </svg>
-                              {center.phone}
-                            </div>
-                          </div>
-                          <div className="text-blue-600 group-hover:translate-x-1 transition-transform">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Step 1: Calendar Selection */}
               {step === 1 && (
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                  {/* Centre sélectionné */}
-                  <div className="mb-6 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                      <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
-                        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-blue-900 text-sm sm:text-base truncate">{selectedCenter?.name}</p>
-                          <p className="text-xs sm:text-sm text-blue-700 break-words">{selectedCenter?.address}, {selectedCenter?.city}</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setStep(0)
-                          setSelectedDate('')
-                          setSelectedTime('')
-                        }}
-                        className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 whitespace-nowrap self-end sm:self-auto"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Changer
-                      </button>
-                    </div>
-                  </div>
-
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Choisissez votre créneau de rendez-vous</h2>
                     <p className="text-gray-600">Sélectionnez la date et l'heure de votre test psychotechnique. Disponibilités en temps réel.</p>
@@ -370,7 +229,6 @@ export default function RendezVous() {
                     onSlotSelect={handleSlotSelect}
                     selectedDate={selectedDate}
                     selectedTime={selectedTime}
-                    centerId={selectedCenter?.id}
                   />
 
                   {selectedDate && selectedTime && (
@@ -394,8 +252,7 @@ export default function RendezVous() {
                       ref={continueButtonRef}
                       onClick={() => {
                         setStep(2)
-                        // Scroll immédiat vers la section "Vos informations personnelles"
-                        requestAnimationFrame(() => {
+                        setTimeout(() => {
                           if (personalInfoRef.current) {
                             const elementPosition = personalInfoRef.current.getBoundingClientRect().top + window.pageYOffset
                             const offsetPosition = elementPosition - 100
@@ -404,7 +261,7 @@ export default function RendezVous() {
                               behavior: 'smooth'
                             })
                           }
-                        })
+                        }, 100)
                       }}
                       disabled={!selectedDate || !selectedTime}
                       className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
@@ -530,7 +387,7 @@ export default function RendezVous() {
                           onChange={handleInputChange}
                           className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm ${errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
                             }`}
-                          placeholder="06 12 34 56 78"
+                          placeholder="06 ** ** ** **"
                         />
                         {errors.phone && (
                           <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
@@ -585,6 +442,7 @@ export default function RendezVous() {
                         type="button"
                         onClick={() => {
                           setStep(1)
+                          scrollToTop()
                         }}
                         className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-50 hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
                       >
@@ -616,8 +474,8 @@ export default function RendezVous() {
 
               {/* Step 3: Success */}
               {step === 3 && success && (
-                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                  <div className="relative mb-6 text-center">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 text-center">
+                  <div className="relative mb-6">
                     <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -627,77 +485,13 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  <h2 className="text-2xl font-bold text-green-600 mb-4 text-center">
-                    ✅ Rendez-vous Confirmé
+                  <h2 className="text-2xl font-bold text-green-600 mb-4">
+                    Test Psychotechnique Réservé avec Succès
                   </h2>
 
-                  {/* Résumé du rendez-vous */}
-                  <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                    <h3 className="text-lg font-bold text-blue-900 mb-4 text-center">Résumé de votre rendez-vous</h3>
-                    
-                    <div className="space-y-3">
-                      {/* Date et heure */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Date et heure</p>
-                          <p className="text-base font-bold text-gray-900">{formatSelectedDateTime()}</p>
-                        </div>
-                      </div>
-
-                      {/* Centre */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Centre</p>
-                          <p className="text-base font-bold text-gray-900">{selectedCenter?.name || 'Centre Clichy'}</p>
-                          <p className="text-sm text-gray-600">{selectedCenter?.address || '82 Rue Henri Barbusse'}</p>
-                          <p className="text-sm text-gray-600">{selectedCenter?.postal_code || '92110'} {selectedCenter?.city || 'Clichy'}</p>
-                        </div>
-                      </div>
-
-                      {/* Informations personnelles */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Vos informations</p>
-                          <p className="text-base font-bold text-gray-900">{formData.firstName} {formData.lastName}</p>
-                          <p className="text-sm text-gray-600">{formData.email}</p>
-                          <p className="text-sm text-gray-600">{formData.phone}</p>
-                        </div>
-                      </div>
-
-                      {/* Motif */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Motif du test</p>
-                          <p className="text-base font-bold text-gray-900">
-                            {formData.reason === 'invalidation' && 'Invalidation du permis'}
-                            {formData.reason === 'suspension' && 'Suspension du permis'}
-                            {formData.reason === 'annulation' && 'Annulation du permis'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-sm text-gray-600 mb-6 max-w-lg mx-auto">
+                    Votre rendez-vous pour le test psychotechnique du permis a été confirmé pour le <span className="font-semibold text-gray-900">{formatSelectedDateTime()}</span> dans notre centre agréé à Clichy.
+                  </p>
 
                   <div className="space-y-6">
                     {/* Email confirmation status */}
@@ -795,25 +589,6 @@ export default function RendezVous() {
 
                 {/* Mobile: Horizontal Progress */}
                 <div className="flex lg:hidden justify-between items-center">
-                  {/* Step 0: Centre */}
-                  <div className="flex flex-col items-center">
-                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 0 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </div>
-                    <span className={`mt-1.5 text-xs sm:text-sm font-medium ${step >= 0 ? 'text-blue-600' : 'text-gray-400'}`}>
-                      Centre
-                    </span>
-                  </div>
-
-                  {/* Connector 0 */}
-                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
-                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded transition-all duration-700 ease-in-out origin-left ${step >= 1 ? 'scale-x-100' : 'scale-x-0'}`}></div>
-                  </div>
-
                   {/* Step 1 */}
                   <div className="flex flex-col items-center">
                     <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 1 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
@@ -826,11 +601,8 @@ export default function RendezVous() {
                     </span>
                   </div>
 
-                  {/* Connector 1 */}
-                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
-                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded transition-all duration-700 ease-in-out origin-left ${step >= 2 ? 'scale-x-100' : 'scale-x-0'}`}></div>
-                  </div>
+                  {/* Connector */}
+                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
 
                   {/* Step 2 */}
                   <div className="flex flex-col items-center">
@@ -845,11 +617,9 @@ export default function RendezVous() {
                     </span>
                   </div>
 
-                  {/* Connector 2 */}
-                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
-                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-emerald-500 rounded transition-all duration-700 ease-in-out origin-left ${step >= 3 ? 'scale-x-100' : 'scale-x-0'}`}></div>
-                  </div>
+                  {/* Connector */}
+                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 3 ? 'bg-gradient-to-r from-blue-500 to-emerald-500' : 'bg-gray-200'
+                    }`}></div>
 
                   {/* Step 3 */}
                   <div className="flex flex-col items-center">
@@ -867,31 +637,6 @@ export default function RendezVous() {
 
                 {/* Desktop: Vertical Progress */}
                 <div className="hidden lg:block">
-                  {/* Step 0: Centre */}
-                  <div className="flex items-center mb-6">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${step >= 0
-                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-400'
-                      }`}>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </div>
-                    <div className="ml-4">
-                      <p className={`font-semibold ${step >= 0 ? 'text-blue-600' : 'text-gray-400'}`}>
-                        Choisir un centre
-                      </p>
-                      <p className="text-sm text-gray-500">Clichy ou Colombes</p>
-                    </div>
-                  </div>
-
-                  {/* Connector 0 */}
-                  <div className="relative w-0.5 h-8 ml-5 mb-6">
-                    <div className="absolute inset-0 bg-gray-200"></div>
-                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-600 transition-all duration-700 ease-in-out origin-top ${step >= 1 ? 'scale-y-100' : 'scale-y-0'}`}></div>
-                  </div>
-
                   {/* Step 1 */}
                   <div className="flex items-center mb-6">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${step >= 1
@@ -911,10 +656,7 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 1 */}
-                  <div className="relative w-0.5 h-8 ml-5 mb-6">
-                    <div className="absolute inset-0 bg-gray-200"></div>
-                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-600 transition-all duration-700 ease-in-out origin-top ${step >= 2 ? 'scale-y-100' : 'scale-y-0'}`}></div>
-                  </div>
+                  <div className={`w-0.5 h-8 ml-5 mb-6 transition-all duration-500 ${step >= 2 ? 'bg-gradient-to-b from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
 
                   {/* Step 2 */}
                   <div className="flex items-center mb-6">
@@ -934,11 +676,9 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  {/* Connector 2 */}
-                  <div className="relative w-0.5 h-8 ml-5 mb-6">
-                    <div className="absolute inset-0 bg-gray-200"></div>
-                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-emerald-500 transition-all duration-700 ease-in-out origin-top ${step >= 3 ? 'scale-y-100' : 'scale-y-0'}`}></div>
-                  </div>
+                  {/* Connector */}
+                  <div className={`w-0.5 h-8 ml-5 mb-6 transition-all duration-500 ${step >= 3 ? 'bg-gradient-to-b from-green-500 to-emerald-500' : 'bg-gray-200'
+                    }`}></div>
 
                   {/* Step 3 */}
                   <div className="flex items-center">

@@ -122,9 +122,9 @@ export const metadata: Metadata = {
     "test psychotechnique Saint-Ouen-l'Aumône",
     "test psychotechnique Pontoise"
   ],
-  authors: [{ name: "Centre Psychotechnique Permis Expert", url: "https://test-psychotechnique-permis.com" }],
-  creator: "Centre Psychotechnique Permis Expert",
-  publisher: "Centre Psychotechnique Permis Expert",
+  authors: [{ name: "Centre Psychotechnique Permis ", url: "https://test-psychotechnique-permis.com" }],
+  creator: "Centre Psychotechnique Permis ",
+  publisher: "Centre Psychotechnique Permis",
   robots: {
     index: true,
     follow: true,
@@ -239,9 +239,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="rating" content="general" />
         <meta name="revisit-after" content="1 days" />
         <meta name="language" content="fr-FR" />
-        <meta name="author" content="Centre Psychotechnique Permis Expert" />
-        <meta name="publisher" content="Centre Psychotechnique Permis Expert" />
-        <meta name="copyright" content="Centre Psychotechnique Permis Expert" />
+        <meta name="author" content="Centre Psychotechnique Permis" />
+        <meta name="publisher" content="Centre Psychotechnique Permis " />
+        <meta name="copyright" content="Centre Psychotechnique Permis " />
         <meta name="city" content="Clichy" />
         <meta name="country" content="France" />
         <meta name="state" content="Île-de-France" />

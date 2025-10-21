@@ -124,7 +124,7 @@ export default function AdminLogin() {
             Espace Administrateur
           </h1>
           <p className="text-blue-200 text-xs sm:text-sm px-4">
-            Centre de Test Psychotechnique - Clichy et Colombes
+            Centre de Test Psychotechnique - Clichy
           </p>
         </div>
 

@@ -119,16 +119,9 @@ export default function Footer() {
                   <span className="mt-0.5" style={{ color: 'var(--secondary-orange)' }}>📍</span>
                   <div className="text-gray-300">
                     <p className="font-semibold text-white mb-1">Centre de Clichy</p>
-                    <address className="not-italic mb-3">
+                    <address className="not-italic">
                       82 Rue Henri Barbusse<br />
                       92110 Clichy
-                    </address>
-                    <p className="font-semibold text-white mb-1">Pro Drive Academy - Colombes</p>
-                    <address className="not-italic">
-                      14 Rue de Mantes<br />
-                      92700 Colombes<br />
-                      Tél: 07 65 56 53 79<br />
-                      Email: contact@test-psychotechnique-permis.com
                     </address>
                   </div>
                 </div>

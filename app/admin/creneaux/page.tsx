@@ -2,15 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
-import type { Center } from '../../../lib/supabase'
 import AuthGuard from '../components/AuthGuard'
-import { useCenterContext } from '../context/CenterContext'
 import Sidebar from '../components/Sidebar'
 import SlotsCalendar from '../components/SlotsCalendar'
 import AddSlotModal from '../components/AddSlotModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Toast from '../components/Toast'
-import { format, addDays, startOfWeek, isPast, parse, isSameDay } from 'date-fns'
+import { format, addDays, startOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { logAdminActivity, AdminLogger } from '../../../lib/adminLogger'
 
@@ -20,11 +18,11 @@ interface TimeSlot {
   start_time: string
   end_time: string
   is_available: boolean
+  center_id?: string
   is_booked?: boolean
   appointment_id?: string
   client_name?: string
   booking_status?: string
-  center_id?: string
 }
 
 export default function TimeSlotManagement() {
@@ -36,13 +34,13 @@ export default function TimeSlotManagement() {
 }
 
 function TimeSlotContent() {
-  const { selectedCenterId } = useCenterContext()
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(true)
   const [admin, setAdmin] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddForm, setShowAddForm] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  // Notifications UI removed
   const [notification, setNotification] = useState<null | { type: 'success' | 'error', message: string }>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
@@ -56,31 +54,28 @@ function TimeSlotContent() {
   const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked' | 'disabled'>('all')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  // Initialiser avec la valeur sauvegardée ou false (ouvert par défaut)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('admin_sidebar_collapsed')
+      return saved ? JSON.parse(saved) : false
+    }
+    return false
+  })
   const [newSlot, setNewSlot] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
     time: '09:00'
   })
 
-  // Générer les options d'horaires de 8h à 21h par intervalles de 20 minutes
-  const generateTimeOptions = (): string[] => {
-    const options: string[] = []
-    const startHour = 8
-    const endHour = 21
-    const intervalMinutes = 20
-    const totalMinutes = (endHour - startHour) * 60
-
-    for (let minutes = 0; minutes <= totalMinutes; minutes += intervalMinutes) {
-      const hour = startHour + Math.floor(minutes / 60)
-      const minute = minutes % 60
-      if (hour > endHour || (hour === endHour && minute > 0)) break
-      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
-      options.push(timeString)
-    }
-    return options
-  }
-
-  const timeOptions = generateTimeOptions()
+  const timeOptions = [
+    '08:00', '08:20', '08:40', '09:00', '09:20', '09:40',
+    '10:00', '10:20', '10:40', '11:00', '11:20', '11:40',
+    '12:00', '12:20', '12:40', '13:00', '13:20', '13:40',
+    '14:00', '14:20', '14:40', '15:00', '15:20', '15:40',
+    '16:00', '16:20', '16:40', '17:00', '17:20', '17:40',
+    '18:00', '18:20', '18:40', '19:00', '19:20', '19:40',
+    '20:00', '20:20', '20:40', '21:00', '21:20', '21:40'
+  ]
 
   useEffect(() => {
     const adminSession = localStorage.getItem('admin_session')
@@ -95,10 +90,8 @@ function TimeSlotContent() {
   }, [])
 
   useEffect(() => {
-    if (selectedCenterId) {
-      fetchTimeSlots()
-    }
-  }, [selectedDate, selectedCenterId])
+    fetchTimeSlots()
+  }, [selectedDate])
 
   const fetchTimeSlots = async () => {
     try {
@@ -106,36 +99,22 @@ function TimeSlotContent() {
       const startDate = format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
       const endDate = format(addDays(startOfWeek(selectedDate, { weekStartsOn: 1 }), 6), 'yyyy-MM-dd')
 
-      // Filtrer par centre sélectionné
-      let query = supabase
+      const { data: slots, error: slotsError } = await supabase
         .from('available_slots')
         .select('*')
         .gte('date', startDate)
         .lte('date', endDate)
-
-      if (selectedCenterId) {
-        query = query.eq('center_id', selectedCenterId)
-      }
-
-      const { data: slots, error: slotsError } = await query
         .order('date')
         .order('start_time')
 
       if (slotsError) throw slotsError
 
-      // Filtrer les rendez-vous par centre également
-      let appointmentsQuery = supabase
+      const { data: appointments, error: appointmentsError } = await supabase
         .from('appointments')
-        .select('id, appointment_date, appointment_time, first_name, last_name, status, center_id')
+        .select('id, appointment_date, appointment_time, first_name, last_name, status')
         .gte('appointment_date', startDate)
         .lte('appointment_date', endDate)
         .in('status', ['confirmed', 'completed'])
-
-      if (selectedCenterId) {
-        appointmentsQuery = appointmentsQuery.eq('center_id', selectedCenterId)
-      }
-
-      const { data: appointments, error: appointmentsError } = await appointmentsQuery
 
       if (appointmentsError) throw appointmentsError
 
@@ -161,27 +140,7 @@ function TimeSlotContent() {
         }
       }) || []
 
-      // Filtrer les créneaux passés immédiatement après le chargement
-      // Garder les créneaux d'aujourd'hui + les créneaux futurs
-      const now = new Date()
-      const today = format(now, 'yyyy-MM-dd')
-
-      const futureSlots = enrichedSlots.filter(slot => {
-        // Garder tous les créneaux d'aujourd'hui
-        if (slot.date === today) {
-          return true
-        }
-
-        // Pour les autres jours, garder uniquement les créneaux futurs
-        const slotDateTime = parse(
-          `${slot.date} ${slot.start_time}`,
-          'yyyy-MM-dd HH:mm',
-          new Date()
-        )
-        return !isPast(slotDateTime)
-      })
-
-      setTimeSlots(futureSlots)
+      setTimeSlots(enrichedSlots)
     } catch (error) {
       console.error('Error fetching time slots:', error)
     } finally {
@@ -191,35 +150,55 @@ function TimeSlotContent() {
 
   const addTimeSlot = async () => {
     try {
+      console.log('🔵 Ajout créneau:', newSlot)
       const [hours, minutes] = newSlot.time.split(':').map(Number)
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 
-      const { error } = await supabase
+      console.log('🔵 Données à insérer:', {
+        date: newSlot.date,
+        start_time: newSlot.time,
+        end_time: endTime,
+        is_available: true
+      })
+
+      const { data, error } = await supabase
         .from('available_slots')
         .insert([{
           date: newSlot.date,
           start_time: newSlot.time,
           end_time: endTime,
           is_available: true,
-          center_id: selectedCenterId
+          center_id: '11111111-1111-1111-1111-111111111111' // Centre Clichy par défaut
         }])
+        .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erreur Supabase:', error)
+        throw error
+      }
+
+      console.log('✅ Créneau créé:', data)
 
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
         `Created slot for ${newSlot.date} at ${newSlot.time}`
       )
 
+      setToast({ message: 'Créneau ajouté avec succès !', type: 'success' })
       setShowAddForm(false)
       setNewSlot({
         date: format(new Date(), 'yyyy-MM-dd'),
         time: '09:00'
       })
       fetchTimeSlots()
-    } catch (error) {
-      console.error('Error adding time slot:', error)
+    } catch (error: any) {
+      console.error('❌ Error adding time slot:', error)
+      console.error('❌ Error details:', error?.message, error?.details, error?.hint)
+      setToast({ 
+        message: `Erreur: ${error?.message || 'Erreur lors de l\'ajout du créneau'}`, 
+        type: 'error' 
+      })
     }
   }
 
@@ -242,7 +221,7 @@ function TimeSlotContent() {
         start_time: newSlot.time,
         end_time: endTime,
         is_available: true,
-        center_id: selectedCenterId
+        center_id: '11111111-1111-1111-1111-111111111111' // Centre Clichy par défaut
       })
     }
 
@@ -258,15 +237,17 @@ function TimeSlotContent() {
         `Created ${slotsToAdd.length} slots starting from ${newSlot.date}`
       )
 
+      setToast({ message: `${slotsToAdd.length} créneaux ajoutés avec succès !`, type: 'success' })
       setShowAddForm(false)
       fetchTimeSlots()
     } catch (error) {
       console.error('Error adding multiple slots:', error)
+      setToast({ message: 'Erreur lors de l\'ajout des créneaux', type: 'error' })
     }
   }
 
   const addBulkSlots = async (startDate: string, endDate: string, times: string[], workdaysOnly: boolean) => {
-    const slotsToAdd: Array<{ date: string, start_time: string, end_time: string, is_available: boolean }> = []
+    const slotsToAdd: Array<{ date: string, start_time: string, end_time: string, is_available: boolean, center_id: string }> = []
     const start = new Date(startDate)
     const end = new Date(endDate)
 
@@ -288,8 +269,8 @@ function TimeSlotContent() {
           start_time: time,
           end_time: endTime,
           is_available: true,
-          center_id: selectedCenterId || '11111111-1111-1111-1111-111111111111'
-        } as any)
+          center_id: '11111111-1111-1111-1111-111111111111' // Centre Clichy par défaut
+        })
       })
     }
 
@@ -305,14 +286,12 @@ function TimeSlotContent() {
         `Bulk created ${slotsToAdd.length} slots from ${startDate} to ${endDate}`
       )
 
+      setToast({ message: `${slotsToAdd.length} créneaux créés avec succès !`, type: 'success' })
       setShowAddForm(false)
       fetchTimeSlots()
-      setNotification({ type: 'success', message: `${slotsToAdd.length} créneaux créés avec succès!` })
-      setTimeout(() => setNotification(null), 3000)
     } catch (error) {
       console.error('Error adding bulk slots:', error)
-      setNotification({ type: 'error', message: 'Erreur lors de la création en masse' })
-      setTimeout(() => setNotification(null), 3000)
+      setToast({ message: 'Erreur lors de la création en masse', type: 'error' })
     }
   }
 
@@ -342,7 +321,7 @@ function TimeSlotContent() {
     if (!slot) return
 
     const action = !currentStatus ? 'activer' : 'désactiver'
-
+    
     setConfirmDialog({
       isOpen: true,
       title: `${action.charAt(0).toUpperCase() + action.slice(1)} le créneau`,
@@ -392,8 +371,6 @@ function TimeSlotContent() {
   }
 
   const getFilteredSlots = () => {
-    // Les créneaux passés sont déjà filtrés dans fetchTimeSlots
-    // On applique juste le filtre de statut ici
     let filtered = timeSlots
 
     if (filterStatus === 'available') {
@@ -438,7 +415,11 @@ function TimeSlotContent() {
         adminName={admin?.full_name || 'Admin'}
         onLogout={() => setShowLogoutConfirm(true)}
         isCollapsed={sidebarCollapsed}
-        setIsCollapsed={setSidebarCollapsed}
+        setIsCollapsed={(collapsed) => {
+          setSidebarCollapsed(collapsed)
+          // Sauvegarder la préférence
+          localStorage.setItem('admin_sidebar_collapsed', JSON.stringify(collapsed))
+        }}
       />
 
       <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
@@ -587,36 +568,6 @@ function TimeSlotContent() {
             </div>
           </div>
 
-          {/* Légende des actions */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md border border-gray-200 p-4 mb-6">
-            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Légende des actions
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="flex items-center gap-2 bg-white rounded-lg p-2">
-                <svg className="w-5 h-5 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                </svg>
-                <span className="text-xs text-gray-700"><strong>Désactiver</strong> (SVJ)</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white rounded-lg p-2">
-                <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-xs text-gray-700"><strong>Activer</strong> le créneau</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white rounded-lg p-2">
-                <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                <span className="text-xs text-gray-700"><strong>Supprimer</strong> le créneau</span>
-              </div>
-            </div>
-          </div>
-
           {/* Calendar or List View */}
           {loading ? (
             <div className="flex justify-center py-12">
@@ -671,31 +622,24 @@ function TimeSlotContent() {
                           {slot.client_name || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
                             {!slot.is_booked && (
                               <button
                                 onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                                className={`group relative p-1.5 rounded-lg transition-all ${slot.is_available ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'}`}
-                                title={slot.is_available ? 'Désactiver (SVJ)' : 'Activer le créneau'}
+                                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${slot.is_available
+                                  ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                  : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                  }`}
                               >
-                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  {slot.is_available ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 715.636 5.636m12.728 12.728L5.636 5.636" />
-                                  ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  )}
-                                </svg>
+                                {slot.is_available ? 'Désactiver' : 'Activer'}
                               </button>
                             )}
                             <button
                               onClick={() => setDeleteConfirmId(slot.id)}
                               disabled={slot.is_booked}
-                              className="group relative p-1.5 rounded-lg transition-all bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Supprimer le créneau"
+                              className="px-3 py-1 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
                             >
-                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
+                              Supprimer
                             </button>
                           </div>
                         </td>
@@ -778,27 +722,22 @@ function TimeSlotContent() {
                       )}
 
                       {/* Actions */}
-                      <div className="flex gap-3 pt-2 justify-center">
+                      <div className="flex gap-2 pt-2">
                         <button
                           onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                          className={`p-3 rounded-lg transition-all shadow-md ${slot.is_available ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'}`}
-                          title={slot.is_available ? 'Désactiver (SVJ)' : 'Activer le créneau'}
+                          className={`flex-1 px-3 py-3 rounded-lg text-sm font-bold transition-all shadow-md whitespace-nowrap ${slot.is_available
+                            ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600'
+                            : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
+                          }`}
                         >
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            {slot.is_available ? (
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                            ) : (
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            )}
-                          </svg>
+                          {slot.is_available ? 'Désactiver' : 'Activer'}
                         </button>
                         <button
                           onClick={() => setDeleteConfirmId(slot.id)}
                           disabled={slot.is_booked}
-                          className="p-3 rounded-lg transition-all shadow-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Supprimer le créneau"
+                          className="px-3 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center justify-center shadow-md flex-shrink-0"
                         >
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
@@ -812,17 +751,15 @@ function TimeSlotContent() {
         </main>
       </div>
 
-      {selectedCenterId && (
-        <AddSlotModal
-          isOpen={showAddForm}
-          onClose={() => setShowAddForm(false)}
-          newSlot={newSlot}
-          setNewSlot={setNewSlot}
-          onAddSingle={addTimeSlot}
-          onAddMultiple={addMultipleSlots}
-          onAddBulk={addBulkSlots}
-        />
-      )}
+      <AddSlotModal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        newSlot={newSlot}
+        setNewSlot={setNewSlot}
+        onAddSingle={addTimeSlot}
+        onAddMultiple={addMultipleSlots}
+        onAddBulk={addBulkSlots}
+      />
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
