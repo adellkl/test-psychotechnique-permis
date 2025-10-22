@@ -1,5 +1,4 @@
 import "./globals.css"
-import "./styles/animations.css"
 import type { Metadata } from "next"
 import Navigation from "./components/Navigation"
 import Footer from "./components/Footer"
