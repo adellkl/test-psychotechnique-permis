@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 import FAQ from '../components/FAQ'
 import { validateAppointmentForm, sanitizeFormData, checkRateLimit } from '../../lib/validation'
+import HoneypotField from '../components/HoneypotField'
 
 interface Center {
   id: string
@@ -33,6 +34,7 @@ export default function RendezVous() {
     reason: '',
     notes: ''
   })
+  const [honeypot, setHoneypot] = useState('') // 🍯 Champ piège pour détecter les bots
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
@@ -183,7 +185,8 @@ export default function RendezVous() {
           center_name: selectedCenter?.name,
           center_address: selectedCenter?.address,
           center_city: selectedCenter?.city,
-          center_postal_code: selectedCenter?.postal_code
+          center_postal_code: selectedCenter?.postal_code,
+          website: honeypot // 🍯 Honeypot pour détection bot côté serveur
         }),
       }).then(async (emailResponse) => {
         if (!emailResponse.ok) {
@@ -579,6 +582,13 @@ export default function RendezVous() {
                         <p className="text-xs text-red-600 mt-1">{errors.notes}</p>
                       )}
                     </div>
+
+                    {/* 🍯 Honeypot - Champ invisible pour détecter les bots */}
+                    <HoneypotField 
+                      name="website"
+                      value={honeypot}
+                      onChange={setHoneypot}
+                    />
 
                     <div className="flex flex-col sm:flex-row gap-3 pt-4">
                       <button

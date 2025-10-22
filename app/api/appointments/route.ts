@@ -2,27 +2,43 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
 import { sendAppointmentConfirmation, sendAppointmentNotificationToAdmin } from '../../../lib/emailService'
 import { validateAppointmentForm, sanitizeString } from '../../../lib/validation'
-import { securityMiddleware, getRateLimitKey, checkRateLimit } from '../../../lib/security'
+import { 
+  securityMiddleware, 
+  getRateLimitKey, 
+  checkRateLimit,
+  advancedSecurityMiddleware,
+  addSecurityHeaders
+} from '../../../lib/security'
 
 // POST - Create new appointment
 export async function POST(request: NextRequest) {
   try {
+    const body = await request.json()
+    
+    // 🔒 SÉCURITÉ AVANCÉE : Honeypot + Injection + User-Agent + IP Blacklist
+    const advancedCheck = advancedSecurityMiddleware(request, {
+      checkHoneypot: true,
+      honeypotField: 'website', // Champ piège invisible
+      checkUserAgent: true,
+      checkInjections: true,
+      data: body
+    })
+    if (advancedCheck) return addSecurityHeaders(advancedCheck)
+    
     // Sécurité : Rate limiting (5 requêtes par minute par IP)
     const ip = getRateLimitKey(request)
     const { allowed } = checkRateLimit(ip, 5, 60000)
     
     if (!allowed) {
-      return NextResponse.json(
+      return addSecurityHeaders(NextResponse.json(
         { error: 'Trop de tentatives. Veuillez réessayer dans quelques instants.' },
         { status: 429 }
-      )
+      ))
     }
 
     // Sécurité : Validation de l'origine
     const securityCheck = securityMiddleware(request, { validateOrigin: true })
-    if (securityCheck) return securityCheck
-
-    const body = await request.json()
+    if (securityCheck) return addSecurityHeaders(securityCheck)
     const {
       first_name,
       last_name,
@@ -169,20 +185,31 @@ export async function POST(request: NextRequest) {
       console.error('❌ Stack:', adminError instanceof Error ? adminError.stack : 'No stack')
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       appointment,
       message: 'Appointment created successfully'
     }, { status: 201 })
+    
+    return addSecurityHeaders(response)
 
   } catch (error) {
     console.error('Error creating appointment:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return addSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }))
   }
 }
 
 // GET - Fetch appointments (for admin use)
 export async function GET(request: NextRequest) {
   try {
+    // Protection basique pour GET
+    const ip = getRateLimitKey(request)
+    const { allowed } = checkRateLimit(`get-appointments:${ip}`, 30, 60000)
+    if (!allowed) {
+      return addSecurityHeaders(NextResponse.json(
+        { error: 'Trop de requêtes' },
+        { status: 429 }
+      ))
+    }
     const { searchParams } = new URL(request.url)
     const email = searchParams.get('email')
     const status = searchParams.get('status')
@@ -214,8 +241,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ appointments: data })
+    return addSecurityHeaders(NextResponse.json({ appointments: data }))
   } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return addSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }))
   }
 }
