@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '../../../../lib/supabase-server'
+import { supabase } from '../../../../lib/supabase'
 import { validateAdminPassword, generateSessionToken, logAdminAction } from '../../../../lib/adminAuth'
 import { 
   getRateLimitKey, 

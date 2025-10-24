@@ -95,7 +95,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Si le statut est "cancelled", envoyer un email au client
+    // Si le statut est "cancelled", envoyer un email au client et libérer le créneau
     if (status === 'cancelled' && data && data[0]) {
       try {
         const appointment = data[0]
@@ -115,6 +115,20 @@ export async function PUT(request: NextRequest) {
       } catch (emailError) {
         console.error('❌ Erreur envoi email annulation:', emailError)
         // On ne bloque pas la mise à jour même si l'email échoue
+      }
+
+      // Remettre le créneau disponible dans le calendrier
+      try {
+        await supabase
+          .from('available_slots')
+          .update({ is_available: true })
+          .eq('date', data[0].appointment_date)
+          .eq('time', data[0].appointment_time)
+          .eq('center_id', data[0].center_id || null)
+        
+        console.log('✅ Créneau remis disponible:', data[0].appointment_date, data[0].appointment_time)
+      } catch (slotError) {
+        console.error('⚠️ Erreur lors de la remise à disposition du créneau:', slotError)
       }
     }
 

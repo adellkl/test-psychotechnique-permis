@@ -13,8 +13,32 @@ export interface SecurityEvent {
 
 /**
  * Enregistre un événement de sécurité dans la base de données
+ * Surcharge pour accepter un type d'événement simple avec des détails
  */
-export async function logSecurityEvent(event: SecurityEvent): Promise<void> {
+export async function logSecurityEvent(
+  eventOrType: SecurityEvent | string,
+  details?: any
+): Promise<void> {
+  let event: SecurityEvent
+  
+  // Si c'est une chaîne, créer un événement simple
+  if (typeof eventOrType === 'string') {
+    event = {
+      event_type: eventOrType as any,
+      ip_address: details?.ip || 'unknown',
+      user_agent: details?.userAgent,
+      request_path: details?.endpoint,
+      request_method: details?.method || 'POST',
+      details: JSON.stringify(details),
+      severity: 'MEDIUM',
+      blocked: false
+    }
+  } else {
+    event = eventOrType
+  }
+  
+  // Fonction originale
+  async function logEvent(event: SecurityEvent): Promise<void> {
   try {
     const { error } = await supabase
       .from('security_logs')
@@ -43,6 +67,9 @@ export async function logSecurityEvent(event: SecurityEvent): Promise<void> {
   } catch (error) {
     console.error('❌ Error logging security event:', error)
   }
+  }
+  
+  await logEvent(event)
 }
 
 /**

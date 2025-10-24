@@ -45,7 +45,9 @@ export default function HoneypotField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         autoComplete="off"
+        tabIndex={tabIndex}
         aria-hidden="true"
+        style={{ display: 'none' }}
       />
     </div>
   )

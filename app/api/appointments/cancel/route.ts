@@ -240,6 +240,21 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Remettre le créneau disponible dans le calendrier
+    try {
+      await supabase
+        .from('available_slots')
+        .update({ is_available: true })
+        .eq('date', appointment.appointment_date)
+        .eq('time', appointment.appointment_time)
+        .eq('center_id', appointment.center_id || null)
+      
+      console.log('✅ Créneau remis disponible:', appointment.appointment_date, appointment.appointment_time)
+    } catch (slotError) {
+      console.error('⚠️ Erreur lors de la remise à disposition du créneau:', slotError)
+      // On ne bloque pas l'annulation si la mise à jour du slot échoue
+    }
+
     // Notifications désactivées - table supprimée
     try {
       await sendCancellationNotificationToAdmin({

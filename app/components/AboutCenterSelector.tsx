@@ -183,7 +183,7 @@ export default function AboutCenterSelector() {
           <div className="relative order-1 lg:order-2">
             <div className="relative h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                src="/images/reunion-de-jeunes-collegues-feminines-et-discuter-du-plan-d-affaires-rediger-un-schema-strategique-sur-papier-faire-un-projet.jpg"
                 alt={`${currentCenter.name} - Accueil professionnel`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"

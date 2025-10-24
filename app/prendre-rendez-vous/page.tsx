@@ -107,6 +107,13 @@ export default function RendezVous() {
     console.log(' Form submitted')
     setErrors({})
 
+    // 🍯 Honeypot: Si rempli, c'est un bot
+    if (honeypot && honeypot.trim() !== '') {
+      console.warn('🤖 Bot détecté via honeypot:', honeypot)
+      setErrors({ general: 'Une erreur est survenue. Veuillez réessayer.' })
+      return
+    }
+
     if (!checkRateLimit('appointment_submit', 5, 60000)) {
       console.error(' Rate limit exceeded')
       setErrors({ general: 'Trop de tentatives. Veuillez patienter une minute.' })
@@ -139,30 +146,33 @@ export default function RendezVous() {
     setLoading(true)
 
     try {
-      const sanitizedData = sanitizeFormData(formData)
-      const { data, error } = await supabase
-        .from('appointments')
-        .insert([
-          {
-            first_name: sanitizedData.firstName,
-            last_name: sanitizedData.lastName,
-            email: sanitizedData.email.toLowerCase(),
-            phone: sanitizedData.phone.replace(/\s/g, ''),
-            appointment_date: selectedDate,
-            appointment_time: selectedTime,
-            reason: sanitizedData.reason,
-            client_notes: sanitizedData.notes,
-            status: 'confirmed',
-            test_type: sanitizedData.reason,
-            duration_minutes: 40,
-            center_id: selectedCenter?.id
-          }
-        ])
-        .select()
+      // Utiliser l'API sécurisée au lieu de l'insertion directe Supabase
+      const response = await fetch('/api/appointments/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          reason: formData.reason,
+          notes: formData.notes,
+          appointment_date: selectedDate,
+          appointment_time: selectedTime,
+          center_id: selectedCenter?.id,
+          honeypot: honeypot
+        }),
+      })
 
-      if (error) throw error
+      const result = await response.json()
 
-      const appointment = data?.[0]
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de la création du rendez-vous')
+      }
+
+      const appointment = result.appointment
 
       setSuccess(true)
       setStep(3)
@@ -173,20 +183,19 @@ export default function RendezVous() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          first_name: sanitizedData.firstName,
-          last_name: sanitizedData.lastName,
-          email: sanitizedData.email,
-          phone: sanitizedData.phone,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
           appointment_date: selectedDate,
           appointment_time: selectedTime,
-          reason: sanitizedData.reason,
+          reason: formData.reason,
           appointment_id: appointment?.id,
           created_at: appointment?.created_at,
           center_name: selectedCenter?.name,
           center_address: selectedCenter?.address,
           center_city: selectedCenter?.city,
-          center_postal_code: selectedCenter?.postal_code,
-          website: honeypot // 🍯 Honeypot pour détection bot côté serveur
+          center_postal_code: selectedCenter?.postal_code
         }),
       }).then(async (emailResponse) => {
         if (!emailResponse.ok) {

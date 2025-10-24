@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '../../../../lib/supabase-server'
+import { supabase } from '../../../../lib/supabase'
 import * as bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Récupérer l'admin par email
-    const { data: admin, error: fetchError } = await supabaseServer
+    const { data: admin, error: fetchError } = await supabase
       .from('admins')
       .select('id, password_hash')
       .eq('email', email.toLowerCase())
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(newPassword, 10)
 
     // Mettre à jour le mot de passe
-    const { error: updateError } = await supabaseServer
+    const { error: updateError } = await supabase
       .from('admins')
       .update({
         password_hash: hashedPassword,
