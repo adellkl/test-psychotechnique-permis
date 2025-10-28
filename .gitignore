@@ -22,10 +22,9 @@ dist/
 # Environment Variables - CRITIQUE
 .env
 .env*
+!.env.example
 .env.local
 .env.production
-.env.production.example
-.env.example
 .env.development.local
 .env.test.local
 .env.production.local
@@ -139,3 +138,16 @@ VALIDATION_*.md
 RAPPORT_*.md
 SECURITY_*.md
 DIAGNOSTIC_*.md
+
+# Templates HTML temporaires
+template-email-*.html
+preview-email*.html
+comparaison-emails.html
+
+# Scripts de mise à jour temporaires
+update-templates.mjs
+supabase-update-templates.txt
+
+# Fichiers de build temporaires
+build-output.txt
+optimize-code.sh
