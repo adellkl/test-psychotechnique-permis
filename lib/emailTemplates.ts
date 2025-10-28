@@ -169,7 +169,9 @@ export const defaultEmailTemplates = [
                                             </tr>
                                             <tr style="border-top: 1px solid #e5e7eb;">
                                                 <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Accès</td>
-                                                <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{metro_info}}</td>
+                                                <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; line-height: 1.6;">
+                                                    {{metro_info}}{{access_details}}
+                                                </td>
                                             </tr>
                                         </table>
                                         
@@ -280,6 +282,8 @@ INFORMATIONS IMPORTANTES
 ACCÈS ET CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Accès : {{metro_info}}
+{{access_details_text}}
+
 Téléphone : {{contact_phone}}
 Site web : {{website}}
 
@@ -383,6 +387,12 @@ Centre Agréé
                                                 <td style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Adresse</td>
                                                 <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; line-height: 1.4;">{{address}}</td>
                                             </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Accès</td>
+                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; line-height: 1.6;">
+                                                    {{location_details}}{{access_details}}
+                                                </td>
+                                            </tr>
                                         </table>
                                         
                                         <!-- Rappels importants -->
@@ -452,6 +462,10 @@ Date : {{appointment_date}}
 Heure : {{appointment_time}}
 Centre : {{location}}
 Adresse : {{address}}
+
+ACCÈS :
+{{location_details}}
+{{access_details_text}}
 
 À NE PAS OUBLIER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

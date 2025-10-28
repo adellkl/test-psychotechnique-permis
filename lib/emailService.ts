@@ -116,14 +116,16 @@ export async function sendAppointmentConfirmation(appointmentData: {
     const centerCity = appointmentData.center_city || 'Clichy'
     
     // Informations selon le centre (template unifié)
-    let centerName, centerAddress, centerPostalCode, contactPhone, metroInfo
+    let centerName, centerAddress, centerPostalCode, contactPhone, metroInfo, accessDetails, accessDetailsText
     
     if (centerCity === 'Colombes') {
       centerName = 'Test Psychotechnique Permis - Colombes'
       centerAddress = '14 Rue de Mantes, Pro Drive Academy'
       centerPostalCode = '92700'
-      contactPhone = '07 65 56 53 79'
+      contactPhone = '0972132250'
       metroInfo = 'Proche des transports en commun'
+      accessDetails = '' // Pas d'informations d'accès spécifiques pour Colombes
+      accessDetailsText = ''
     } else {
       // Clichy par défaut
       centerName = 'Test Psychotechnique Permis - Clichy'
@@ -131,6 +133,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
       centerPostalCode = '92110'
       contactPhone = '07 65 56 53 79'
       metroInfo = 'Ligne 13 - Mairie de Clichy'
+      accessDetails = '<br><strong>Rez-de-chaussée, droit.</strong><br>Code d\'entrée : <strong>6138A</strong><br>Sonner à Cabinet'
+      accessDetailsText = 'Rez-de-chaussée, droit.\nCode d\'entrée : 6138A\nSonner à Cabinet'
     }
     
     const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
@@ -147,6 +151,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
       location: centerName,
       address: fullAddress,
       metro_info: metroInfo,
+      access_details: accessDetails,
+      access_details_text: accessDetailsText,
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',
       website: 'https://test-psychotechnique-permis.com'
@@ -330,14 +336,16 @@ export async function sendAppointmentReminder(appointmentData: {
     const centerCity = appointmentData.center_city || 'Clichy'
     
     // Informations selon le centre (template unifié)
-    let centerName, centerAddress, centerPostalCode, contactPhone, locationDetails
+    let centerName, centerAddress, centerPostalCode, contactPhone, locationDetails, accessDetails, accessDetailsText
     
     if (centerCity === 'Colombes') {
       centerName = 'Test Psychotechnique Permis - Colombes'
       centerAddress = '14 Rue de Mantes, Pro Drive Academy'
       centerPostalCode = '92700'
-      contactPhone = '07 65 56 53 79'
+      contactPhone = '0972132250'
       locationDetails = 'Proche des transports en commun'
+      accessDetails = '' // Pas d'informations d'accès spécifiques pour Colombes
+      accessDetailsText = ''
     } else {
       // Clichy par défaut
       centerName = 'Test Psychotechnique Permis - Clichy'
@@ -345,6 +353,8 @@ export async function sendAppointmentReminder(appointmentData: {
       centerPostalCode = '92110'
       contactPhone = '07 65 56 53 79'
       locationDetails = 'Ligne 13 - Mairie de Clichy'
+      accessDetails = '<br><strong>Rez-de-chaussée, droit.</strong><br>Code d\'entrée : <strong>6138A</strong><br>Sonner à Cabinet'
+      accessDetailsText = 'Rez-de-chaussée, droit.\nCode d\'entrée : 6138A\nSonner à Cabinet'
     }
     
     const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
@@ -357,6 +367,8 @@ export async function sendAppointmentReminder(appointmentData: {
       location: centerName,
       address: fullAddress,
       location_details: locationDetails,
+      access_details: accessDetails,
+      access_details_text: accessDetailsText,
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',
       phone: contactPhone
