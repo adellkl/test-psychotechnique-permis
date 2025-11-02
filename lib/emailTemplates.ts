@@ -464,9 +464,6 @@ Centre Agréé
                                             </tr>
                                         </table>
                                         
-                                        <!-- Plan d'accès détaillé -->
-                                        {{access_details}}
-                                        
                                         <!-- Rappels importants -->
                                         <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px; margin-top: 20px;">
                                             <h3 style="margin: 0 0 10px 0; color: #92400e; font-size: 16px; font-weight: 700;">
