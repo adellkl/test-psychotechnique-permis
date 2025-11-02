@@ -5,11 +5,11 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: "À Propos - Centres Test Psychotechnique Clichy & Colombes 92 | Agréés Préfecture",
-  description: "Découvrez nos 2 centres agréés préfecture : Test Psychotechnique Permis à Clichy (métro ligne 13, psychologue ADELI certifiée, 2ème chance gratuite) et Pro Drive Academy à Colombes. Invalidation, suspension, annulation permis. Hauts-de-Seine 92110 et 92700.",
-  keywords: "à propos test psychotechnique, centre agréé Clichy 92110, Pro Drive Academy Colombes 92700, psychologue ADELI 929334555, métro ligne 13 Clichy, test psychotechnique Hauts-de-Seine, centre agréé préfecture 92, récupération permis Clichy, récupération permis Colombes, test psychotechnique proche Paris, deuxième chance gratuite, psychologue agréé permis conduire",
+  description: "Découvrez nos 2 centres agréés préfecture : Test Psychotechnique Permis à Clichy (métro ligne 13, psychologue ADELI certifiée, 2ème chance gratuite) et Centre 2e Chance à Colombes. Invalidation, suspension, annulation permis. Hauts-de-Seine 92110 et 92700.",
+  keywords: "à propos test psychotechnique, centre agréé Clichy 92110, Centre 2e Chance Colombes 92700, psychologue ADELI 929334555, métro ligne 13 Clichy, test psychotechnique Hauts-de-Seine, centre agréé préfecture 92, récupération permis Clichy, récupération permis Colombes, test psychotechnique proche Paris, deuxième chance gratuite, psychologue agréé permis conduire",
   openGraph: {
     title: "À Propos - 2 Centres Test Psychotechnique Agréés Clichy & Colombes (92)",
-    description: "Centres agréés préfecture dans les Hauts-de-Seine. Clichy : psychologue ADELI, métro ligne 13, 2ème chance gratuite. Colombes : Pro Drive Academy, service rapide.",
+    description: "Centres agréés préfecture dans les Hauts-de-Seine. Clichy : psychologue ADELI, métro ligne 13, 2ème chance gratuite. Colombes : Centre 2e Chance, service rapide.",
     url: "https://test-psychotechnique-permis.com/a-propos",
     type: "website",
     locale: "fr_FR",
@@ -103,7 +103,7 @@ export default function APropos() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Pro Drive Academy</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">Centre 2e Chance</h3>
                   <p className="text-sm text-gray-600 font-semibold">92700 Colombes - Hauts-de-Seine</p>
                 </div>
               </div>

@@ -123,7 +123,7 @@ export default function Footer() {
                       82 Rue Henri Barbusse<br />
                       92110 Clichy
                     </address>
-                    <p className="font-semibold text-white mb-1">Pro Drive Academy - Colombes</p>
+                    <p className="font-semibold text-white mb-1">Centre 2e Chance - Colombes</p>
                     <address className="not-italic">
                       14 Rue de Mantes<br />
                       92700 Colombes<br />

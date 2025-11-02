@@ -187,7 +187,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
     
     if (centerCity === 'Colombes') {
       centerName = 'Test Psychotechnique Permis - Colombes'
-      centerAddress = '14 Rue de Mantes, Pro Drive Academy'
+      centerAddress = '14 Rue de Mantes, Centre 2e Chance'
       centerPostalCode = '92700'
       contactPhone = '07 65 56 53 79'
       metroInfo = 'Proche des transports en commun'
@@ -402,7 +402,7 @@ export async function sendAppointmentReminder(appointmentData: {
     
     if (centerCity === 'Colombes') {
       centerName = 'Test Psychotechnique Permis - Colombes'
-      centerAddress = '14 Rue de Mantes, Pro Drive Academy'
+      centerAddress = '14 Rue de Mantes, Centre 2e Chance'
       centerPostalCode = '92700'
       contactPhone = '07 65 56 53 79'
       locationDetails = 'Proche des transports en commun'

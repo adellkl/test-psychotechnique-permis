@@ -33,7 +33,7 @@ const centers = [
     id: 'colombes',
     name: 'Centre de Colombes',
     code: '92700',
-    address: '14 Rue de Mantes - Pro Drive Academy, 92700 Colombes',
+    address: '14 Rue de Mantes - Centre 2e Chance, 92700 Colombes',
     color: 'blue',
     transport: [
       {

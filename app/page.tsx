@@ -9,7 +9,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: "Test Psychotechnique Permis - Centres Agréés Clichy & Colombes 92 | Récupération Permis",
   description: "2 centres agréés préfecture pour tests psychotechniques : Clichy (métro ligne 13) et Colombes. Invalidation, suspension, annulation permis. Psychologue ADELI certifiée. Deuxième chance gratuite. RDV rapide 07 65 56 53 79. Hauts-de-Seine 92.",
-  keywords: "test psychotechnique permis, centre agréé préfecture, test psychotechnique Clichy, test psychotechnique Colombes, Pro Drive Academy, invalidation permis, suspension permis, annulation permis, psychologue ADELI, récupération permis conduire, permis invalidé, métro ligne 13, Hauts-de-Seine 92, 92110 Clichy, 92700 Colombes, test psychotechnique 92, centre agréé Hauts-de-Seine, psychologue permis conduire, Île-de-France, proche Paris",
+  keywords: "test psychotechnique permis, centre agréé préfecture, test psychotechnique Clichy, test psychotechnique Colombes, Centre 2e Chance, invalidation permis, suspension permis, annulation permis, psychologue ADELI, récupération permis conduire, permis invalidé, métro ligne 13, Hauts-de-Seine 92, 92110 Clichy, 92700 Colombes, test psychotechnique 92, centre agréé Hauts-de-Seine, psychologue permis conduire, Île-de-France, proche Paris",
   openGraph: {
     title: "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes (92)",
     description: "Centres agréés préfecture à Clichy et Colombes. Psychologue certifiée ADELI. Deuxième chance gratuite. Métro ligne 13. RDV rapide dans les Hauts-de-Seine.",
@@ -88,7 +88,7 @@ export default function HomePage() {
                         </p>
                       </div>
                       <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-                        <p className="font-semibold text-purple-900 mb-1">📍 Pro Drive Academy - Colombes</p>
+                        <p className="font-semibold text-purple-900 mb-1">📍 Centre 2e Chance - Colombes</p>
                         <p className="text-sm text-gray-600 mb-2">
                           14 Rue de Mantes, 92700 Colombes
                         </p>

@@ -25,7 +25,7 @@ export default function ContactPage() {
       features: ['Psychologue ADELI', '2ème chance gratuite', 'Parking à proximité']
     },
     colombes: {
-      name: 'Pro Drive Academy',
+      name: 'Centre 2e Chance',
       shortName: 'Colombes',
       address: '14 Rue de Mantes',
       city: '92700 Colombes',

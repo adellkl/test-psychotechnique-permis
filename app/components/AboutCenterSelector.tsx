@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 
 // Composant SEO-optimisé pour la page À Propos avec sélection de centres
-// Présente Test Psychotechnique Permis Clichy et Pro Drive Academy Colombes
+// Présente Test Psychotechnique Permis Clichy et Centre 2e Chance Colombes
 const centers = [
   {
     id: 'clichy',
@@ -31,9 +31,9 @@ const centers = [
   },
   {
     id: 'colombes',
-    name: 'Pro Drive Academy - Colombes',
+    name: 'Centre 2e Chance – Colombes',
     code: '92700',
-    title: 'À propos de Pro Drive Academy - Test psychotechnique à Colombes (92700)',
+    title: 'À propos du centre 2e Chance - Test psychotechnique à Colombes (92700)',
     address: '14 Rue de Mantes, 92700 Colombes',
     phone: '07 65 56 53 79',
     email: 'contact@test-psychotechnique-permis.com',
@@ -87,8 +87,8 @@ export default function AboutCenterSelector() {
               key={center.id}
               onClick={() => setSelectedCenter(index)}
               className={`w-full sm:w-auto py-3 px-4 sm:px-6 rounded-xl font-semibold transition-all duration-300 transform text-sm sm:text-base ${selectedCenter === index
-                  ? `${colorClasses[center.color as keyof typeof colorClasses].button} text-white shadow-lg scale-105`
-                  : `${colorClasses[center.color as keyof typeof colorClasses].buttonInactive}`
+                ? `${colorClasses[center.color as keyof typeof colorClasses].button} text-white shadow-lg scale-105`
+                : `${colorClasses[center.color as keyof typeof colorClasses].buttonInactive}`
                 }`}
             >
               <span className="hidden sm:inline">{center.name}</span>
@@ -208,11 +208,10 @@ export default function AboutCenterSelector() {
             <button
               key={index}
               onClick={() => setSelectedCenter(index)}
-              className={`h-2 rounded-full transition-all duration-300 hover:scale-110 ${
-                selectedCenter === index 
-                  ? 'w-8 bg-blue-600 shadow-md' 
+              className={`h-2 rounded-full transition-all duration-300 hover:scale-110 ${selectedCenter === index
+                  ? 'w-8 bg-blue-600 shadow-md'
                   : 'w-2 bg-gray-300 hover:bg-gray-400'
-              }`}
+                }`}
               aria-label={`Sélectionner le centre ${index + 1}`}
             />
           ))}

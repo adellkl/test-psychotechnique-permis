@@ -20,7 +20,7 @@ export default function ContactPage() {
       lng: 2.3068
     },
     colombes: {
-      name: 'Pro Drive Academy',
+      name: 'Centre 2e Chance',
       address: '14 Rue de Mantes',
       city: '92700 Colombes',
       phone: '07 65 56 53 79',
