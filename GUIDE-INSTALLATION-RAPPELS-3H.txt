@@ -1,0 +1,139 @@
+====================================
+GUIDE D'INSTALLATION - RAPPELS 3H
+====================================
+
+Ce guide vous explique comment installer et configurer le système de rappels automatiques 3h avant les rendez-vous.
+
+ÉTAPE 1 : METTRE À JOUR LA BASE DE DONNÉES SUPABASE
+----------------------------------------------------
+1. Ouvrir Supabase : https://supabase.com
+2. Aller dans votre projet
+3. Cliquer sur "SQL Editor"
+4. Copier-coller le contenu du fichier "add-reminder-3h-columns.txt"
+5. Cliquer sur "Run" pour exécuter le script
+6. Vérifier que les colonnes ont été ajoutées :
+   - Aller dans "Table Editor"
+   - Sélectionner la table "appointments"
+   - Vérifier la présence de :
+     * reminder_3h_sent (boolean)
+     * reminder_3h_sent_at (timestamp)
+
+ÉTAPE 2 : GÉNÉRER UN SECRET POUR LE CRON JOB
+---------------------------------------------
+1. Ouvrir un terminal
+2. Exécuter la commande :
+   openssl rand -hex 32
+3. Copier le résultat (c'est votre CRON_SECRET)
+4. Le sauvegarder dans un endroit sûr
+
+ÉTAPE 3 : CONFIGURER LES VARIABLES D'ENVIRONNEMENT
+---------------------------------------------------
+A. Dans votre fichier .env.local (développement local) :
+   
+   1. Ouvrir le fichier .env.local
+   2. Ajouter cette ligne :
+      CRON_SECRET=votre-secret-genere-etape-2
+   3. Sauvegarder le fichier
+
+B. Dans Vercel (production) :
+   
+   1. Aller sur https://vercel.com
+   2. Sélectionner votre projet
+   3. Aller dans Settings > Environment Variables
+   4. Cliquer sur "Add New"
+   5. Ajouter :
+      - Name: CRON_SECRET
+      - Value: votre-secret-genere-etape-2
+      - Environment: Production, Preview, Development
+   6. Cliquer sur "Save"
+
+ÉTAPE 4 : DÉPLOYER SUR VERCEL
+------------------------------
+1. Committer et pusher les changements :
+   git add .
+   git commit -m "Ajout systeme rappels 3h avant rendez-vous"
+   git push
+
+2. Vercel va automatiquement déployer les changements
+
+3. Vérifier que le cron job est bien configuré :
+   - Aller sur Vercel > Votre projet > Cron Jobs
+   - Vous devriez voir :
+     * Path: /api/reminders/send-3h-before
+     * Schedule: 0 * * * * (toutes les heures)
+
+ÉTAPE 5 : TESTER LE SYSTÈME
+----------------------------
+Option A : Test manuel via API
+   
+   1. Créer un rendez-vous de test dans environ 3 heures
+   2. Appeler l'API manuellement :
+      
+      curl -X GET https://test-psychotechnique-permis.com/api/reminders/send-3h-before \
+      -H "Authorization: Bearer VOTRE_CRON_SECRET"
+   
+   3. Vérifier :
+      - Les logs dans Vercel
+      - L'email reçu
+      - La colonne reminder_3h_sent = true dans Supabase
+
+Option B : Attendre l'exécution automatique
+   
+   1. Créer un rendez-vous de test dans environ 3 heures
+   2. Attendre l'heure pile suivante (ex: 14:00, 15:00, etc.)
+   3. Vérifier les logs dans Vercel Deployments > Functions
+
+VÉRIFICATION DU BON FONCTIONNEMENT
+-----------------------------------
+1. Aller sur Vercel > Votre projet > Logs
+2. Rechercher "[REMINDER-3H]"
+3. Vous devriez voir des logs comme :
+   ✅ [REMINDER-3H] Rappel envoyé à client@email.com
+   ℹ️  [REMINDER-3H] Aucun rendez-vous à rappeler
+
+DÉPANNAGE
+---------
+Problème : Le cron job ne s'exécute pas
+Solution : 
+- Vérifier que vercel.json est bien présent
+- Vérifier le déploiement sur Vercel
+- Consulter les logs dans Vercel > Functions
+
+Problème : Erreur 401 Non autorisé
+Solution :
+- Vérifier que CRON_SECRET est bien défini dans Vercel
+- Vérifier que le secret est identique partout
+
+Problème : Les emails ne sont pas envoyés
+Solution :
+- Vérifier que ELASTIC_EMAIL_API_KEY est configuré
+- Vérifier les logs pour voir l'erreur exacte
+- Vérifier le template "appointment_reminder_client" dans Supabase
+
+Problème : Rappels envoyés plusieurs fois
+Solution :
+- Vérifier que la colonne reminder_3h_sent est bien mise à jour
+- Vérifier l'index dans Supabase
+
+FICHIERS CRÉÉS/MODIFIÉS
+------------------------
+✅ /app/api/reminders/send-3h-before/route.ts (nouveau)
+✅ /vercel.json (modifié)
+✅ add-reminder-3h-columns.txt (nouveau)
+✅ RAPPELS-3H-DOCUMENTATION.txt (nouveau)
+✅ ENV-VARIABLES-REQUIRED.txt (nouveau)
+✅ GUIDE-INSTALLATION-RAPPELS-3H.txt (ce fichier)
+
+PROCHAINES ÉTAPES
+-----------------
+Une fois le système installé et testé :
+1. Surveiller les premiers jours pour vérifier le bon fonctionnement
+2. Ajuster le timing si nécessaire (actuellement 3h avant)
+3. Personnaliser le template d'email si souhaité
+
+SUPPORT
+-------
+En cas de problème, consulter :
+- Les logs Vercel
+- La documentation Supabase
+- La documentation Vercel Cron Jobs

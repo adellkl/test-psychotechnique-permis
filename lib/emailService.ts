@@ -416,6 +416,9 @@ export async function sendAppointmentReminder(appointmentData: {
     }
     
     const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
+    
+    // Générer le plan d'accès détaillé selon le centre
+    const accessDetails = getAccessDetailsHTML(centerCity)
 
     const variables = {
       first_name: appointmentData.first_name,
@@ -427,7 +430,8 @@ export async function sendAppointmentReminder(appointmentData: {
       location_details: locationDetails,
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',
-      phone: contactPhone
+      phone: contactPhone,
+      access_details: accessDetails
     }
 
     const htmlContent = replaceTemplateVariables(template.html_content, variables)

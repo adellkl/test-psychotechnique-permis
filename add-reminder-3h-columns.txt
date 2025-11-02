@@ -1,0 +1,17 @@
+-- Script SQL pour ajouter les colonnes de suivi des rappels 3h avant le rendez-vous
+-- À exécuter dans Supabase SQL Editor
+
+-- Ajouter les colonnes pour tracer l'envoi des rappels 3h
+ALTER TABLE appointments 
+ADD COLUMN IF NOT EXISTS reminder_3h_sent BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS reminder_3h_sent_at TIMESTAMP WITH TIME ZONE;
+
+-- Créer un index pour optimiser les requêtes de recherche des rendez-vous à rappeler
+-- Note: La table utilise appointment_date + appointment_time (colonnes séparées)
+CREATE INDEX IF NOT EXISTS idx_appointments_reminder_3h 
+ON appointments(appointment_date, appointment_time, status, reminder_3h_sent)
+WHERE status = 'confirmed' AND (reminder_3h_sent IS NULL OR reminder_3h_sent = FALSE);
+
+-- Commentaires pour documentation
+COMMENT ON COLUMN appointments.reminder_3h_sent IS 'Indique si le rappel 3h avant a été envoyé';
+COMMENT ON COLUMN appointments.reminder_3h_sent_at IS 'Date et heure d''envoi du rappel 3h avant';
