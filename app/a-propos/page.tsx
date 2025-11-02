@@ -110,7 +110,7 @@ export default function APropos() {
 
               <div className="space-y-4">
                 <p className="text-gray-700 leading-relaxed">
-                  Situé à <strong>Colombes</strong>, Pro Drive Academy est un centre agréé spécialisé dans les tests psychotechniques. Environnement professionnel et bienveillant pour une évaluation fiable et rapide.
+                  Implanté au sein des bureaux de <strong>Prodrive Academy</strong>, notre centre est agréé pour la réalisation des tests psychotechniques d'aptitude à la conduite.
                 </p>
 
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">

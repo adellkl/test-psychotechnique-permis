@@ -1,0 +1,343 @@
+-- ============================================
+-- SCRIPT SQL POUR METTRE À JOUR LE TEMPLATE EMAIL
+-- À exécuter dans Supabase SQL Editor
+-- ============================================
+
+UPDATE email_templates
+SET 
+  html_content = '<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Confirmation de rendez-vous</title>
+    <style type="text/css">
+        /* Police professionnelle */
+        body, table, td, p, h1, h2, h3, h4, ul, li {
+            font-family: -apple-system, BlinkMacSystemFont, ''Segoe UI'', Roboto, ''Helvetica Neue'', Arial, sans-serif;
+        }
+        
+        /* Styles responsive pour mobile */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                min-width: 100% !important;
+                border-radius: 0 !important;
+            }
+            .mobile-padding {
+                padding: 25px 20px !important;
+            }
+            .mobile-padding-small {
+                padding: 20px 15px !important;
+            }
+            .mobile-font-large {
+                font-size: 22px !important;
+                line-height: 1.3 !important;
+            }
+            .mobile-font-medium {
+                font-size: 18px !important;
+                line-height: 1.4 !important;
+            }
+            .mobile-font-small {
+                font-size: 13px !important;
+                line-height: 1.5 !important;
+            }
+            .mobile-price {
+                font-size: 18px !important;
+            }
+            .mobile-stack {
+                display: block !important;
+                width: 100% !important;
+                text-align: left !important;
+                padding: 6px 0 !important;
+            }
+            .mobile-stack-right {
+                text-align: left !important;
+                padding-top: 4px !important;
+            }
+            .mobile-hide {
+                display: none !important;
+            }
+            .mobile-button {
+                padding: 12px 24px !important;
+                font-size: 14px !important;
+                display: block !important;
+                width: 90% !important;
+                max-width: 280px !important;
+            }
+            .mobile-table-cell {
+                font-size: 13px !important;
+                padding: 6px 0 !important;
+            }
+            ul li {
+                font-size: 13px !important;
+                margin-bottom: 8px !important;
+            }
+            /* Styles responsive pour access details */
+            .access-code-text {
+                font-size: 24px !important;
+                letter-spacing: 2px !important;
+            }
+            .access-instruction-icon {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Styles pour Outlook */
+        body {
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+        
+        /* Styles pour les détails d''accès */
+        .access-container {
+            background-color: #f0f9ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .access-title {
+            margin: 0 0 15px 0;
+            color: #1e40af;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        
+        .access-address-box {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .access-instructions-box {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .access-instruction-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .access-instruction-row:last-child {
+            border-bottom: none;
+        }
+        
+        .access-code-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .access-code-label {
+            margin: 0 0 8px 0;
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .access-code-text {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            letter-spacing: 4px;
+            font-family: ''Courier New'', Courier, monospace;
+            text-shadow: 1px 1px 2px rgba(30, 64, 175, 0.1);
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; font-family: ''Segoe UI'', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+    <!-- Wrapper complet -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px 10px;">
+        <tr>
+            <td align="center">
+                <!-- Container principal -->
+                <table class="email-container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header professionnel -->
+                    <tr>
+                        <td class="mobile-padding" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 40px 30px; text-align: center;">
+                            <h1 class="mobile-font-large" style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2;">
+                                Confirmation de rendez-vous
+                            </h1>
+                            <p class="mobile-font-small" style="margin: 10px 0 0 0; color: #dbeafe; font-size: 16px; line-height: 1.4; font-weight: 500;">Test Psychotechnique du Permis de Conduire</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Contenu principal -->
+                    <tr>
+                        <td class="mobile-padding" style="padding: 40px 30px;">
+                            <h2 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #1f2937; font-size: 22px; font-weight: 600; line-height: 1.3;">
+                                Bonjour {{first_name}} {{last_name}},
+                            </h2>
+                            
+                            <p class="mobile-font-small" style="margin: 0 0 30px 0; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                                Nous avons le plaisir de confirmer votre rendez-vous pour le test psychotechnique. Toutes les informations importantes sont détaillées ci-dessous.
+                            </p>
+                            
+                            <!-- Section Informations unique -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 12px; border: 2px solid #3b82f6; margin-bottom: 30px;">
+                                <tr>
+                                    <td class="mobile-padding-small" style="padding: 25px;">
+                                        <h2 class="mobile-font-medium" style="margin: 0 0 25px 0; color: #1e40af; font-size: 22px; font-weight: 700; line-height: 1.3; text-align: center;">
+                                            Informations de votre rendez-vous
+                                        </h2>
+                                        
+                                        <!-- Sous-section: Rendez-vous -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 700; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
+                                            Votre rendez-vous
+                                        </h3>
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+                                            <tr>
+                                                <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Date</td>
+                                                <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{appointment_date}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Heure</td>
+                                                <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 16px; font-weight: 700; padding: 8px 0; text-align: right;">{{appointment_time}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Tarif</td>
+                                                <td class="mobile-table-cell mobile-price mobile-stack-right" style="color: #059669; font-size: 18px; font-weight: 700; padding: 8px 0; text-align: right;">90€</td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <!-- Sous-section: Localisation -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 700; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
+                                            Localisation
+                                        </h3>
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+                                            <tr>
+                                                <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Centre</td>
+                                                <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{location}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Adresse</td>
+                                                <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; line-height: 1.4;">{{address}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Accès</td>
+                                                <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{metro_info}}</td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <!-- Plan d''accès détaillé (dynamique selon le centre) -->
+                                        {{access_details}}
+                                        
+                                        
+                                        <!-- Sous-section: À prévoir -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 700; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
+                                            À prévoir
+                                        </h3>
+                                        <ul class="mobile-font-small" style="margin: 0 0 20px 0; padding-left: 20px; color: #374151; font-size: 14px; line-height: 1.8;">
+                                            <li style="margin-bottom: 6px;">Arrivez <strong>15 minutes avant</strong></li>
+                                            <li style="margin-bottom: 6px;"><strong>Pièce d''identité valide</strong> obligatoire</li>
+                                            <li style="margin-bottom: 6px;">Lunettes ou lentilles si nécessaire</li>
+                                            <li style="margin-bottom: 6px;"><strong>Paiement en espèces</strong></li>
+                                            <li>Durée : 40 minutes</li>
+                                        </ul>
+                                        
+                                        <!-- Message important annulation -->
+                                        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                                            <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
+                                                <strong>Important :</strong> Si vous ne pouvez pas être présent(e), merci de nous prévenir à l''avance ou d''annuler votre rendez-vous via le bouton ci-dessous. Cela permettra de libérer le créneau pour d''autres personnes. Merci de votre compréhension.
+                                            </p>
+                                        </div>
+                                        
+                                        <!-- Sous-section: Contact -->
+                                        <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 700; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
+                                            Contact
+                                        </h3>
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Téléphone</td>
+                                                <td class="mobile-stack mobile-font-small" style="padding: 8px 0; text-align: right;">
+                                                    <a href="tel:{{contact_phone}}" style="color: #2563eb; text-decoration: none; font-weight: 600; font-size: 14px;">{{contact_phone}}</a>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #e5e7eb;">
+                                                <td class="mobile-stack" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Site web</td>
+                                                <td class="mobile-stack mobile-font-small" style="padding: 8px 0; text-align: right;">
+                                                    <a href="{{website}}" style="color: #2563eb; text-decoration: none; font-weight: 600; font-size: 14px;">test-psychotechnique-permis.com</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Bouton annulation -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+                                <tr>
+                                    <td align="center" style="padding: 10px 0;">
+                                        <h3 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
+                                            Besoin d''annuler votre rendez-vous ?
+                                        </h3>
+                                        <p class="mobile-font-small" style="margin: 0 0 20px 0; color: #4b5563; font-size: 14px; line-height: 1.6;">
+                                            Votre rendez-vous est <strong style="color: #059669;">confirmé</strong>. Si vous ne pouvez pas vous présenter, merci de l''annuler en cliquant sur le bouton ci-dessous.
+                                        </p>
+                                        <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" class="mobile-button" style="display: inline-block; padding: 14px 32px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
+                                            Annuler mon rendez-vous
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td class="mobile-padding-small" style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p class="mobile-font-small" style="margin: 0 0 10px 0; color: #6b7280; font-size: 15px; line-height: 1.6;">
+                                Merci de votre confiance.
+                            </p>
+                            <p class="mobile-font-small" style="margin: 0; color: #9ca3af; font-size: 14px; line-height: 1.5;">
+                                <strong>Test Psychotechnique Permis</strong><br>
+                                Centre Agréé 
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>',
+  updated_at = NOW()
+WHERE template_name = 'appointment_confirmation_client';
+
+-- Vérification de la mise à jour
+SELECT template_name, updated_at, LENGTH(html_content) as html_length
+FROM email_templates
+WHERE template_name = 'appointment_confirmation_client';

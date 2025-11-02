@@ -72,6 +72,14 @@ export const defaultEmailTemplates = [
                 font-size: 13px !important;
                 margin-bottom: 8px !important;
             }
+            /* Styles responsive pour access details */
+            .access-code-text {
+                font-size: 24px !important;
+                letter-spacing: 2px !important;
+            }
+            .access-instruction-icon {
+                font-size: 16px !important;
+            }
         }
         
         /* Styles pour Outlook */
@@ -95,6 +103,74 @@ export const defaultEmailTemplates = [
             outline: none;
             text-decoration: none;
             -ms-interpolation-mode: bicubic;
+        }
+        
+        /* Styles pour les détails d'accès */
+        .access-container {
+            background-color: #f0f9ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .access-title {
+            margin: 0 0 15px 0;
+            color: #1e40af;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        
+        .access-address-box {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .access-instructions-box {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .access-instruction-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .access-instruction-row:last-child {
+            border-bottom: none;
+        }
+        
+        .access-code-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .access-code-label {
+            margin: 0 0 8px 0;
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .access-code-text {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            letter-spacing: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            text-shadow: 1px 1px 2px rgba(30, 64, 175, 0.1);
         }
     </style>
 </head>
@@ -172,6 +248,9 @@ export const defaultEmailTemplates = [
                                                 <td class="mobile-table-cell mobile-stack-right" style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{metro_info}}</td>
                                             </tr>
                                         </table>
+                                        
+                                        <!-- Plan d'accès détaillé (dynamique selon le centre) -->
+                                        {{access_details}}
                                         
                                         
                                         <!-- Sous-section: À prévoir -->

@@ -66,6 +66,73 @@ function replaceTemplateVariables(template: string, variables: Record<string, st
   return result
 }
 
+function getAccessDetailsHTML(centerCity: string): string {
+  if (centerCity === 'Colombes') {
+    return `
+      <div style="background-color: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 12px 0; color: #1e40af; font-size: 15px; font-weight: 700; display: flex; align-items: center;">
+          📍 Plan d'accès détaillé
+        </h4>
+        <div style="color: #1f2937; font-size: 14px; line-height: 1.8;">
+          <p style="margin: 0 0 8px 0;"><strong>14 rue de Mantes, 92700 Colombes</strong></p>
+          <p style="margin: 0 0 5px 0;">→ 1er Bâtiment dans la cour : <strong>Bâtiment A/B</strong></p>
+          <p style="margin: 0 0 5px 0;">→ Accès <strong>ascenseur B</strong> du hall, à gauche</p>
+          <p style="margin: 0 0 5px 0;">→ <strong>5e étage</strong> au bout du couloir à gauche</p>
+          <p style="margin: 0;">→ Suivre l'affichage <strong style="color: #2563eb;">ProDrive Academy</strong></p>
+        </div>
+      </div>
+    `
+  } else {
+    // Clichy par défaut
+    return `
+      <div style="background-color: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 15px 0; color: #1e40af; font-size: 15px; font-weight: 700; display: flex; align-items: center;">
+          📍 Plan d'accès détaillé
+        </h4>
+        
+        <!-- Adresse -->
+        <div style="background-color: #ffffff; border-radius: 6px; padding: 12px; margin-bottom: 12px; border-left: 3px solid #3b82f6;">
+          <p style="margin: 0; color: #1f2937; font-size: 14px; font-weight: 600;">
+            📌 82, rue Henri Barbusse, 92110 Clichy
+          </p>
+        </div>
+        
+        <!-- Instructions d'accès -->
+        <div style="background-color: #ffffff; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                <div style="display: flex; align-items: start;">
+                  <span style="color: #3b82f6; font-size: 18px; margin-right: 10px;">→</span>
+                  <span style="color: #1f2937; font-size: 14px;"><strong>Rez-de-chaussée</strong>, à droite</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0;">
+                <div style="display: flex; align-items: start;">
+                  <span style="color: #3b82f6; font-size: 18px; margin-right: 10px;">🔔</span>
+                  <span style="color: #1f2937; font-size: 14px;"><strong>Sonner à Cabinet</strong></span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        
+        <!-- Code d'entrée mis en avant -->
+        <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #3b82f6; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);">
+          <p style="margin: 0 0 8px 0; color: #1e40af; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">
+            🔑 Code d'entrée
+          </p>
+          <p style="margin: 0; font-size: 28px; font-weight: 700; color: #1e40af; letter-spacing: 4px; font-family: 'Courier New', Courier, monospace; text-shadow: 1px 1px 2px rgba(30, 64, 175, 0.1);">
+            6138A
+          </p>
+        </div>
+      </div>
+    `
+  }
+}
+
 async function getEmailTemplate(templateName: string): Promise<EmailTemplate> {
   const { data: template, error } = await supabase
     .from('email_templates')
@@ -149,7 +216,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
       metro_info: metroInfo,
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',
-      website: 'https://test-psychotechnique-permis.com'
+      website: 'https://test-psychotechnique-permis.com',
+      access_details: getAccessDetailsHTML(centerCity)
     }
 
     console.log(`📝 [CLIENT] Remplacement des variables...`)

@@ -76,23 +76,31 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">2 Centres Test Psychotechnique Permis Agréés</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">2e Chance met à votre disposition deux centres agréés pour la réalisation des tests psychotechniques d'aptitude à la conduite.</h3>
                     <div className="space-y-3">
                       <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
                         <p className="font-semibold text-blue-900 mb-1">📍 Centre de Clichy</p>
-                        <p className="text-sm text-gray-600">
-                          82 Rue Henri Barbusse, 92110 Clichy - <span className="font-semibold text-blue-600">3 min du métro Mairie de Clichy (Ligne 13)</span>
+                        <p className="text-sm text-gray-600 mb-2">
+                          82 Rue Henri Barbusse, 92110 Clichy
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          <span className="font-semibold text-blue-600">🚇 À 3 min du métro Mairie de Clichy (ligne 13) – 8 min de la gare Clichy-Levallois (ligne L)</span>
                         </p>
                       </div>
                       <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
                         <p className="font-semibold text-purple-900 mb-1">📍 Pro Drive Academy - Colombes</p>
+                        <p className="text-sm text-gray-600 mb-2">
+                          14 Rue de Mantes, 92700 Colombes
+                        </p>
+                        <p className="text-xs text-gray-500 mb-2">
+                          <span className="font-semibold text-purple-600">🚊 À 3 min du tram Charlebourg (T2) – 3 min de la gare La Garenne-Colombes (ligne L) – 5 min de La Défense</span>
+                        </p>
                         <p className="text-sm text-gray-600">
-                          14 Rue de Mantes, 92700 Colombes<br />
                           Tél: 07 65 56 53 79 - Email: contact@test-psychotechnique-permis.com
                         </p>
                       </div>
                       <p className="text-gray-600 text-sm leading-relaxed pt-2">
-                        Nos <strong>2 centres agréés préfecture</strong> vous offrent plus de flexibilité pour votre <strong>test psychotechnique du permis de conduire</strong>. Choisissez le centre le plus proche de chez vous !
+                        Nos psychologues certifiées vous accompagnent dans un environnement professionnel, bienveillant et accessible.
                       </p>
                     </div>
                   </div>
@@ -158,16 +166,21 @@ export default function HomePage() {
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Une deuxième chance gratuite</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Deuxième chance gratuite</h3>
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full text-sm font-medium mb-4">
                       <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                       En cas d'échec
                     </div>
                   </div>
 
-                  <p className="text-gray-700 leading-relaxed mb-6 text-center">
-                    Le test psychotechnique peut être un moment stressant pour certains et il peut arriver que votre test soit un échec à cause de cela. Notre psychologue vous proposera de passer le test une <span className="font-bold text-blue-600">deuxième fois gratuitement</span>, pour vous donner toutes les chances de récupérer votre permis de conduire.
-                  </p>
+                  <div className="space-y-4 mb-6">
+                    <p className="text-gray-700 leading-relaxed text-center">
+                      Pour certains candidats, les tests peuvent être un moment stressant. En cas d'échec, notre psychologue vous proposera un <span className="font-bold text-blue-600">second rendez-vous offert</span> — votre "deuxième chance".
+                    </p>
+                    <p className="text-gray-700 leading-relaxed text-center font-medium">
+                      Gardez votre sérénité, repassez votre test <span className="font-bold text-blue-600">sans frais supplémentaires</span> en cas d'échec.
+                    </p>
+                  </div>
 
                   <div className="text-center">
                     <Link
@@ -328,7 +341,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 animate-slide-in-left" style={{ animationDelay: '0ms' }}>
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -337,7 +350,7 @@ export default function HomePage() {
                     <span className="text-gray-600">Aucun acompte</span>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -346,7 +359,7 @@ export default function HomePage() {
                     <span className="text-gray-600">Paiement sur place</span>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 animate-slide-in-left" style={{ animationDelay: '200ms' }}>
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -379,18 +392,19 @@ export default function HomePage() {
               </div>
 
               <div className="text-center space-y-4">
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed animate-slide-in-left" style={{ animationDelay: '0ms' }}>
                   Notre psychologue est <span className="font-semibold text-blue-600">agréée par la préfecture</span> et dispose d'un numéro ADELI délivré par l'ARS.
                 </p>
 
-                <div className="p-4 bg-blue-50 rounded-lg">
+                <div className="p-4 bg-blue-50 rounded-lg animate-slide-in-left" style={{ animationDelay: '100ms' }}>
                   <p className="text-sm text-gray-600 mb-2">Numéro ADELI</p>
                   <p className="text-xl font-bold text-blue-600 font-mono">929334555</p>
                 </div>
 
                 <Link
                   href="/agrement-prefectoral"
-                  className="inline-flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 animate-slide-in-left"
+                  style={{ animationDelay: '200ms' }}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

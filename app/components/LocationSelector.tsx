@@ -37,6 +37,21 @@ const centers = [
     color: 'blue',
     transport: [
       {
+        icon: 'tram',
+        title: 'Tram T2',
+        detail: '3 min à pied - Arrêt Charlebourg'
+      },
+      {
+        icon: 'train',
+        title: 'Gare La Garenne-Colombes',
+        detail: '3 min à pied - Ligne L'
+      },
+      {
+        icon: 'metro',
+        title: 'La Défense',
+        detail: '5 min en transport'
+      },
+      {
         icon: 'phone',
         title: 'Téléphone',
         detail: '07 65 56 53 79'
@@ -105,6 +120,12 @@ export default function LocationSelector() {
             <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
           </svg>
         )
+      case 'tram':
+        return (
+          <svg className={`w-4 h-4 ${colors.iconText}`} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0v-.5A1.5 1.5 0 0114.5 6c.526 0 .988-.27 1.256-.679a6.012 6.012 0 011.913 2.706l-1.563 1.563a3 3 0 01-4.242 0l-1.06-1.06a1 1 0 00-1.414 0l-1.06 1.06a3 3 0 01-4.242 0L4.332 8.027z" clipRule="evenodd" />
+          </svg>
+        )
       default:
         return null
     }
@@ -156,7 +177,8 @@ export default function LocationSelector() {
           {currentCenter.transport.map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-2 bg-white rounded-lg transition-all duration-300 hover:shadow-md"
+              className="flex items-center gap-3 p-2 bg-white rounded-lg transition-all duration-300 hover:shadow-md animate-slide-in-left"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className={`w-8 h-8 ${colors.iconBg} rounded-full flex items-center justify-center`}>
                 {getIcon(item.icon)}

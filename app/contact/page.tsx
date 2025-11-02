@@ -12,7 +12,7 @@ export default function ContactPage() {
       city: '92110 Clichy',
       phone: '07 65 56 53 79',
       email: 'contact@test-psychotechnique-permis.com',
-      metro: 'Métro Ligne 13 - Mairie de Clichy (3 min)',
+      metro: 'À 3 min du métro Mairie de Clichy (ligne 13) – 8 min de la gare Clichy-Levallois (ligne L)',
       color: 'blue',
       gradient: 'from-blue-500 to-blue-600',
       bgGradient: 'from-blue-50 to-indigo-50'
@@ -24,7 +24,7 @@ export default function ContactPage() {
       city: '92700 Colombes',
       phone: '07 65 56 53 79',
       email: 'contact@test-psychotechnique-permis.com',
-      metro: 'Proche du T2 arrêt Jacqueline Auriol (5 min)',
+      metro: 'À 3 min du tram Charlebourg (T2) – 3 min de la gare La Garenne-Colombes (ligne L) – 5 min de La Défense',
       color: 'purple',
       gradient: 'from-purple-500 to-purple-600',
       bgGradient: 'from-purple-50 to-pink-50'

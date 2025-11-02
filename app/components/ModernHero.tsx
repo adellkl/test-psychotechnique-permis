@@ -154,7 +154,7 @@ export default function ModernHero() {
             {/* Title */}
             <motion.div variants={itemVariants} className="space-y-3 sm:space-y-4">
               <motion.h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold leading-tight"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
                 style={{
                   background: 'linear-gradient(to right, #fff, #93c5fd)',
                   WebkitBackgroundClip: 'text',
@@ -163,8 +163,6 @@ export default function ModernHero() {
                   willChange: 'auto'
                 }}
               >
-                Centre de Test
-                <br />
                 <motion.span
                   className="text-blue-400"
                   animate={{
@@ -173,10 +171,10 @@ export default function ModernHero() {
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                   style={{ willChange: 'auto' }}
                 >
-                  Psychotechnique
+                  2e Chance
                 </motion.span>
-                <br />
-                Permis
+                {' – '}
+                Centre agréé de tests psychotechniques, valable partout en France
                 <br />
                 <motion.span
                   className="text-red-400 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold"
@@ -208,8 +206,11 @@ export default function ModernHero() {
                 variants={itemVariants}
                 className="text-sm sm:text-base lg:text-lg xl:text-xl text-gray-300 max-w-2xl"
               >
-                En cas d'échec, une deuxième chance vous sera accordée{' '}
-                <span className="font-bold text-emerald-400">gratuitement !</span>
+                Avec nos{' '}
+                <span className="font-bold text-blue-400">deux centres agréés</span>,{' '}
+                2e Chance vous offre plus de{' '}
+                <span className="font-bold text-emerald-400">flexibilité</span>{' '}
+                pour passer votre test psychotechnique.
               </motion.p>
             </motion.div>
 

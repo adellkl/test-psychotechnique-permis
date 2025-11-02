@@ -646,158 +646,63 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  <h2 className="text-2xl font-bold text-green-600 mb-4 text-center">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600 mb-6 sm:mb-8 text-center px-4">
                     ✅ Rendez-vous Confirmé
                   </h2>
 
-                  {/* Résumé du rendez-vous */}
-                  <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                    <h3 className="text-lg font-bold text-blue-900 mb-4 text-center">Résumé de votre rendez-vous</h3>
-                    
-                    <div className="space-y-3">
-                      {/* Date et heure */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <div className="space-y-4 sm:space-y-5 max-w-2xl mx-auto px-4 sm:px-0">
+                    {/* Email confirmation status */}
+                    <div className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-4 border-2 border-green-300 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 sm:w-5 sm:h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                           </svg>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Date et heure</p>
-                          <p className="text-base font-bold text-gray-900">{formatSelectedDateTime()}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-green-900 text-base sm:text-lg break-words">Email de confirmation envoyé</p>
+                          <p className="text-xs sm:text-sm text-green-700 mt-0.5">Vérifiez votre boîte de réception</p>
                         </div>
                       </div>
+                    </div>
 
-                      {/* Centre */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    {/* Message d'annulation important */}
+                    <div className="bg-orange-50 rounded-lg sm:rounded-xl p-4 sm:p-4 border-2 border-orange-300 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-5 h-5 sm:w-5 sm:h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Centre</p>
-                          <p className="text-base font-bold text-gray-900">{selectedCenter?.name || 'Centre Clichy'}</p>
-                          <p className="text-sm text-gray-600">{selectedCenter?.address || '82 Rue Henri Barbusse'}</p>
-                          <p className="text-sm text-gray-600">{selectedCenter?.postal_code || '92110'} {selectedCenter?.city || 'Clichy'}</p>
-                        </div>
-                      </div>
-
-                      {/* Informations personnelles */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Vos informations</p>
-                          <p className="text-base font-bold text-gray-900">{formData.firstName} {formData.lastName}</p>
-                          <p className="text-sm text-gray-600">{formData.email}</p>
-                          <p className="text-sm text-gray-600">{formData.phone}</p>
-                        </div>
-                      </div>
-
-                      {/* Motif */}
-                      <div className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600">Motif du test</p>
-                          <p className="text-base font-bold text-gray-900">
-                            {formData.reason === 'invalidation' && 'Invalidation du permis'}
-                            {formData.reason === 'suspension' && 'Suspension du permis'}
-                            {formData.reason === 'annulation' && 'Annulation du permis'}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-orange-900 text-base sm:text-lg mb-1.5 break-words">⚠️ Impossible de venir ?</p>
+                          <p className="text-xs sm:text-sm text-orange-800 leading-relaxed break-words">
+                            Si vous ne pouvez pas être présent(e) à votre rendez-vous, merci de <strong>l'annuler au plus vite</strong> via le lien dans l'email de confirmation. Cela permettra de libérer le créneau pour d'autres candidats. Merci de votre compréhension.
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6">
-                    {/* Email confirmation status */}
-                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-green-800">Email de confirmation envoyé</p>
-                          <p className="text-sm text-green-600">Vérifiez votre boîte de réception</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Important information - Mobile responsive */}
-                    <div className="bg-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200">
-                      <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        Informations importantes
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Arrivée 10 minutes avant votre rendez-vous</span>
-                        </div>
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Pièce d'identité obligatoire (carte d'identité ou passeport)</span>
-                        </div>
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Durée : 40 minutes</span>
-                        </div>
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Paiement sur place (aucun acompte requis)</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 mt-8">
+                  <div className="space-y-3 sm:space-y-4 mt-6 sm:mt-8 px-4 sm:px-0 max-w-2xl mx-auto">
                     <button
                       onClick={() => window.location.href = '/'}
-                      className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                      className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                       </svg>
                       Retour à l'accueil
                     </button>
 
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <p className="text-gray-700 mb-1 font-medium text-sm">
+                    <div className="p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl">
+                      <p className="text-gray-700 mb-1 font-medium text-xs sm:text-sm">
                         Besoin de modifier votre rendez-vous ?
                       </p>
-                      <p className="text-gray-600 text-sm">
+                      <p className="text-gray-600 text-xs sm:text-sm">
                         Contactez-nous au{' '}
-                        <a href="tel:0765565379" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                        <a href="tel:0765565379" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors whitespace-nowrap">
                           07 65 56 53 79
                         </a>
                       </p>

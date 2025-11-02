@@ -21,7 +21,7 @@ const centers = [
       'Des résultats transmis rapidement',
       'Un accueil personnalisé pour chaque candidat',
       'Une équipe à l\'écoute, disponible pour répondre à vos questions',
-      'Une deuxième chance gratuite en cas d\'échec'
+      'Deuxième chance gratuite en cas d\'échec'
     ],
     contact: {
       address: '82 Rue Henri Barbusse, 92110 Clichy',
@@ -38,13 +38,15 @@ const centers = [
     phone: '07 65 56 53 79',
     email: 'contact@test-psychotechnique-permis.com',
     color: 'purple',
-    description: `Situé au 14 Rue de Mantes à Colombes (92700), Pro Drive Academy est un centre agréé spécialisé dans les tests psychotechniques pour le permis de conduire. Nous accompagnons les conducteurs souhaitant récupérer leur permis suspendu, annulé ou invalidé, ainsi que ceux devant renouveler leur aptitude à la conduite.`,
-    description2: `Nos tests sont réalisés dans un environnement professionnel, calme et bienveillant, par des experts agréés, afin de garantir une évaluation fiable et rapide de vos capacités.`,
+    description: `Implanté au sein des bureaux de Prodrive Academy, notre centre est agréé pour la réalisation des tests psychotechniques d'aptitude à la conduite.`,
+    description2: `Nous accompagnons les conducteurs concernés par une suspension, une invalidation ou une annulation du permis de conduire, dans le cadre des démarches administratives obligatoires.`,
     features: [
-      'Une prise de rendez-vous simple et rapide',
-      'Des résultats transmis rapidement',
-      'Un accueil personnalisé pour chaque candidat',
-      'Une équipe à l\'écoute, disponible pour répondre à vos questions'
+      'Prise de rendez-vous rapide et simplifiée',
+      'Transmission des résultats dans les meilleurs délais',
+      'Accueil personnalisé pour chaque candidat',
+      'Orientation vers un médecin agréé ou conseils pour la commission médicale',
+      'Équipe à l\'écoute et disponible',
+      'Deuxième chance gratuite en cas d\'échec'
     ],
     contact: {
       address: '14 Rue de Mantes, 92700 Colombes',
