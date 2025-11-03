@@ -15,7 +15,6 @@ interface SidebarProps {
 export default function Sidebar({ activeSection, onSectionChange, adminName, onLogout, isCollapsed: externalIsCollapsed, setIsCollapsed: externalSetIsCollapsed }: SidebarProps) {
   const { centers, selectedCenterId, setSelectedCenterId, loadingCenters } = useCenterContext()
   
-  // Toujours ouvert par défaut, ignorer localStorage
   const [internalIsCollapsed, setInternalIsCollapsed] = useState(false)
 
   const isCollapsed = externalIsCollapsed !== undefined ? externalIsCollapsed : internalIsCollapsed
@@ -25,7 +24,6 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
     } else {
       setInternalIsCollapsed(collapsed)
     }
-    // Ne plus sauvegarder dans localStorage pour garder toujours ouvert
   }
 
   const menuItems = [
@@ -169,7 +167,6 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
                 key={item.id}
                 href={item.href}
                 onClick={() => {
-                  // Fermer le menu mobile après le clic
                   if (window.innerWidth < 1024) {
                     setIsCollapsed(true)
                   }
@@ -189,7 +186,6 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
                 key={item.id}
                 onClick={() => {
                   onSectionChange(item.id)
-                  // Fermer le menu mobile après la sélection
                   if (window.innerWidth < 1024) {
                     setIsCollapsed(true)
                   }

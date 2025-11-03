@@ -91,7 +91,7 @@ export default function AppointmentsTable({
     const created = new Date(createdAt)
     const now = new Date()
     const diffHours = (now.getTime() - created.getTime()) / (1000 * 60 * 60)
-    return diffHours < 24 // Nouveau si créé dans les dernières 24h
+    return diffHours < 24
   }
 
   const isAllSelected = filteredAppointments.length > 0 && selectedAppointments.size === filteredAppointments.length
@@ -118,7 +118,6 @@ export default function AppointmentsTable({
       const result = await response.json()
       console.log('✅ Email envoyé:', result)
 
-      // Rafraîchir la page pour voir les changements
       window.location.reload()
     } catch (error) {
       console.error('❌ Erreur:', error)

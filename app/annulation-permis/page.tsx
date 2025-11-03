@@ -71,7 +71,6 @@ export default function AnnulationPermisPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-20 pt-40">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
@@ -96,7 +95,6 @@ export default function AnnulationPermisPage() {
         </div>
       </section>
 
-      {/* Qu'est-ce que c'est */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
@@ -113,7 +111,6 @@ export default function AnnulationPermisPage() {
         </div>
       </section>
 
-      {/* Comment récupérer son permis */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
@@ -180,7 +177,6 @@ export default function AnnulationPermisPage() {
         </div>
       </section>
 
-      {/* Infractions routières concernées */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
@@ -188,7 +184,6 @@ export default function AnnulationPermisPage() {
           </h2>
           
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Alcool ou stupéfiants */}
             <div className="bg-red-50 p-6 rounded-xl border border-red-200">
               <h3 className="text-xl font-bold text-red-900 mb-4 flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
@@ -205,7 +200,6 @@ export default function AnnulationPermisPage() {
               </ul>
             </div>
 
-            {/* Atteintes involontaires aggravées */}
             <div className="bg-orange-50 p-6 rounded-xl border border-orange-200">
               <h3 className="text-xl font-bold text-orange-900 mb-4 flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
@@ -222,7 +216,6 @@ export default function AnnulationPermisPage() {
               </ul>
             </div>
 
-            {/* Comportement en cas de contrôle routier */}
             <div className="bg-purple-50 p-6 rounded-xl border border-purple-200">
               <h3 className="text-xl font-bold text-purple-900 mb-4 flex items-center gap-3">
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -239,7 +232,6 @@ export default function AnnulationPermisPage() {
               </ul>
             </div>
 
-            {/* Infractions graves */}
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">

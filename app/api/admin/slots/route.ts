@@ -4,7 +4,7 @@ import { validateSlotCreation, sanitizeString, isValidTime } from '../../../../l
 import { requireAdmin } from '../../../../lib/adminAuth'
 import { getRateLimitKey } from '../../../../lib/security'
 
-// GET - Fetch available slots (public, pas besoin d'auth)
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -36,14 +36,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create new slot (admin uniquement)
+
 export async function POST(request: NextRequest) {
   try {
-    // Sécurité : Authentification admin requise
+
     const authResult = await requireAdmin(request, {
       rateLimit: { maxRequests: 20, windowMs: 60000 }
     })
-    
+
     if (authResult instanceof NextResponse) return authResult
     const { admin } = authResult
 
@@ -54,12 +54,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Validation
+
     const validation = validateSlotCreation({ date, time: start_time })
     if (!validation.isValid) {
-      return NextResponse.json({ 
-        error: 'Validation failed', 
-        details: validation.errors 
+      return NextResponse.json({
+        error: 'Validation failed',
+        details: validation.errors
       }, { status: 400 })
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid end time format' }, { status: 400 })
     }
 
-    // Sanitization
+
     const sanitizedDate = sanitizeString(date)
     const sanitizedStartTime = sanitizeString(start_time)
     const sanitizedEndTime = sanitizeString(end_time)
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Log de l'action
+
     const ip = getRateLimitKey(request)
     const { logAdminAction } = await import('../../../../lib/adminAuth')
     await logAdminAction(admin.id, 'CREATE_SLOT', `Created slot for ${sanitizedDate} at ${sanitizedStartTime}`, ip)
@@ -99,14 +99,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT - Update slot (admin uniquement)
+
 export async function PUT(request: NextRequest) {
   try {
-    // Sécurité : Authentification admin requise
+
     const authResult = await requireAdmin(request, {
       rateLimit: { maxRequests: 20, windowMs: 60000 }
     })
-    
+
     if (authResult instanceof NextResponse) return authResult
     const { admin } = authResult
 
@@ -117,7 +117,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 })
     }
 
-    // Validation UUID
+
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
     if (!uuidRegex.test(id)) {
       return NextResponse.json({ error: 'Invalid slot ID format' }, { status: 400 })
@@ -137,7 +137,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Log de l'action
+
     const ip = getRateLimitKey(request)
     const { logAdminAction } = await import('../../../../lib/adminAuth')
     await logAdminAction(admin.id, 'UPDATE_SLOT', `Updated slot ${id} availability to ${is_available}`, ip)
@@ -148,15 +148,15 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete slot (admin uniquement avec permissions élevées)
+
 export async function DELETE(request: NextRequest) {
   try {
-    // Sécurité : Authentification admin requise avec permissions élevées
+
     const authResult = await requireAdmin(request, {
       requireRole: ['super_admin', 'admin'],
       rateLimit: { maxRequests: 10, windowMs: 60000 }
     })
-    
+
     if (authResult instanceof NextResponse) return authResult
     const { admin } = authResult
 
@@ -167,7 +167,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 })
     }
 
-    // Validation UUID
+
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
     if (!uuidRegex.test(id)) {
       return NextResponse.json({ error: 'Invalid slot ID format' }, { status: 400 })
@@ -182,7 +182,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Log de l'action
+
     const ip = getRateLimitKey(request)
     const { logAdminAction } = await import('../../../../lib/adminAuth')
     await logAdminAction(admin.id, 'DELETE_SLOT', `Deleted slot ${id}`, ip)

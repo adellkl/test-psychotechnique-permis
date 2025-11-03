@@ -34,7 +34,6 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 pt-32 pb-12">
-        {/* Important Notice */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,7 +57,6 @@ export default function ContactPage() {
           </div>
         </motion.div>
 
-        {/* Centres de contact */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           {centers.map((center, index) => (
             <motion.div
@@ -68,7 +66,6 @@ export default function ContactPage() {
               transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
               className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200"
             >
-              {/* Header */}
               <div className="bg-slate-800 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center">
@@ -84,9 +81,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-6 space-y-4">
-                {/* Adresse */}
                 <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
                   <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
@@ -97,7 +92,6 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                {/* Téléphone */}
                 <a
                   href={`tel:${center.phone.replace(/\s/g, '')}`}
                   className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group border border-gray-200"
@@ -110,7 +104,6 @@ export default function ContactPage() {
                   </span>
                 </a>
 
-                {/* Email */}
                 <a
                   href={`mailto:${center.email}`}
                   className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group border border-gray-200"
@@ -123,7 +116,6 @@ export default function ContactPage() {
                   </span>
                 </a>
 
-                {/* Métro */}
                 <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -131,7 +123,6 @@ export default function ContactPage() {
                   <p className="text-sm text-gray-700 font-medium">{center.metro}</p>
                 </div>
 
-                {/* Bouton itinéraire */}
                 <a
                   href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(center.address + ', ' + center.city)}`}
                   target="_blank"
@@ -151,7 +142,6 @@ export default function ContactPage() {
           ))}
         </div>
 
-        {/* CTA Réservation */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,7 +177,6 @@ export default function ContactPage() {
         </motion.div>
       </div>
 
-      {/* FAQ Section */}
       <FAQ />
     </div>
   )

@@ -36,12 +36,10 @@ export default function SlotsCalendar({
     return timeSlots.filter(slot => {
       if (slot.date !== dateStr) return false
       
-      // Garder tous les créneaux d'aujourd'hui
       if (slot.date === today) {
         return true
       }
       
-      // Pour les autres jours, ne garder que les créneaux futurs
       const slotDateTime = parse(
         `${slot.date} ${slot.start_time}`,
         'yyyy-MM-dd HH:mm',

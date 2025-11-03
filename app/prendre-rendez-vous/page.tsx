@@ -235,7 +235,6 @@ export default function RendezVous() {
     <>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-32">
         <div className="container mx-auto px-4 py-6">
-          {/* Breadcrumb Navigation */}
           <nav className="mb-6" aria-label="Fil d'Ariane">
             <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
               <li>
@@ -255,7 +254,6 @@ export default function RendezVous() {
             </ol>
           </nav>
 
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg mb-4">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,11 +268,8 @@ export default function RendezVous() {
             </p>
           </div>
 
-          {/* Main Layout */}
           <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
-            {/* Left Panel - Content */}
             <div className="flex-1 order-2 lg:order-1">
-              {/* Step 0: Centre Selection */}
               {step === 0 && (
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
                   <div className="mb-6">
@@ -322,10 +317,8 @@ export default function RendezVous() {
                 </div>
               )}
 
-              {/* Step 1: Calendar Selection */}
               {step === 1 && (
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                  {/* Centre sélectionné */}
                   <div className="mb-6 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
@@ -406,7 +399,6 @@ export default function RendezVous() {
                       ref={continueButtonRef}
                       onClick={() => {
                         setStep(2)
-                        // Scroll immédiat vers la section "Vos informations personnelles"
                         requestAnimationFrame(() => {
                           if (personalInfoRef.current) {
                             const elementPosition = personalInfoRef.current.getBoundingClientRect().top + window.pageYOffset
@@ -430,7 +422,6 @@ export default function RendezVous() {
                 </div>
               )}
 
-              {/* Step 2: Personal Information */}
               {step === 2 && (
                 <div ref={personalInfoRef} className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
                   <div className="mb-4">
@@ -438,7 +429,6 @@ export default function RendezVous() {
                     <p className="text-sm text-gray-600">Complétez vos coordonnées pour finaliser votre réservation de test psychotechnique</p>
                   </div>
 
-                  {/* Selected slot reminder */}
                   <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                       <div className="w-8 h-8 bg-emerald-100 rounded-xl flex items-center justify-center">
@@ -453,7 +443,6 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  {/* Error Messages */}
                   {errors.general && (
                     <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                       <div className="flex items-center gap-2">
@@ -592,7 +581,6 @@ export default function RendezVous() {
                       )}
                     </div>
 
-                    {/* 🍯 Honeypot - Champ invisible pour détecter les bots */}
                     <HoneypotField 
                       name="website"
                       value={honeypot}
@@ -633,7 +621,6 @@ export default function RendezVous() {
                 </div>
               )}
 
-              {/* Step 3: Success */}
               {step === 3 && success && (
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
                   <div className="relative mb-6 text-center">
@@ -651,7 +638,6 @@ export default function RendezVous() {
                   </h2>
 
                   <div className="space-y-4 sm:space-y-5 max-w-2xl mx-auto px-4 sm:px-0">
-                    {/* Email confirmation status */}
                     <div className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-4 border-2 border-green-300 shadow-sm">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 sm:w-11 sm:h-11 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -667,7 +653,6 @@ export default function RendezVous() {
                       </div>
                     </div>
 
-                    {/* Message d'annulation important */}
                     <div className="bg-orange-50 rounded-lg sm:rounded-xl p-4 sm:p-4 border-2 border-orange-300 shadow-sm">
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 sm:w-11 sm:h-11 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -678,7 +663,7 @@ export default function RendezVous() {
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-orange-900 text-base sm:text-lg mb-1.5 break-words">⚠️ Impossible de venir ?</p>
                           <p className="text-xs sm:text-sm text-orange-800 leading-relaxed break-words">
-                            Si vous ne pouvez pas être présent(e) à votre rendez-vous, merci de <strong>l'annuler au plus vite</strong> via le lien dans l'email de confirmation. Cela permettra de libérer le créneau pour d'autres candidats. Merci de votre compréhension.
+                            Si vous ne pouvez pas être présent(e) à votre rendez-vous, merci de <strong>contacter le centre au plus vite</strong> pour annuler. Cela permettra de libérer le créneau pour d'autres candidats. Merci de votre compréhension.
                           </p>
                         </div>
                       </div>
@@ -712,14 +697,11 @@ export default function RendezVous() {
               )}
             </div>
 
-            {/* Right Panel - Progress Bar */}
             <div className="w-full lg:w-80 order-1 lg:order-2">
               <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:sticky lg:top-24">
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4 sm:mb-6">Progression</h3>
 
-                {/* Mobile: Horizontal Progress */}
                 <div className="flex lg:hidden justify-between items-center">
-                  {/* Step 0: Centre */}
                   <div className="flex flex-col items-center">
                     <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 0 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

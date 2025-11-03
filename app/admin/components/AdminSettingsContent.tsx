@@ -57,7 +57,6 @@ export default function AdminSettingsContent() {
     setLoading(true)
 
     try {
-      // Vérifier le mot de passe via l'API
       const verifyResponse = await fetch('/api/admin/verify-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -125,7 +124,6 @@ export default function AdminSettingsContent() {
     setLoading(true)
 
     try {
-      // Vérifier le mot de passe actuel via l'API
       const verifyResponse = await fetch('/api/admin/verify-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -139,7 +137,6 @@ export default function AdminSettingsContent() {
         throw new Error('Mot de passe actuel incorrect')
       }
 
-      // Mettre à jour le mot de passe via l'API
       const updateResponse = await fetch('/api/admin/update-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

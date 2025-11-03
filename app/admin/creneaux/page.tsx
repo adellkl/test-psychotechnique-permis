@@ -62,7 +62,6 @@ function TimeSlotContent() {
     time: '09:00'
   })
 
-  // Générer les options d'horaires de 8h à 21h par intervalles de 20 minutes
   const generateTimeOptions = (): string[] => {
     const options: string[] = []
     const startHour = 8

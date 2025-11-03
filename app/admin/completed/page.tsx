@@ -62,7 +62,6 @@ function CompletedContent() {
       
       setCompletedAppointments(data || [])
       
-      // Calculer les statistiques
       const now = new Date()
       const today = now.toISOString().split('T')[0]
       const startOfWeek = new Date(now)

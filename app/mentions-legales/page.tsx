@@ -55,7 +55,6 @@ export default function MentionsLegalesPage() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="prose prose-lg max-w-none">
             
-            {/* Introduction */}
             <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8">
               <p className="text-lg leading-relaxed">
                 Bienvenue sur le Site web «test-psychotechnique-permis.com» (ci-après «le Site»).

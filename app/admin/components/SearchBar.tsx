@@ -21,7 +21,6 @@ export default function SearchBar({ onSearch, onReset }: SearchBarProps) {
   const [dateTo, setDateTo] = useState('')
   const [isExpanded, setIsExpanded] = useState(false)
 
-  // Recherche en temps réel avec debounce
   useEffect(() => {
     const timer = setTimeout(() => {
       onSearch({
@@ -30,7 +29,7 @@ export default function SearchBar({ onSearch, onReset }: SearchBarProps) {
         dateFrom: dateFrom || undefined,
         dateTo: dateTo || undefined
       })
-    }, 300) // Debounce de 300ms
+    }, 300)
 
     return () => clearTimeout(timer)
   }, [searchTerm, searchField, dateFrom, dateTo, onSearch])

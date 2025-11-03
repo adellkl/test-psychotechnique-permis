@@ -9,10 +9,10 @@ interface TwoFactorCode {
   attempts: number
 }
 
-// Cache en mémoire pour les codes 2FA
+
 const twoFactorCodes = new Map<string, TwoFactorCode>()
 
-// Nettoyage automatique des codes expirés
+
 setInterval(() => {
   const now = Date.now()
   twoFactorCodes.forEach((data, key) => {
@@ -20,26 +20,18 @@ setInterval(() => {
       twoFactorCodes.delete(key)
     }
   })
-}, 60 * 1000) // Toutes les minutes
+}, 60 * 1000)
 
-/**
- * Générer un code 2FA à 6 chiffres
- */
+
 function generateTwoFactorCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
-/**
- * Créer et envoyer un code 2FA
- */
 export async function createTwoFactorCode(email: string): Promise<{ success: boolean; error?: string }> {
   try {
-    // Générer le code
     const code = generateTwoFactorCode()
     const now = Date.now()
-    const expiresAt = now + 10 * 60 * 1000 // 10 minutes
-
-    // Stocker le code
+    const expiresAt = now + 10 * 60 * 1000
     twoFactorCodes.set(email, {
       code,
       email,
@@ -48,11 +40,8 @@ export async function createTwoFactorCode(email: string): Promise<{ success: boo
       attempts: 0
     })
 
-    // Envoyer le code par email
-    // TODO: Intégrer avec votre service d'email
     console.log(`📧 Code 2FA pour ${email}: ${code}`)
-    
-    // Pour le développement, stocker aussi en base de données
+
     await supabase
       .from('two_factor_codes')
       .upsert({
@@ -70,12 +59,9 @@ export async function createTwoFactorCode(email: string): Promise<{ success: boo
   }
 }
 
-/**
- * Vérifier un code 2FA
- */
-export function verifyTwoFactorCode(email: string, code: string): { 
+export function verifyTwoFactorCode(email: string, code: string): {
   valid: boolean
-  error?: string 
+  error?: string
 } {
   const data = twoFactorCodes.get(email)
 
@@ -83,43 +69,33 @@ export function verifyTwoFactorCode(email: string, code: string): {
     return { valid: false, error: 'Code non trouvé ou expiré' }
   }
 
-  // Vérifier l'expiration
   if (data.expiresAt < Date.now()) {
     twoFactorCodes.delete(email)
     return { valid: false, error: 'Code expiré' }
   }
 
-  // Vérifier le nombre de tentatives
   if (data.attempts >= 3) {
     twoFactorCodes.delete(email)
     return { valid: false, error: 'Trop de tentatives. Demandez un nouveau code.' }
   }
 
-  // Incrémenter les tentatives
   data.attempts++
 
-  // Vérifier le code
   if (data.code !== code) {
     return { valid: false, error: `Code incorrect (${3 - data.attempts} tentatives restantes)` }
   }
-
-  // Code valide, le supprimer
   twoFactorCodes.delete(email)
-  
-  // Marquer comme utilisé en base de données (async, ne pas attendre)
+
   supabase
     .from('two_factor_codes')
     .update({ used: true })
     .eq('email', email)
     .eq('code', code)
-    .then(() => {}, (err: Error) => console.error('Erreur mise à jour 2FA:', err))
+    .then(() => { }, (err: Error) => console.error('Erreur mise à jour 2FA:', err))
 
   return { valid: true }
 }
 
-/**
- * Vérifier si un admin a activé le 2FA
- */
 export async function isTwoFactorEnabled(email: string): Promise<boolean> {
   try {
     const { data, error } = await supabase
@@ -137,9 +113,6 @@ export async function isTwoFactorEnabled(email: string): Promise<boolean> {
   }
 }
 
-/**
- * Activer le 2FA pour un admin
- */
 export async function enableTwoFactor(email: string): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase
@@ -156,9 +129,6 @@ export async function enableTwoFactor(email: string): Promise<{ success: boolean
   }
 }
 
-/**
- * Désactiver le 2FA pour un admin
- */
 export async function disableTwoFactor(email: string): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase
@@ -175,9 +145,6 @@ export async function disableTwoFactor(email: string): Promise<{ success: boolea
   }
 }
 
-/**
- * Nettoyer les anciens codes 2FA (> 1 heure)
- */
 export async function cleanupOldTwoFactorCodes(): Promise<number> {
   try {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()

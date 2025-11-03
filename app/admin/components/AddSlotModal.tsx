@@ -15,19 +15,17 @@ interface AddSlotModalProps {
 
 const generateTimeOptions = (intervalMinutes: number): string[] => {
   const options: string[] = []
-  const startHour = 8 // 8h du matin
-  const endHour = 21 // 21h (9h du soir)
+  const startHour = 8
+  const endHour = 21
   const totalMinutes = (endHour - startHour) * 60
 
   if (intervalMinutes <= 0 || !Number.isFinite(intervalMinutes)) {
     return []
   }
 
-  // Utiliser <= pour inclure le dernier créneau à 21h00
   for (let minutes = 0; minutes <= totalMinutes; minutes += intervalMinutes) {
     const hour = startHour + Math.floor(minutes / 60)
     const minute = minutes % 60
-    // Ne pas dépasser 21h00
     if (hour > endHour || (hour === endHour && minute > 0)) break
     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
     options.push(timeString)
@@ -55,18 +53,15 @@ export default function AddSlotModal({
     intervalMinutes: 20
   })
 
-  // Générer les options d'horaires de manière optimisée
   const timeOptions = useMemo(() =>
     generateTimeOptions(bulkConfig.intervalMinutes),
     [bulkConfig.intervalMinutes]
   )
 
-  // Reset des erreurs quand on change de mode
   useEffect(() => {
     setErrors({})
   }, [mode])
 
-  // Validation des données
   const validateBulkConfig = () => {
     if (!bulkConfig.startDate || !bulkConfig.endDate) {
       return 'Veuillez sélectionner les dates de début et de fin'
@@ -125,10 +120,8 @@ export default function AddSlotModal({
 
   const toggleAllTimes = () => {
     if (bulkConfig.selectedTimes.length === timeOptions.length) {
-      // Tout désélectionner
       setBulkConfig(prev => ({ ...prev, selectedTimes: [] }))
     } else {
-      // Tout sélectionner
       setBulkConfig(prev => ({ ...prev, selectedTimes: [...timeOptions] }))
     }
   }

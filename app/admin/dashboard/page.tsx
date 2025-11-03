@@ -60,14 +60,12 @@ function DashboardContent() {
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
     fetchAppointments()
 
-    // Rafraîchissement automatique toutes les 30 secondes (en mode silencieux)
     const intervalId = setInterval(() => {
       fetchAppointments(true)
     }, 30000)
 
-    // Nettoyage de l'intervalle au démontage
     return () => clearInterval(intervalId)
-  }, [selectedCenterId]) // Recharger quand le centre change
+  }, [selectedCenterId])
 
   const fetchAppointments = async (silent = false) => {
     try {
@@ -75,7 +73,6 @@ function DashboardContent() {
         setLoading(true)
       }
       
-      // Récupérer TOUS les rendez-vous sans filtre de centre
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
@@ -84,7 +81,6 @@ function DashboardContent() {
 
       if (error) throw error
       
-      // Détecter les nouveaux rendez-vous
       if (silent && data) {
         const currentIds = new Set(appointments.map(apt => apt.id))
         const newAppointments = data.filter(apt => !currentIds.has(apt.id))
@@ -98,16 +94,12 @@ function DashboardContent() {
         }
       }
       
-      // Calculer la date et l'heure actuelles pour les RDV d'aujourd'hui
       const now = new Date()
       const today = now.toISOString().split('T')[0]
-      const currentTime = now.toTimeString().slice(0, 5) // Format HH:MM
+      const currentTime = now.toTimeString().slice(0, 5)
       
-      // Filtrer les RDV d'aujourd'hui AVANT la mise à jour automatique
-      // Exclure les RDV dont l'heure est déjà passée
       let todayApts = (data || []).filter(apt => {
         if (apt.appointment_date !== today) return false
-        // Si l'heure du RDV est passée, ne pas l'afficher
         if (apt.appointment_time < currentTime) return false
         return true
       })
@@ -116,31 +108,25 @@ function DashboardContent() {
       }
       setTodayAppointments(todayApts)
       
-      // Auto-marquer les rendez-vous passés comme "terminé"
-      // Inclut les RDV d'aujourd'hui dont l'heure est déjà passée
       const appointmentsToUpdate: string[] = []
       
       data?.forEach(apt => {
         if (apt.status === 'confirmed') {
-          // RDV des jours précédents
           if (apt.appointment_date < today) {
             appointmentsToUpdate.push(apt.id)
           }
-          // RDV d'aujourd'hui dont l'heure est passée
           else if (apt.appointment_date === today && apt.appointment_time < currentTime) {
             appointmentsToUpdate.push(apt.id)
           }
         }
       })
       
-      // Mettre à jour les rendez-vous des jours précédents en masse
       if (appointmentsToUpdate.length > 0) {
         await supabase
           .from('appointments')
           .update({ status: 'completed' })
           .in('id', appointmentsToUpdate)
         
-        // Rafraîchir les données après la mise à jour
         const { data: updatedData } = await supabase
           .from('appointments')
           .select('*')
@@ -150,7 +136,6 @@ function DashboardContent() {
         setAppointments(updatedData || [])
         setFilteredAppointments(updatedData || [])
         
-        // Recalculer les RDV d'aujourd'hui après mise à jour (exclure ceux dont l'heure est passée)
         let refreshedTodayApts = (updatedData || []).filter(apt => {
           if (apt.appointment_date !== today) return false
           if (apt.appointment_time < currentTime) return false
@@ -176,15 +161,12 @@ function DashboardContent() {
   useEffect(() => {
     let filtered = appointments
 
-    // Filtrer par centre sélectionné
     if (selectedCenterId) {
       filtered = filtered.filter(apt => apt.center_id === selectedCenterId)
     }
 
-    // Exclure les rendez-vous terminés de la liste principale
     filtered = filtered.filter(apt => apt.status !== 'completed')
 
-    // Filter by search
     if (!searchFilters || !searchFilters.searchTerm) {
       if (searchFilters?.dateFrom || searchFilters?.dateTo) {
         filtered = filtered.filter(apt => {

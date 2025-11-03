@@ -40,7 +40,6 @@ export const metadata: Metadata = {
     "psychologue permis conduire",
     "examen psychotechnique permis",
     "visite médicale permis",
-    // Nouveaux mots-clés Île-de-France
     "test psychotechnique Paris 75",
     "test psychotechnique Seine-et-Marne 77",
     "test psychotechnique Yvelines 78",
@@ -49,7 +48,6 @@ export const metadata: Metadata = {
     "test psychotechnique Seine-Saint-Denis 93",
     "test psychotechnique Val-de-Marne 94",
     "test psychotechnique Val-d'Oise 95",
-    // Villes principales Île-de-France
     "test psychotechnique Boulogne-Billancourt",
     "test psychotechnique Nanterre",
     "test psychotechnique Asnières-sur-Seine",

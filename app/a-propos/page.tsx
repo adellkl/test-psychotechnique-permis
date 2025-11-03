@@ -26,10 +26,8 @@ export const metadata: Metadata = {
 export default function APropos() {
   return (
     <>
-      {/* Hero Section avec sélection de centre */}
       <AboutCenterSelector />
 
-      {/* Passer son test psychotechnique proche de Paris */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -42,7 +40,6 @@ export default function APropos() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 mb-12">
-            {/* Centre Clichy */}
             <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center">
@@ -94,7 +91,6 @@ export default function APropos() {
               </div>
             </div>
 
-            {/* Centre Colombes */}
             <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center">
@@ -178,7 +174,6 @@ export default function APropos() {
         </div>
       </section>
 
-      {/* Notre équipe */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -252,7 +247,6 @@ export default function APropos() {
         </div>
       </section>
 
-      {/* Qu'est-ce qu'un test psychotechnique */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-2xl font-light text-gray-900 mb-8 tracking-wide">
@@ -266,7 +260,6 @@ export default function APropos() {
           </div>
 
           <div className="space-y-8 sm:space-y-12">
-            {/* 1ère étape */}
             <div className="bg-white p-4 sm:p-8 rounded-lg shadow-sm border border-gray-200">
               <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -303,7 +296,6 @@ export default function APropos() {
               </div>
             </div>
 
-            {/* 2ème étape */}
             <div className="bg-white p-4 sm:p-8 rounded-lg shadow-sm border border-gray-200">
               <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">

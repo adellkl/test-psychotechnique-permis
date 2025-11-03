@@ -39,7 +39,6 @@ export default function HomePage() {
     <>
       <ModernHero />
 
-      {/* À propos du centre */}
       <section className="bg-gray-50 py-16 -mt-1">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -65,9 +64,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Contenu principal */}
             <div className="space-y-8 animate-slide-in-left">
-              {/* Localisation avec image */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="flex flex-row-reverse lg:flex-row items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -118,7 +115,6 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Paiement avec image */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="flex flex-row-reverse lg:flex-row items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -147,10 +143,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Deuxième chance gratuite avec image */}
             <div className="animate-slide-in-right">
               <div className="bg-gradient-to-br from-blue-50 to-emerald-50 p-8 rounded-2xl border border-blue-100 overflow-hidden relative">
-                {/* Image de fond subtile remplacée par une illustration */}
                 <div className="absolute top-0 right-0 w-32 h-32 opacity-20 flex items-center justify-center">
                   <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-emerald-400 rounded-full flex items-center justify-center">
                     <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -200,7 +194,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Nos Services */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -214,9 +207,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Services Grid */}
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {/* Invalidation */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up animation-delay-200">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -242,7 +233,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Suspension */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up animation-delay-400">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -268,7 +258,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Annulation */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up animation-delay-600">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -295,7 +284,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* CTA Principal */}
           <div className="text-center mt-8 sm:mt-12 animate-smooth-bounce animation-delay-800">
             <Link
               href="/prendre-rendez-vous"
@@ -310,7 +298,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pourquoi choisir notre centre */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -323,7 +310,6 @@ export default function HomePage() {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Tarifs et Paiement */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-fade-in-up animation-delay-200">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -371,7 +357,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Psychologue Agréée avec image */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-fade-in-up animation-delay-400 overflow-hidden">
               <div className="text-center mb-6">
                 <div className="relative w-24 h-24 mx-auto mb-4">
@@ -414,7 +399,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Localisation avec sélection de centre */}
             <LocationSelector />
           </div>
         </div>

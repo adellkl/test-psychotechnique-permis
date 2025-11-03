@@ -43,7 +43,7 @@ export default function StatsChart() {
       setLoading(true)
       const response = await fetch(`/api/admin/stats?period=${period}`)
       if (!response.ok) throw new Error('Failed to fetch stats')
-      
+
       const data = await response.json()
       setStats(data.stats)
     } catch (error) {
@@ -76,7 +76,7 @@ export default function StatsChart() {
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Stats Cards */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">

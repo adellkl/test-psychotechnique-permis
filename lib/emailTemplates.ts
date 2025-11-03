@@ -268,7 +268,7 @@ export const defaultEmailTemplates = [
                                         <!-- Message important annulation -->
                                         <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                                             <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
-                                                <strong>Important :</strong> Si vous ne pouvez pas être présent(e), merci de nous prévenir à l'avance ou d'annuler votre rendez-vous via le bouton ci-dessous. Cela permettra de libérer le créneau pour d'autres personnes. Merci de votre compréhension.
+                                                <strong>Important :</strong> Si vous ne pouvez pas être présent(e), merci de nous prévenir à l'avance. Cela permettra de libérer le créneau pour d'autres personnes. Merci de votre compréhension.
                                             </p>
                                         </div>
                                         
@@ -294,22 +294,15 @@ export const defaultEmailTemplates = [
                                 </tr>
                             </table>
                             
-                            <!-- Bouton annulation -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
-                                <tr>
-                                    <td align="center" style="padding: 10px 0;">
-                                        <h3 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
-                                            Besoin d'annuler votre rendez-vous ?
-                                        </h3>
-                                        <p class="mobile-font-small" style="margin: 0 0 20px 0; color: #4b5563; font-size: 14px; line-height: 1.6;">
-                                            Votre rendez-vous est <strong style="color: #059669;">confirmé</strong>. Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant sur le bouton ci-dessous.
-                                        </p>
-                                        <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" class="mobile-button" style="display: inline-block; padding: 14px 32px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
-                                            Annuler mon rendez-vous
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
+                            <!-- Message annulation -->
+                            <div style="background-color: #fef2f2; border: 2px solid #ef4444; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                                <h3 class="mobile-font-medium" style="margin: 0 0 15px 0; color: #991b1b; font-size: 18px; font-weight: 700;">
+                                    Besoin d'annuler votre rendez-vous ?
+                                </h3>
+                                <p class="mobile-font-small" style="margin: 0; color: #7f1d1d; font-size: 15px; line-height: 1.6;">
+                                    Si vous souhaitez annuler votre rendez-vous, merci de <strong>contacter le centre</strong> au <a href="tel:{{contact_phone}}" style="color: #2563eb; text-decoration: none; font-weight: 700;">{{contact_phone}}</a>
+                                </p>
+                            </div>
                         </td>
                     </tr>
                     
@@ -364,9 +357,7 @@ Site web : {{website}}
 
 BESOIN D'ANNULER ?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Votre rendez-vous est CONFIRMÉ.
-Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant ici :
-{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}
+Si vous souhaitez annuler votre rendez-vous, merci de contacter le centre au {{contact_phone}}
 
 Merci de votre confiance.
 L'équipe Test Psychotechnique Permis

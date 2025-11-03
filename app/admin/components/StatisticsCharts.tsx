@@ -19,13 +19,11 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
   const chartInstances = useRef<Chart[]>([])
 
   useEffect(() => {
-    // Cleanup previous charts
     chartInstances.current.forEach(chart => chart.destroy())
     chartInstances.current = []
 
     if (!appointmentsByStatusRef.current || !appointmentsByMonthRef.current || !appointmentsByReasonRef.current || !evolutionRef.current || !dailyRef.current) return
 
-    // 1. Appointments by Status
     const statusCounts = {
       confirmed: appointments.filter(a => a.status === 'confirmed').length,
       completed: appointments.filter(a => a.status === 'completed').length,
@@ -81,7 +79,6 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
     })
     chartInstances.current.push(statusChart)
 
-    // 2. Appointments by Month
     const monthCounts: { [key: string]: number } = {}
     appointments.forEach(apt => {
       const month = new Date(apt.appointment_date).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
@@ -90,7 +87,7 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
 
     const sortedMonths = Object.keys(monthCounts).sort((a, b) => {
       return new Date(a).getTime() - new Date(b).getTime()
-    }).slice(-6) // Last 6 months
+    }).slice(-6)
 
     const monthChart = new Chart(appointmentsByMonthRef.current, {
       type: 'bar',
@@ -125,7 +122,6 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
     })
     chartInstances.current.push(monthChart)
 
-    // 3. Appointments by Reason
     const reasonCounts: { [key: string]: number } = {}
     appointments.forEach(apt => {
       const reason = apt.reason || 'Non spécifié'
@@ -174,7 +170,6 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
     })
     chartInstances.current.push(reasonChart)
 
-    // 4. Evolution Timeline (Line Chart)
     const dailyCounts: { [key: string]: number } = {}
     appointments.forEach(apt => {
       const date = new Date(apt.appointment_date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
@@ -183,7 +178,7 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
 
     const sortedDates = Object.keys(dailyCounts).sort((a, b) => {
       return new Date(a).getTime() - new Date(b).getTime()
-    }).slice(-30) // Last 30 days
+    }).slice(-30)
 
     const evolutionChart = new Chart(evolutionRef.current, {
       type: 'line',
@@ -222,7 +217,6 @@ export default function StatisticsCharts({ appointments }: StatisticsChartsProps
     })
     chartInstances.current.push(evolutionChart)
 
-    // 5. Daily Distribution (Bar Chart)
     const dayOfWeekCounts: { [key: string]: number } = {
       'Lundi': 0, 'Mardi': 0, 'Mercredi': 0, 'Jeudi': 0, 'Vendredi': 0, 'Samedi': 0, 'Dimanche': 0
     }
