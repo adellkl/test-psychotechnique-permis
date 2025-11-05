@@ -10,7 +10,18 @@
 const { createClient } = require('@supabase/supabase-js')
 const fs = require('fs')
 const path = require('path')
-require('dotenv').config({ path: '.env.local' })
+
+// Charger le fichier .env approprié
+if (fs.existsSync(path.join(__dirname, '.env.production'))) {
+  require('dotenv').config({ path: '.env.production' })
+  console.log('📁 Utilisation de .env.production')
+} else if (fs.existsSync(path.join(__dirname, '.env.local'))) {
+  require('dotenv').config({ path: '.env.local' })
+  console.log('📁 Utilisation de .env.local')
+} else {
+  require('dotenv').config()
+  console.log('📁 Utilisation de .env')
+}
 
 // Lire et parser le fichier TypeScript manuellement
 function loadTemplatesFromTS() {

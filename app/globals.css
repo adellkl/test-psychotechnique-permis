@@ -570,3 +570,13 @@ body {
 .animate-underline {
   animation: underline 2s ease-in-out;
 }
+
+/* Masquer la scrollbar pour les onglets debug */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE et Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari et Opera */
+}
