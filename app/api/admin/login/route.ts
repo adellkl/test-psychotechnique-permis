@@ -18,18 +18,16 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json()
     
-    // 🔒 SÉCURITÉ AVANCÉE : Honeypot + Injection + User-Agent + IP Blacklist
     const advancedCheck = advancedSecurityMiddleware(request, {
       checkHoneypot: true,
-      honeypotField: 'username', // Champ piège pour admin login
+      honeypotField: 'username', 
       checkUserAgent: true,
       checkInjections: true,
       data: { email, password }
     })
     if (advancedCheck) return addSecurityHeaders(advancedCheck)
     
-    // Sécurité : Rate limiting TRÈS strict sur login admin (3 tentatives par 5 minutes par IP)
-    const { allowed } = checkRateLimit(`admin-login:${ip}`, 3, 300000)
+      const { allowed } = checkRateLimit(`admin-login:${ip}`, 3, 300000)
     
     if (!allowed) {
       recordFailedLogin(ip)
@@ -39,11 +37,9 @@ export async function POST(request: NextRequest) {
       ))
     }
 
-    // Sécurité : Validation de l'origine
     const securityCheck = securityMiddleware(request, { validateOrigin: true })
     if (securityCheck) return addSecurityHeaders(securityCheck)
 
-    // Validation des entrées
     if (!email || !password) {
       return NextResponse.json({ error: 'Email et mot de passe requis' }, { status: 400 })
     }
@@ -56,17 +52,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Mot de passe invalide' }, { status: 400 })
     }
 
-    // Sanitization
     const sanitizedEmail = sanitizeString(email).toLowerCase().trim()
 
-    // Validation du mot de passe avec protection timing attack
     const { valid, admin, error } = await validateAdminPassword(sanitizedEmail, password)
 
     if (!valid || !admin) {
-      // 🚨 Enregistrer l'échec de connexion pour détection brute force
       recordFailedLogin(ip)
       
-      // Log de la tentative échouée
       await logAdminAction('unknown', 'LOGIN_FAILED', `Failed login attempt for ${sanitizedEmail}`, ip)
       
       return addSecurityHeaders(NextResponse.json({ 
@@ -74,16 +66,12 @@ export async function POST(request: NextRequest) {
       }, { status: 401 }))
     }
 
-    // ✅ Connexion réussie - Reset le compteur d'échecs
     recordSuccessfulLogin(ip)
     
-    // Génération d'un token de session
     const sessionToken = generateSessionToken()
 
-    // Log de la connexion réussie
-    await logAdminAction(admin.id, 'LOGIN_SUCCESS', `Successful login from ${ip}`, ip)
+        await logAdminAction(admin.id, 'LOGIN_SUCCESS', `Successful login from ${ip}`, ip)
 
-    // Retourner les données admin (sans le mot de passe)
     return addSecurityHeaders(NextResponse.json({ 
       success: true, 
       admin,

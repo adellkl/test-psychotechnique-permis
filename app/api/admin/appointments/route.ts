@@ -89,7 +89,7 @@ export async function PUT(request: NextRequest) {
       .from('appointments')
       .update(updateData)
       .eq('id', id)
-      .select()
+      .select('*, centers(*)')
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -101,6 +101,17 @@ export async function PUT(request: NextRequest) {
         const appointment = data[0]
         const { sendAppointmentCancellation } = await import('../../../../lib/emailService')
         
+        // Log pour débugger
+        console.log('📧 Envoi email annulation pour:', {
+          email: appointment.email,
+          center_city: appointment.center_city,
+          center_id: appointment.center_id,
+          has_centers_relation: !!appointment.centers
+        })
+        
+        // Récupérer les infos du centre depuis la relation si disponible
+        const centerInfo = appointment.centers
+        
         await sendAppointmentCancellation({
           first_name: appointment.first_name,
           last_name: appointment.last_name,
@@ -108,7 +119,10 @@ export async function PUT(request: NextRequest) {
           appointment_date: appointment.appointment_date,
           appointment_time: appointment.appointment_time,
           reason: admin_notes || 'Annulation par le centre',
-          center_city: appointment.center_city
+          center_city: appointment.center_city || centerInfo?.city,
+          center_id: appointment.center_id?.toString(),
+          center_name: centerInfo?.name,
+          center_address: centerInfo?.address
         })
         
         console.log('✅ Email d\'annulation envoyé au client:', appointment.email)

@@ -59,6 +59,80 @@ const faqData: FAQItem[] = [
     )
   },
   {
+    question: "Comment se rendre à nos centres depuis Paris et la région ?",
+    answer: (
+      <div className="space-y-6">
+        <p className="font-semibold text-gray-900">Nos deux centres sont facilement accessibles depuis toute l'Île-de-France :</p>
+        
+        <div className="space-y-4">
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h4 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+              <span className="text-xl">🚇</span>
+              Depuis La Défense
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="pl-6">
+                <p className="font-semibold text-blue-800">→ Vers Clichy :</p>
+                <p className="text-gray-700">Transilien L jusqu'à Clichy-Levallois (1 station - 3 min), puis 8 min à pied</p>
+                <p className="text-gray-600 text-xs mt-1">Ou Métro 1 jusqu'à Charles de Gaulle-Étoile, puis Ligne 13 (15 min total)</p>
+                <p className="text-gray-600 text-xs mt-1">📍 82 Rue Henri Barbusse</p>
+              </div>
+              <div className="pl-6 mt-3">
+                <p className="font-semibold text-purple-800">→ Vers Colombes :</p>
+                <p className="text-gray-700">Tram T2 direction Pont de Bezons - Arrêt Charlebourg (2 stations - 5 min)</p>
+                <p className="text-gray-600 text-xs mt-1">📍 14 Rue de Mantes, à 3 min à pied du tram</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+            <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2">
+              <span className="text-xl">🚉</span>
+              Depuis Gare du Nord
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="pl-6">
+                <p className="font-semibold text-blue-800">→ Vers Clichy :</p>
+                <p className="text-gray-700">Métro ligne 5 jusqu'à Place de Clichy (10 min), puis 10 min à pied</p>
+                <p className="text-gray-600 text-xs mt-1">Ou Ligne 2 puis 13 via Charles de Gaulle-Étoile (20 min total)</p>
+              </div>
+              <div className="pl-6 mt-3">
+                <p className="font-semibold text-purple-800">→ Vers Colombes :</p>
+                <p className="text-gray-700">RER D direction Orry-la-Ville - Arrêt La Garenne-Colombes (12 min)</p>
+                <p className="text-gray-600 text-xs mt-1">📍 Puis 5 min à pied jusqu'au 14 Rue de Mantes</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+            <h4 className="font-bold text-orange-900 mb-3 flex items-center gap-2">
+              <span className="text-xl">🚇</span>
+              Depuis Châtelet
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="pl-6">
+                <p className="font-semibold text-blue-800">→ Vers Clichy :</p>
+                <p className="text-gray-700">Métro ligne 14 jusqu'à Saint-Lazare, puis ligne 13 direction Saint-Denis (15 min total)</p>
+                <p className="text-gray-600 text-xs mt-1">Arrêt Mairie de Clichy, puis 3 min à pied</p>
+              </div>
+              <div className="pl-6 mt-3">
+                <p className="font-semibold text-purple-800">→ Vers Colombes :</p>
+                <p className="text-gray-700">RER C direction Pontoise/Montigny - Arrêt Colombes (direct en 15 min)</p>
+                <p className="text-gray-600 text-xs mt-1">📍 Puis 7 min à pied jusqu'au 14 Rue de Mantes</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 bg-gray-100 rounded-lg border border-gray-300">
+          <p className="text-sm text-gray-700">
+            <strong>💡 Conseil :</strong> Prévoyez d'arriver 15 minutes avant votre rendez-vous. Les deux centres sont très bien desservis par les transports en commun !
+          </p>
+        </div>
+      </div>
+    )
+  },
+  {
     question: "Comment réussir son test psychotechnique ?",
     answer: (
       <div className="space-y-4">

@@ -263,9 +263,19 @@ export default function RendezVous() {
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
               Réservation Test Psychotechnique Permis
             </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
+            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg mb-4">
               Prenez rendez-vous pour votre test psychotechnique dans l'un de nos centres agréés. Réservation en ligne rapide et sécurisée.
             </p>
+            <div className="max-w-2xl mx-auto mt-3 px-2 sm:px-0">
+              <div className="p-2 sm:p-3 bg-amber-50 border border-amber-300 rounded-lg">
+                <p className="text-amber-900 font-bold text-xs sm:text-sm text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                  <svg className="w-4 h-4 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span>Merci de vérifier votre disponibilité avant de réserver un créneau</span>
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
@@ -648,23 +658,7 @@ export default function RendezVous() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-green-900 text-base sm:text-lg break-words">Email de confirmation envoyé</p>
-                          <p className="text-xs sm:text-sm text-green-700 mt-0.5">Vérifiez votre boîte de réception</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-orange-50 rounded-lg sm:rounded-xl p-4 sm:p-4 border-2 border-orange-300 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 sm:w-11 sm:h-11 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <svg className="w-5 h-5 sm:w-5 sm:h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-orange-900 text-base sm:text-lg mb-1.5 break-words">⚠️ Impossible de venir ?</p>
-                          <p className="text-xs sm:text-sm text-orange-800 leading-relaxed break-words">
-                            Si vous ne pouvez pas être présent(e) à votre rendez-vous, merci de <strong>contacter le centre au plus vite</strong> pour annuler. Cela permettra de libérer le créneau pour d'autres candidats. Merci de votre compréhension.
-                          </p>
+                          <p className="text-xs sm:text-sm text-green-700 mt-0.5">Vérifiez votre boîte de réception et les spams</p>
                         </div>
                       </div>
                     </div>

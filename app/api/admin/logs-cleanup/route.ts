@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../../lib/supabase'
 import { logAdminActivity, AdminLogger } from '../../../../lib/adminLogger'
 
-// GET - Preview logs to be deleted
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url)
@@ -15,9 +15,8 @@ export async function GET(request: NextRequest) {
             }, { status: 400 })
         }
 
-        // Permettre 0 pour voir tous les logs actuels
         if (days === 0) {
-            const cutoffDate = new Date() // Date actuelle
+            const cutoffDate = new Date() 
 
             const { count: totalCount, error: countError } = await supabase
                 .from('admin_logs')
@@ -49,7 +48,6 @@ export async function GET(request: NextRequest) {
         const cutoffDate = new Date()
         cutoffDate.setDate(cutoffDate.getDate() - days)
 
-        // Compter le nombre total de logs qui seront supprimés
         const { count: totalCount, error: countError } = await supabase
             .from('admin_logs')
             .select('*', { count: 'exact', head: true })
@@ -59,7 +57,6 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: countError.message }, { status: 500 })
         }
 
-        // Récupérer les 100 premiers logs pour l'aperçu
         const { data: logs, error } = await supabase
             .from('admin_logs')
             .select('id, admin_id, action, details, created_at')
@@ -73,8 +70,8 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
             logs: logs || [],
-            count: totalCount || 0, // Nombre total de logs qui seront supprimés
-            previewCount: logs?.length || 0, // Nombre de logs dans l'aperçu
+            count: totalCount || 0, 
+            previewCount: logs?.length || 0, 
             cutoffDate: cutoffDate.toISOString().split('T')[0],
             olderThanDays: days
         })
@@ -85,7 +82,6 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// DELETE - Delete old admin logs
 export async function DELETE(request: NextRequest) {
     try {
         const body = await request.json()
@@ -104,7 +100,6 @@ export async function DELETE(request: NextRequest) {
             }, { status: 400 })
         }
 
-        // Si 0, supprimer tous les logs
         if (days === 0) {
             const { count: logsCount, error: countError } = await supabase
                 .from('admin_logs')
@@ -151,7 +146,6 @@ export async function DELETE(request: NextRequest) {
         const cutoffDate = new Date()
         cutoffDate.setDate(cutoffDate.getDate() - days)
 
-        // Compter d'abord combien de logs seront supprimés
         const { count: logsCount, error: countError } = await supabase
             .from('admin_logs')
             .select('*', { count: 'exact', head: true })
@@ -169,7 +163,6 @@ export async function DELETE(request: NextRequest) {
             })
         }
 
-        // Supprimer les logs
         const { error: deleteError } = await supabase
             .from('admin_logs')
             .delete()
@@ -180,8 +173,7 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: deleteError.message }, { status: 500 })
         }
 
-        // Logger l'action de nettoyage
-        try {
+                    try {
             await logAdminActivity(
                 AdminLogger.ACTIONS.DELETE_APPOINTMENT,
                 `Cleaned up ${logsCount} admin logs older than ${days} days`

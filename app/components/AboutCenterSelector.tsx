@@ -185,11 +185,12 @@ export default function AboutCenterSelector() {
           <div className="relative order-1 lg:order-2">
             <div className="relative h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/images/reunion-de-jeunes-collegues-feminines-et-discuter-du-plan-d-affaires-rediger-un-schema-strategique-sur-papier-faire-un-projet.jpg"
+                src="/images/IMG_6134.png"
                 alt={`${currentCenter.name} - Accueil professionnel`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
+                style={{ objectPosition: '75% center' }}
                 priority
               />
             </div>

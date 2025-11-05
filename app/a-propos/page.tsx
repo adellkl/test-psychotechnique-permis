@@ -133,10 +133,10 @@ export default function APropos() {
 
                 <div className="bg-gray-50 border-l-4 border-slate-700 p-4 rounded-r-lg">
                   <p className="text-sm font-semibold text-gray-900 mb-2">
-                    ⚡ Service rapide
+                    ✨ Deuxième chance gratuite
                   </p>
                   <p className="text-sm text-gray-700">
-                    Prise de rendez-vous simple et résultats transmis rapidement pour votre dossier préfecture.
+                    Notre psychologue certifiée ADELI vous propose de repasser le test gratuitement en cas d'échec.
                   </p>
                 </div>
               </div>

@@ -76,7 +76,6 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white">{center.name}</h3>
-                    <p className="text-gray-300 text-sm">Centre Agréé Préfecture</p>
                   </div>
                 </div>
               </div>

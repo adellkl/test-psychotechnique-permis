@@ -4,17 +4,10 @@ import { validateAppointmentForm, sanitizeFormData } from '../../../../lib/valid
 import { checkFormRateLimit } from '../../../../lib/rateLimit'
 import { logSecurityEvent } from '../../../../lib/securityLogger'
 
-/**
- * API sécurisée pour créer des rendez-vous
- * Remplace l'insertion directe Supabase côté client
- * 
- * POST /api/appointments/create
- */
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
   
   try {
-    // 1. Rate limiting strict
     const rateLimit = checkFormRateLimit(request, 'appointment')
     if (!rateLimit.allowed) {
       await logSecurityEvent('RATE_LIMIT_EXCEEDED', {
@@ -32,7 +25,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 2. Récupérer et valider les données
     const body = await request.json()
     const { 
       firstName, 
@@ -44,10 +36,9 @@ export async function POST(request: NextRequest) {
       appointment_date,
       appointment_time,
       center_id,
-      honeypot // Champ piège
+      honeypot
     } = body
 
-    // 3. Vérification honeypot
     if (honeypot && honeypot.trim() !== '') {
       await logSecurityEvent('BOT_DETECTED', {
         endpoint: '/api/appointments/create',
@@ -55,14 +46,12 @@ export async function POST(request: NextRequest) {
         honeypot
       })
       
-      // Retourner succès pour ne pas alerter le bot
       return NextResponse.json({ 
         success: true,
         message: 'Rendez-vous créé avec succès' 
       })
     }
 
-    // 4. Validation complète
     const validation = validateAppointmentForm({
       firstName,
       lastName,
@@ -90,7 +79,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 5. Sanitization des données
     const sanitizedData = sanitizeFormData({
       firstName,
       lastName,
@@ -100,7 +88,6 @@ export async function POST(request: NextRequest) {
       notes: notes || ''
     })
 
-    // 6. Vérifier que le créneau est disponible (optionnel - ne pas bloquer si pas de système de slots)
     const { data: existingSlot, error: slotError } = await supabase
       .from('available_slots')
       .select('id, is_available')
@@ -109,7 +96,6 @@ export async function POST(request: NextRequest) {
       .eq('center_id', center_id || null)
       .maybeSingle()
 
-    // Si le système de slots n'est pas utilisé, continuer sans bloquer
     if (existingSlot && !existingSlot.is_available) {
       return NextResponse.json(
         { error: 'Ce créneau n\'est plus disponible. Veuillez sélectionner un autre créneau.' },
@@ -117,7 +103,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 7. Vérifier les rendez-vous existants par nom/prénom
     const today = new Date().toISOString().split('T')[0]
     const { data: existingAppointments } = await supabase
       .from('appointments')
@@ -157,7 +142,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 8. Vérifier également par email (sécurité supplémentaire)
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
     const { data: emailDuplicates } = await supabase
       .from('appointments')
@@ -180,7 +164,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 9. Créer le rendez-vous dans une transaction
     const { data: appointment, error: insertError } = await supabase
       .from('appointments')
       .insert([
@@ -217,7 +200,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 10. Marquer le créneau comme indisponible (si le slot existe)
     if (existingSlot) {
       await supabase
         .from('available_slots')
@@ -225,7 +207,7 @@ export async function POST(request: NextRequest) {
         .eq('id', existingSlot.id)
     }
 
-    // 11. Log de succès
+          
     await logSecurityEvent('APPOINTMENT_CREATED', {
       endpoint: '/api/appointments/create',
       ip,
@@ -233,7 +215,7 @@ export async function POST(request: NextRequest) {
       email: sanitizedData.email
     })
 
-    // 12. Retourner les données
+      
     return NextResponse.json({
       success: true,
       appointment: {

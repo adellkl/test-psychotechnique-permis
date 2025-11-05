@@ -97,7 +97,7 @@ export default function HomePage() {
                         </p>
                       </div>
                       <p className="text-gray-600 text-sm leading-relaxed pt-2">
-                        Nos psychologues certifiées vous accompagnent dans un environnement professionnel, bienveillant et accessible.
+                        Notre psychologue certifiée vous accompagne dans un environnement professionnel, bienveillant et accessible.
                       </p>
                     </div>
                   </div>

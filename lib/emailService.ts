@@ -186,8 +186,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
     let centerName, centerAddress, centerPostalCode, contactPhone, metroInfo
     
     if (centerCity === 'Colombes') {
-      centerName = 'Test Psychotechnique Permis - Colombes'
-      centerAddress = '14 Rue de Mantes, Centre 2e Chance'
+      centerName = 'Centre tests psychotechniques 2e chance - Colombes'
+      centerAddress = '14 Rue de Mantes'
       centerPostalCode = '92700'
       contactPhone = '07 65 56 53 79'
       metroInfo = 'Proche des transports en commun'
@@ -401,8 +401,8 @@ export async function sendAppointmentReminder(appointmentData: {
     let centerName, centerAddress, centerPostalCode, contactPhone, locationDetails
     
     if (centerCity === 'Colombes') {
-      centerName = 'Test Psychotechnique Permis - Colombes'
-      centerAddress = '14 Rue de Mantes, Centre 2e Chance'
+      centerName = 'Centre tests psychotechniques 2e chance - Colombes'
+      centerAddress = '14 Rue de Mantes'
       centerPostalCode = '92700'
       contactPhone = '07 65 56 53 79'
       locationDetails = 'Proche des transports en commun'
@@ -458,6 +458,9 @@ export async function sendAppointmentCancellation(appointmentData: {
   appointment_time: string
   reason?: string
   center_city?: string
+  center_id?: string
+  center_name?: string
+  center_address?: string
 }) {
   try {
     const template = await getEmailTemplate('appointment_cancellation_client')
@@ -469,14 +472,92 @@ export async function sendAppointmentCancellation(appointmentData: {
       day: 'numeric'
     })
 
-    const centerCity = appointmentData.center_city || 'Clichy'
-    const contactPhone = '07 65 56 53 79'
+    // LOGIQUE DE FALLBACK : Détection automatique du centre
+    let centerCity = appointmentData.center_city
+    
+    console.log('🔍 Données reçues pour détection centre:', {
+      center_city: appointmentData.center_city,
+      center_id: appointmentData.center_id,
+      center_name: appointmentData.center_name,
+      center_address: appointmentData.center_address
+    })
+    
+    // Si center_city n'est pas défini, on essaie de le détecter
+    if (!centerCity || centerCity.trim() === '') {
+      let detectionMethod = 'default'
+      
+      // Méthode 1 : Via center_id
+      if (appointmentData.center_id) {
+        const centerId = String(appointmentData.center_id).toLowerCase()
+        if (centerId.includes('colombes') || centerId === '2') {
+          centerCity = 'Colombes'
+          detectionMethod = 'center_id'
+        } else if (centerId === '1' || centerId.includes('clichy')) {
+          centerCity = 'Clichy'
+          detectionMethod = 'center_id'
+        }
+      }
+      
+      // Méthode 2 : Via center_name
+      if (!centerCity && appointmentData.center_name) {
+        const centerName = appointmentData.center_name.toLowerCase()
+        if (centerName.includes('colombes') || centerName.includes('2e chance') || centerName.includes('2eme chance')) {
+          centerCity = 'Colombes'
+          detectionMethod = 'center_name'
+        } else if (centerName.includes('clichy')) {
+          centerCity = 'Clichy'
+          detectionMethod = 'center_name'
+        }
+      }
+      
+      // Méthode 3 : Via center_address
+      if (!centerCity && appointmentData.center_address) {
+        const centerAddress = appointmentData.center_address.toLowerCase()
+        if (centerAddress.includes('mantes') || centerAddress.includes('92700') || centerAddress.includes('colombes')) {
+          centerCity = 'Colombes'
+          detectionMethod = 'center_address'
+        } else if (centerAddress.includes('barbusse') || centerAddress.includes('92110') || centerAddress.includes('clichy')) {
+          centerCity = 'Clichy'
+          detectionMethod = 'center_address'
+        }
+      }
+      
+      // Par défaut : Clichy
+      if (!centerCity) {
+        centerCity = 'Clichy'
+        detectionMethod = 'default'
+      }
+      
+      console.log(`📍 Centre détecté automatiquement: ${centerCity} (méthode: ${detectionMethod})`)
+    } else {
+      console.log(`📍 Centre déjà défini: ${centerCity}`)
+    }
+    
+    // Informations selon le centre
+    let centerName, centerAddress, centerPostalCode, contactPhone
+    
+    if (centerCity === 'Colombes') {
+      centerName = 'Centre 2e chance - Colombes'
+      centerAddress = '14 Rue de Mantes'
+      centerPostalCode = '92700'
+      contactPhone = '07 65 56 53 79'
+    } else {
+      // Clichy par défaut
+      centerName = 'Test Psychotechnique Permis - Clichy'
+      centerAddress = '82 Rue Henri Barbusse'
+      centerPostalCode = '92110'
+      contactPhone = '07 65 56 53 79'
+    }
+    
+    const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
 
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
+      location: centerName,
+      address: fullAddress,
       reason: appointmentData.reason || 'Non spécifiée',
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',
