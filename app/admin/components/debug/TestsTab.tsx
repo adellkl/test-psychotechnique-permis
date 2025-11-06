@@ -16,30 +16,38 @@ export default function DebugTestsTab({ setToast }: any) {
   const testAppointmentForm = async () => {
     setLoading(true)
     try {
+      console.log('🧪 Test de création de rendez-vous...')
+      console.log('📅 Date:', testFormData.date, 'Heure:', testFormData.time)
       const response = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          firstName: testFormData.firstName,
-          lastName: testFormData.lastName,
+          first_name: testFormData.firstName,
+          last_name: testFormData.lastName,
           email: testFormData.email,
           phone: testFormData.phone,
-          appointmentDate: testFormData.date,
-          appointmentTime: testFormData.time,
-          testType: 'Test debug',
-          duration: 60,
-          centerName: 'Centre de test',
-          centerAddress: 'Adresse de test'
+          appointment_date: testFormData.date,
+          appointment_time: testFormData.time,
+          test_type: 'Test psychotechnique permis',
+          reason: 'Invalidation de permis',
+          center_id: '11111111-1111-1111-1111-111111111111', // ID du centre de Clichy
+          is_second_chance: false,
+          client_notes: 'Rendez-vous de test créé depuis le monitoring'
         })
       })
       const data = await response.json()
       if (response.ok) {
-        setToast({ type: 'success', message: 'Rendez-vous de test créé avec succès! Vérifiez la réception de l\'email.' })
+        console.log('✅ Rendez-vous créé:', data)
+        setToast({ type: 'success', message: '✅ Rendez-vous de test créé avec succès! Vérifiez la réception des emails.' })
       } else {
-        setToast({ type: 'error', message: data.error || 'Échec de création' })
+        console.error('Erreur API:', data)
+        const errorMsg = data.error || 'Échec de création'
+        const details = data.details ? ` - ${JSON.stringify(data.details)}` : ''
+        setToast({ type: 'error', message: errorMsg + details })
       }
     } catch (error) {
-      setToast({ type: 'error', message: 'Erreur lors du test du formulaire' })
+      console.error('Erreur complète:', error)
+      setToast({ type: 'error', message: 'Erreur lors du test du formulaire: ' + (error instanceof Error ? error.message : String(error)) })
     } finally {
       setLoading(false)
     }
@@ -54,7 +62,7 @@ export default function DebugTestsTab({ setToast }: any) {
         <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
           <h3 className="font-bold text-sm mb-2">Test de réservation de rendez-vous</h3>
           <p className="text-xs text-gray-600 mb-3">
-            Ce test crée un vrai rendez-vous dans la base de données et envoie les emails de confirmation.
+            ⚠️ <strong>Avant de tester :</strong> Créez un créneau disponible dans "Créneaux" pour la date/heure ci-dessous. Ce test crée un vrai rendez-vous et envoie les emails de confirmation.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-3">
             <input
@@ -111,6 +119,8 @@ export default function DebugTestsTab({ setToast }: any) {
         <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
           <h4 className="font-bold text-sm text-blue-900 mb-1">ℹ️ Informations importantes</h4>
           <ul className="text-xs text-blue-800 space-y-0.5 list-disc list-inside">
+            <li><strong>Étape 1 :</strong> Allez dans "Créneaux" et créez un créneau pour la date/heure sélectionnée</li>
+            <li><strong>Étape 2 :</strong> Revenez ici et cliquez sur "Créer un rendez-vous de test"</li>
             <li>Le rendez-vous créé sera visible dans le dashboard</li>
             <li>Des emails seront envoyés au client ET à l'admin</li>
             <li>Vérifiez votre boîte mail après le test</li>

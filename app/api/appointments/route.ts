@@ -49,7 +49,8 @@ export async function POST(request: NextRequest) {
       test_type,
       reason,
       is_second_chance = false,
-      client_notes
+      client_notes,
+      center_id
     } = body
 
     // Validation complète des données
@@ -82,12 +83,13 @@ export async function POST(request: NextRequest) {
       client_notes: client_notes ? sanitizeString(client_notes) : null
     }
 
-    // Check if slot is still available
+    // Check if slot is still available for this center
     const { data: existingSlot, error: slotError } = await supabase
       .from('available_slots')
       .select('*')
       .eq('date', appointment_date)
       .eq('start_time', appointment_time + ':00')
+      .eq('center_id', center_id)
       .eq('is_available', true)
       .single()
 
@@ -95,12 +97,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Selected time slot is no longer available' }, { status: 400 })
     }
 
-    // Check if slot is already booked (exclude cancelled appointments)
+    // Check if slot is already booked for this center (exclude cancelled appointments)
     const { data: existingAppointments, error: appointmentError } = await supabase
       .from('appointments')
       .select('id')
       .eq('appointment_date', appointment_date)
       .eq('appointment_time', appointment_time)
+      .eq('center_id', center_id)
       .in('status', ['confirmed', 'completed'])
 
     if (appointmentError) {
@@ -109,6 +112,28 @@ export async function POST(request: NextRequest) {
 
     if (existingAppointments && existingAppointments.length > 0) {
       return NextResponse.json({ error: 'This time slot is already booked' }, { status: 400 })
+    }
+
+    // Validate center_id is provided
+    if (!center_id) {
+      return NextResponse.json({ 
+        error: 'Centre non sélectionné', 
+        details: ['Veuillez sélectionner un centre'] 
+      }, { status: 400 })
+    }
+
+    // Get center information
+    const { data: centerInfo, error: centerError } = await supabase
+      .from('centers')
+      .select('*')
+      .eq('id', center_id)
+      .single()
+
+    if (centerError || !centerInfo) {
+      return NextResponse.json({ 
+        error: 'Centre invalide', 
+        details: ['Le centre sélectionné n\'existe pas'] 
+      }, { status: 400 })
     }
 
     // Create the appointment avec données sanitizées
@@ -125,7 +150,7 @@ export async function POST(request: NextRequest) {
       is_second_chance,
       status: 'confirmed',
       client_notes: sanitizedData.client_notes,
-      center_id: '11111111-1111-1111-1111-111111111111',
+      center_id: center_id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
@@ -160,7 +185,11 @@ export async function POST(request: NextRequest) {
         appointment_date,
         appointment_time,
         appointment_id: appointment.id,
-        created_at: appointment.created_at
+        created_at: appointment.created_at,
+        center_name: centerInfo.name,
+        center_address: centerInfo.address,
+        center_city: centerInfo.city,
+        center_postal_code: centerInfo.postal_code
       })
       console.log('✅ Email client envoyé avec succès, ID:', clientResult?.messageId)
     } catch (clientError) {
@@ -177,7 +206,11 @@ export async function POST(request: NextRequest) {
         email,
         phone,
         appointment_date,
-        appointment_time
+        appointment_time,
+        center_name: centerInfo.name,
+        center_address: centerInfo.address,
+        center_city: centerInfo.city,
+        center_postal_code: centerInfo.postal_code
       })
       console.log('✅ Email admin envoyé avec succès, ID:', adminResult?.messageId)
     } catch (adminError) {
