@@ -267,13 +267,15 @@ export default function RendezVous() {
               Prenez rendez-vous pour votre test psychotechnique dans l'un de nos centres agréés. Réservation en ligne rapide et sécurisée.
             </p>
             <div className="max-w-2xl mx-auto mt-3 px-2 sm:px-0">
-              <div className="p-2 sm:p-3 bg-amber-50 border border-amber-300 rounded-lg">
-                <p className="text-amber-900 font-bold text-xs sm:text-sm text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-                  <svg className="w-4 h-4 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <div className="p-3 sm:p-3 bg-amber-50 border border-amber-300 rounded-lg">
+                <div className="flex items-start justify-center gap-2">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                  <span>Merci de vérifier votre disponibilité avant de réserver un créneau</span>
-                </p>
+                  <p className="text-amber-900 font-bold text-xs sm:text-sm text-center">
+                    Merci de vérifier votre disponibilité avant de réserver un créneau
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -692,7 +694,7 @@ export default function RendezVous() {
             </div>
 
             <div className="w-full lg:w-80 order-1 lg:order-2">
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:sticky lg:top-24">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 sticky top-[88px] sm:top-20 z-30">
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4 sm:mb-6">Progression</h3>
 
                 <div className="flex lg:hidden justify-between items-center">
