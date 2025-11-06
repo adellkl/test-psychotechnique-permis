@@ -222,8 +222,7 @@ export async function sendAppointmentConfirmation(appointmentData: {
       access_details_text: accessDetailsText,
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',
-      website: 'https://test-psychotechnique-permis.com',
-      access_details: getAccessDetailsHTML(centerCity)
+      website: 'https://test-psychotechnique-permis.com'
     }
 
     console.log(`📝 [CLIENT] Remplacement des variables...`)
