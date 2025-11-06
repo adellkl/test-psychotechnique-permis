@@ -16,6 +16,7 @@ Allow: /prendre-rendez-vous
 Allow: /contact
 Allow: /a-propos
 Allow: /agrement-prefectoral
+Allow: /nos-centres
 
 # Crawl delay
 Crawl-delay: 1

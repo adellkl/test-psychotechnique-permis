@@ -39,7 +39,6 @@ export default function CreateAppointmentModal({ isOpen, onClose, onSuccess }: C
     setError('')
 
     try {
-      // Créer le rendez-vous via l'API admin
       const response = await fetch('/api/admin/create-appointment', {
         method: 'POST',
         headers: {
@@ -53,7 +52,6 @@ export default function CreateAppointmentModal({ isOpen, onClose, onSuccess }: C
         throw new Error(errorData.error || 'Erreur lors de la création du rendez-vous')
       }
 
-      // Réinitialiser le formulaire
       setFormData({
         firstName: '',
         lastName: '',

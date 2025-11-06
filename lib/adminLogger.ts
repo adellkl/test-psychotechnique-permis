@@ -53,7 +53,7 @@ export class AdminLogger {
 
 export function getAdminSession() {
   if (typeof window === 'undefined') return null
-  
+
   const session = localStorage.getItem('admin_session')
   return session ? JSON.parse(session) : null
 }
@@ -64,7 +64,7 @@ export async function logAdminActivity(action: string, details?: string) {
     if (!admin) return
 
     const ip = await AdminLogger.getClientIP()
-    
+
     await AdminLogger.log({
       admin_id: admin.id || 'unknown',
       admin_email: admin.email || 'unknown@admin.com',

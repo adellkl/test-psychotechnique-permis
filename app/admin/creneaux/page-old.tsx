@@ -55,7 +55,7 @@ function TimeSlotContent() {
       const startDate = format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
       const endDate = format(addDays(startOfWeek(selectedDate, { weekStartsOn: 1 }), 6), 'yyyy-MM-dd')
 
-      // Fetch available slots
+
       const { data: slots, error: slotsError } = await supabase
         .from('available_slots')
         .select('*')
@@ -66,7 +66,7 @@ function TimeSlotContent() {
 
       if (slotsError) throw slotsError
 
-      // Fetch appointments to check which slots are booked
+
       const { data: appointments, error: appointmentsError } = await supabase
         .from('appointments')
         .select('id, appointment_date, appointment_time, first_name, last_name, status')
@@ -76,7 +76,7 @@ function TimeSlotContent() {
 
       if (appointmentsError) throw appointmentsError
 
-      // Create a map of booked slots
+
       const bookedSlotsMap = new Map()
       appointments?.forEach(apt => {
         const key = `${apt.appointment_date}_${apt.appointment_time}`
@@ -87,7 +87,7 @@ function TimeSlotContent() {
         })
       })
 
-      // Merge slot data with booking information
+
       const enrichedSlots = slots?.map(slot => {
         const key = `${slot.date}_${slot.start_time}`
         const bookingInfo = bookedSlotsMap.get(key)
@@ -110,7 +110,7 @@ function TimeSlotContent() {
 
   const addTimeSlot = async () => {
     try {
-      // Calculate end time (2 hours later)
+
       const [hours, minutes] = newSlot.time.split(':').map(Number)
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
@@ -125,12 +125,12 @@ function TimeSlotContent() {
         }])
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.CREATE_SLOT,
         `Created slot for ${newSlot.date} at ${newSlot.time}`
       )
-      
+
       setShowAddForm(false)
       setNewSlot({
         date: format(new Date(), 'yyyy-MM-dd'),
@@ -153,12 +153,12 @@ function TimeSlotContent() {
         .eq('id', id)
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.DELETE_SLOT,
         `Deleted slot with ID: ${id}`
       )
-      
+
       fetchTimeSlots()
     } catch (error) {
       console.error('Error deleting time slot:', error)
@@ -174,12 +174,12 @@ function TimeSlotContent() {
         .eq('id', id)
 
       if (error) throw error
-      
+
       await logAdminActivity(
         AdminLogger.ACTIONS.UPDATE_SLOT,
         `Updated slot ${id} availability to ${!currentStatus}`
       )
-      
+
       fetchTimeSlots()
     } catch (error) {
       console.error('Error updating availability:', error)
@@ -190,20 +190,20 @@ function TimeSlotContent() {
   const addMultipleSlots = async () => {
     const slotsToAdd = []
     const startDate = new Date(newSlot.date)
-    
-    // Add slots for the next 7 days
+
+
     for (let i = 0; i < 7; i++) {
       const currentDate = addDays(startDate, i)
       const dateStr = format(currentDate, 'yyyy-MM-dd')
-      
+
       // Skip weekends if desired
       if (currentDate.getDay() === 0 || currentDate.getDay() === 6) continue
-      
+
       // Calculate end time (2 hours later)
       const [hours, minutes] = newSlot.time.split(':').map(Number)
       const endHours = hours + 2
       const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-      
+
       slotsToAdd.push({
         date: dateStr,
         start_time: newSlot.time,
@@ -218,7 +218,7 @@ function TimeSlotContent() {
         .insert(slotsToAdd)
 
       if (error) throw error
-      
+
       setShowAddForm(false)
       fetchTimeSlots()
       alert(`${slotsToAdd.length} créneaux ajoutés avec succès`)
@@ -280,11 +280,11 @@ function TimeSlotContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            
+
             <h2 className="text-lg font-semibold text-gray-900">
               Semaine du {format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'dd MMMM yyyy', { locale: fr })}
             </h2>
-            
+
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, 7))}
               className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -294,7 +294,7 @@ function TimeSlotContent() {
               </svg>
             </button>
           </div>
-          
+
           {/* Legend */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
             <div className="flex items-center gap-2">
@@ -336,7 +336,7 @@ function TimeSlotContent() {
               const isToday = isSameDay(day, new Date())
               const availableCount = daySlots.filter(slot => slot.is_available && !slot.is_booked).length
               const bookedCount = daySlots.filter(slot => slot.is_booked).length
-              
+
               return (
                 <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                   <div className={`p-3 border-b ${isToday ? 'bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200' : 'bg-gray-50'}`}>
@@ -359,7 +359,7 @@ function TimeSlotContent() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="p-2 xl:p-4 space-y-2 xl:space-y-3 min-h-[250px] xl:min-h-[300px] max-h-[350px] xl:max-h-[400px] overflow-y-auto">
                     {daySlots.length === 0 ? (
                       <div className="text-center py-6 xl:py-8">
@@ -379,7 +379,7 @@ function TimeSlotContent() {
                           }
                           return 'bg-green-50 border-green-200 text-green-800'
                         }
-                        
+
                         const getStatusIcon = () => {
                           if (slot.is_booked) {
                             return (
@@ -401,7 +401,7 @@ function TimeSlotContent() {
                             </svg>
                           )
                         }
-                        
+
                         return (
                           <div
                             key={slot.id}
@@ -418,16 +418,15 @@ function TimeSlotContent() {
                                 {!slot.is_booked && (
                                   <button
                                     onClick={() => toggleAvailability(slot.id, slot.is_available)}
-                                    className={`p-1 xl:p-1.5 rounded-md transition-colors ${
-                                      slot.is_available 
-                                        ? 'text-green-600 hover:bg-green-100' 
+                                    className={`p-1 xl:p-1.5 rounded-md transition-colors ${slot.is_available
+                                        ? 'text-green-600 hover:bg-green-100'
                                         : 'text-red-600 hover:bg-red-100'
-                                    }`}
+                                      }`}
                                     title={slot.is_available ? 'Désactiver' : 'Activer'}
                                   >
                                     <svg className="w-3 h-3 xl:w-3.5 xl:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                        d={slot.is_available ? "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" : "M15 12a3 3 0 11-6 0 3 3 0 016 0z"} 
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                        d={slot.is_available ? "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" : "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}
                                       />
                                     </svg>
                                   </button>

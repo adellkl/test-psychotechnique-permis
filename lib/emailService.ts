@@ -66,6 +66,73 @@ function replaceTemplateVariables(template: string, variables: Record<string, st
   return result
 }
 
+function getAccessDetailsHTML(centerCity: string): string {
+  if (centerCity === 'Colombes') {
+    return `
+      <div style="background-color: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 12px 0; color: #1e40af; font-size: 15px; font-weight: 700; display: flex; align-items: center;">
+          📍 Plan d'accès détaillé
+        </h4>
+        <div style="color: #1f2937; font-size: 14px; line-height: 1.8;">
+          <p style="margin: 0 0 8px 0;"><strong>14 rue de Mantes, 92700 Colombes</strong></p>
+          <p style="margin: 0 0 5px 0;">→ 1er Bâtiment dans la cour : <strong>Bâtiment A/B</strong></p>
+          <p style="margin: 0 0 5px 0;">→ Accès <strong>ascenseur B</strong> du hall, à gauche</p>
+          <p style="margin: 0 0 5px 0;">→ <strong>5e étage</strong> au bout du couloir à gauche</p>
+          <p style="margin: 0;">→ Suivre l'affichage <strong style="color: #2563eb;">ProDrive Academy</strong></p>
+        </div>
+      </div>
+    `
+  } else {
+    // Clichy par défaut
+    return `
+      <div style="background-color: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 15px 0; color: #1e40af; font-size: 15px; font-weight: 700; display: flex; align-items: center;">
+          📍 Plan d'accès détaillé
+        </h4>
+        
+        <!-- Adresse -->
+        <div style="background-color: #ffffff; border-radius: 6px; padding: 12px; margin-bottom: 12px; border-left: 3px solid #3b82f6;">
+          <p style="margin: 0; color: #1f2937; font-size: 14px; font-weight: 600;">
+            📌 82, rue Henri Barbusse, 92110 Clichy
+          </p>
+        </div>
+        
+        <!-- Instructions d'accès -->
+        <div style="background-color: #ffffff; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                <div style="display: flex; align-items: start;">
+                  <span style="color: #3b82f6; font-size: 18px; margin-right: 10px;">→</span>
+                  <span style="color: #1f2937; font-size: 14px;"><strong>Rez-de-chaussée</strong>, à droite</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0;">
+                <div style="display: flex; align-items: start;">
+                  <span style="color: #3b82f6; font-size: 18px; margin-right: 10px;">🔔</span>
+                  <span style="color: #1f2937; font-size: 14px;"><strong>Sonner à Cabinet</strong></span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        
+        <!-- Code d'entrée mis en avant -->
+        <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #3b82f6; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);">
+          <p style="margin: 0 0 8px 0; color: #1e40af; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">
+            🔑 Code d'entrée
+          </p>
+          <p style="margin: 0; font-size: 28px; font-weight: 700; color: #1e40af; letter-spacing: 4px; font-family: 'Courier New', Courier, monospace; text-shadow: 1px 1px 2px rgba(30, 64, 175, 0.1);">
+            6138A
+          </p>
+        </div>
+      </div>
+    `
+  }
+}
+
 async function getEmailTemplate(templateName: string): Promise<EmailTemplate> {
   const { data: template, error } = await supabase
     .from('email_templates')
@@ -119,8 +186,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
     let centerName, centerAddress, centerPostalCode, contactPhone, metroInfo, accessDetails, accessDetailsText
     
     if (centerCity === 'Colombes') {
-      centerName = 'Test Psychotechnique Permis - Colombes'
-      centerAddress = '14 Rue de Mantes, Pro Drive Academy'
+      centerName = 'Centre tests psychotechniques 2e chance - Colombes'
+      centerAddress = '14 Rue de Mantes'
       centerPostalCode = '92700'
       contactPhone = '0972132250'
       metroInfo = 'Proche des transports en commun'
@@ -155,7 +222,8 @@ export async function sendAppointmentConfirmation(appointmentData: {
       access_details_text: accessDetailsText,
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',
-      website: 'https://test-psychotechnique-permis.com'
+      website: 'https://test-psychotechnique-permis.com',
+      access_details: getAccessDetailsHTML(centerCity)
     }
 
     console.log(`📝 [CLIENT] Remplacement des variables...`)
@@ -339,8 +407,8 @@ export async function sendAppointmentReminder(appointmentData: {
     let centerName, centerAddress, centerPostalCode, contactPhone, locationDetails, accessDetails, accessDetailsText
     
     if (centerCity === 'Colombes') {
-      centerName = 'Test Psychotechnique Permis - Colombes'
-      centerAddress = '14 Rue de Mantes, Pro Drive Academy'
+      centerName = 'Centre tests psychotechniques 2e chance - Colombes'
+      centerAddress = '14 Rue de Mantes'
       centerPostalCode = '92700'
       contactPhone = '0972132250'
       locationDetails = 'Proche des transports en commun'
@@ -402,6 +470,9 @@ export async function sendAppointmentCancellation(appointmentData: {
   appointment_time: string
   reason?: string
   center_city?: string
+  center_id?: string
+  center_name?: string
+  center_address?: string
 }) {
   try {
     const template = await getEmailTemplate('appointment_cancellation_client')
@@ -413,14 +484,92 @@ export async function sendAppointmentCancellation(appointmentData: {
       day: 'numeric'
     })
 
-    const centerCity = appointmentData.center_city || 'Clichy'
-    const contactPhone = '07 65 56 53 79'
+    // LOGIQUE DE FALLBACK : Détection automatique du centre
+    let centerCity = appointmentData.center_city
+    
+    console.log('🔍 Données reçues pour détection centre:', {
+      center_city: appointmentData.center_city,
+      center_id: appointmentData.center_id,
+      center_name: appointmentData.center_name,
+      center_address: appointmentData.center_address
+    })
+    
+    // Si center_city n'est pas défini, on essaie de le détecter
+    if (!centerCity || centerCity.trim() === '') {
+      let detectionMethod = 'default'
+      
+      // Méthode 1 : Via center_id
+      if (appointmentData.center_id) {
+        const centerId = String(appointmentData.center_id).toLowerCase()
+        if (centerId.includes('colombes') || centerId === '2') {
+          centerCity = 'Colombes'
+          detectionMethod = 'center_id'
+        } else if (centerId === '1' || centerId.includes('clichy')) {
+          centerCity = 'Clichy'
+          detectionMethod = 'center_id'
+        }
+      }
+      
+      // Méthode 2 : Via center_name
+      if (!centerCity && appointmentData.center_name) {
+        const centerName = appointmentData.center_name.toLowerCase()
+        if (centerName.includes('colombes') || centerName.includes('2e chance') || centerName.includes('2eme chance')) {
+          centerCity = 'Colombes'
+          detectionMethod = 'center_name'
+        } else if (centerName.includes('clichy')) {
+          centerCity = 'Clichy'
+          detectionMethod = 'center_name'
+        }
+      }
+      
+      // Méthode 3 : Via center_address
+      if (!centerCity && appointmentData.center_address) {
+        const centerAddress = appointmentData.center_address.toLowerCase()
+        if (centerAddress.includes('mantes') || centerAddress.includes('92700') || centerAddress.includes('colombes')) {
+          centerCity = 'Colombes'
+          detectionMethod = 'center_address'
+        } else if (centerAddress.includes('barbusse') || centerAddress.includes('92110') || centerAddress.includes('clichy')) {
+          centerCity = 'Clichy'
+          detectionMethod = 'center_address'
+        }
+      }
+      
+      // Par défaut : Clichy
+      if (!centerCity) {
+        centerCity = 'Clichy'
+        detectionMethod = 'default'
+      }
+      
+      console.log(`📍 Centre détecté automatiquement: ${centerCity} (méthode: ${detectionMethod})`)
+    } else {
+      console.log(`📍 Centre déjà défini: ${centerCity}`)
+    }
+    
+    // Informations selon le centre
+    let centerName, centerAddress, centerPostalCode, contactPhone
+    
+    if (centerCity === 'Colombes') {
+      centerName = 'Centre 2e chance - Colombes'
+      centerAddress = '14 Rue de Mantes'
+      centerPostalCode = '92700'
+      contactPhone = '07 65 56 53 79'
+    } else {
+      // Clichy par défaut
+      centerName = 'Test Psychotechnique Permis - Clichy'
+      centerAddress = '82 Rue Henri Barbusse'
+      centerPostalCode = '92110'
+      contactPhone = '07 65 56 53 79'
+    }
+    
+    const fullAddress = `${centerAddress}, ${centerPostalCode} ${centerCity}`
 
     const variables = {
       first_name: appointmentData.first_name,
       last_name: appointmentData.last_name,
       appointment_date: formattedDate,
       appointment_time: appointmentData.appointment_time,
+      location: centerName,
+      address: fullAddress,
       reason: appointmentData.reason || 'Non spécifiée',
       contact_phone: contactPhone,
       contact_email: 'contact@test-psychotechnique-permis.com',

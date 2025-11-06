@@ -31,11 +31,26 @@ const centers = [
   },
   {
     id: 'colombes',
-    name: 'Centre de Colombes',
+    name: 'Centre 2e Chance\nColombes',
     code: '92700',
-    address: '14 Rue de Mantes - Pro Drive Academy, 92700 Colombes',
+    address: '14 Rue de Mantes - Centre 2e Chance, 92700 Colombes',
     color: 'blue',
     transport: [
+      {
+        icon: 'tram',
+        title: 'Tram T2 - Station Charlebourg',
+        detail: 'À 3 minutes'
+      },
+      {
+        icon: 'metro',
+        title: 'La Défense (T2)',
+        detail: 'À 5 minutes - Station Charlebourg'
+      },
+      {
+        icon: 'train',
+        title: 'Gare La Garenne-Colombes',
+        detail: '3 min à pied - Ligne L'
+      },
       {
         icon: 'phone',
         title: 'Téléphone',
@@ -105,6 +120,12 @@ export default function LocationSelector() {
             <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
           </svg>
         )
+      case 'tram':
+        return (
+          <svg className={`w-4 h-4 ${colors.iconText}`} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0v-.5A1.5 1.5 0 0114.5 6c.526 0 .988-.27 1.256-.679a6.012 6.012 0 011.913 2.706l-1.563 1.563a3 3 0 01-4.242 0l-1.06-1.06a1 1 0 00-1.414 0l-1.06 1.06a3 3 0 01-4.242 0L4.332 8.027z" clipRule="evenodd" />
+          </svg>
+        )
       default:
         return null
     }
@@ -130,14 +151,13 @@ export default function LocationSelector() {
           <button
             key={center.id}
             onClick={() => setSelectedCenter(index)}
-            className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-xl font-semibold text-xs sm:text-base transition-all duration-300 transform ${
-              selectedCenter === index
+            className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-xl font-semibold text-xs sm:text-base transition-all duration-300 transform ${selectedCenter === index
                 ? `${colorClasses[center.color as keyof typeof colorClasses].button} text-white shadow-lg scale-105`
                 : `${colorClasses[center.color as keyof typeof colorClasses].buttonInactive}`
-            }`}
+              }`}
           >
-            <span className="hidden sm:inline">{center.name}</span>
-            <span className="sm:hidden">{center.name.replace('Centre de ', '')}</span>
+            <span className="hidden sm:inline whitespace-pre-line leading-tight">{center.name}</span>
+            <span className="sm:hidden whitespace-pre-line leading-tight text-center">{center.name}</span>
           </button>
         ))}
       </div>
@@ -147,7 +167,7 @@ export default function LocationSelector() {
         key={currentCenter.id}
         className={`border-2 ${colors.border} rounded-xl p-4 bg-gradient-to-br ${colors.bg} transition-all duration-500 animate-fade-in`}
       >
-        <h4 className={`font-bold ${colors.text} mb-3 text-lg`}>
+        <h4 className={`font-bold ${colors.text} mb-3 text-lg whitespace-pre-line`}>
           📍 {currentCenter.name} ({currentCenter.code})
         </h4>
         <p className="text-gray-700 font-semibold mb-4">{currentCenter.address}</p>
@@ -156,7 +176,8 @@ export default function LocationSelector() {
           {currentCenter.transport.map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-2 bg-white rounded-lg transition-all duration-300 hover:shadow-md"
+              className="flex items-center gap-3 p-2 bg-white rounded-lg transition-all duration-300 hover:shadow-md animate-slide-in-left"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className={`w-8 h-8 ${colors.iconBg} rounded-full flex items-center justify-center`}>
                 {getIcon(item.icon)}
@@ -176,9 +197,8 @@ export default function LocationSelector() {
           <button
             key={index}
             onClick={() => setSelectedCenter(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              selectedCenter === index ? 'w-8 bg-purple-600' : 'w-2 bg-gray-300'
-            }`}
+            className={`h-2 rounded-full transition-all duration-300 ${selectedCenter === index ? 'w-8 bg-purple-600' : 'w-2 bg-gray-300'
+              }`}
             aria-label={`Sélectionner le centre ${index + 1}`}
           />
         ))}

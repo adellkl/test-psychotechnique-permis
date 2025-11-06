@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 
 // Composant SEO-optimisé pour la page À Propos avec sélection de centres
-// Présente Test Psychotechnique Permis Clichy et Pro Drive Academy Colombes
+// Présente Test Psychotechnique Permis Clichy et Centre 2e Chance Colombes
 const centers = [
   {
     id: 'clichy',
@@ -21,7 +21,7 @@ const centers = [
       'Des résultats transmis rapidement',
       'Un accueil personnalisé pour chaque candidat',
       'Une équipe à l\'écoute, disponible pour répondre à vos questions',
-      'Une deuxième chance gratuite en cas d\'échec'
+      'Deuxième chance gratuite en cas d\'échec'
     ],
     contact: {
       address: '82 Rue Henri Barbusse, 92110 Clichy',
@@ -31,20 +31,22 @@ const centers = [
   },
   {
     id: 'colombes',
-    name: 'Pro Drive Academy - Colombes',
+    name: 'Centre 2e Chance – Colombes',
     code: '92700',
-    title: 'À propos de Pro Drive Academy - Test psychotechnique à Colombes (92700)',
+    title: 'À propos du centre 2e Chance - Test psychotechnique à Colombes (92700)',
     address: '14 Rue de Mantes, 92700 Colombes',
     phone: '07 65 56 53 79',
     email: 'contact@test-psychotechnique-permis.com',
     color: 'purple',
-    description: `Situé au 14 Rue de Mantes à Colombes (92700), Pro Drive Academy est un centre agréé spécialisé dans les tests psychotechniques pour le permis de conduire. Nous accompagnons les conducteurs souhaitant récupérer leur permis suspendu, annulé ou invalidé, ainsi que ceux devant renouveler leur aptitude à la conduite.`,
-    description2: `Nos tests sont réalisés dans un environnement professionnel, calme et bienveillant, par des experts agréés, afin de garantir une évaluation fiable et rapide de vos capacités.`,
+    description: `Implanté au sein des bureaux de Prodrive Academy, notre centre est agréé pour la réalisation des tests psychotechniques d'aptitude à la conduite.`,
+    description2: `Nous accompagnons les conducteurs concernés par une suspension, une invalidation ou une annulation du permis de conduire, dans le cadre des démarches administratives obligatoires.`,
     features: [
-      'Une prise de rendez-vous simple et rapide',
-      'Des résultats transmis rapidement',
-      'Un accueil personnalisé pour chaque candidat',
-      'Une équipe à l\'écoute, disponible pour répondre à vos questions'
+      'Prise de rendez-vous rapide et simplifiée',
+      'Transmission des résultats dans les meilleurs délais',
+      'Accueil personnalisé pour chaque candidat',
+      'Orientation vers un médecin agréé ou conseils pour la commission médicale',
+      'Équipe à l\'écoute et disponible',
+      'Deuxième chance gratuite en cas d\'échec'
     ],
     contact: {
       address: '14 Rue de Mantes, 92700 Colombes',
@@ -85,8 +87,8 @@ export default function AboutCenterSelector() {
               key={center.id}
               onClick={() => setSelectedCenter(index)}
               className={`w-full sm:w-auto py-3 px-4 sm:px-6 rounded-xl font-semibold transition-all duration-300 transform text-sm sm:text-base ${selectedCenter === index
-                  ? `${colorClasses[center.color as keyof typeof colorClasses].button} text-white shadow-lg scale-105`
-                  : `${colorClasses[center.color as keyof typeof colorClasses].buttonInactive}`
+                ? `${colorClasses[center.color as keyof typeof colorClasses].button} text-white shadow-lg scale-105`
+                : `${colorClasses[center.color as keyof typeof colorClasses].buttonInactive}`
                 }`}
             >
               <span className="hidden sm:inline">{center.name}</span>
@@ -183,11 +185,12 @@ export default function AboutCenterSelector() {
           <div className="relative order-1 lg:order-2">
             <div className="relative h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                src="/images/IMG_6134.png"
                 alt={`${currentCenter.name} - Accueil professionnel`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
+                style={{ objectPosition: '75% center' }}
                 priority
               />
             </div>
@@ -206,11 +209,10 @@ export default function AboutCenterSelector() {
             <button
               key={index}
               onClick={() => setSelectedCenter(index)}
-              className={`h-2 rounded-full transition-all duration-300 hover:scale-110 ${
-                selectedCenter === index 
-                  ? 'w-8 bg-blue-600 shadow-md' 
+              className={`h-2 rounded-full transition-all duration-300 hover:scale-110 ${selectedCenter === index
+                  ? 'w-8 bg-blue-600 shadow-md'
                   : 'w-2 bg-gray-300 hover:bg-gray-400'
-              }`}
+                }`}
               aria-label={`Sélectionner le centre ${index + 1}`}
             />
           ))}

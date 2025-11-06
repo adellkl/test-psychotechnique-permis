@@ -52,7 +52,6 @@ export default function AgrementPrefectoralPage() {
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-6">
 
-          {/* Document officiel */}
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-8 mb-12">
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -79,7 +78,6 @@ export default function AgrementPrefectoralPage() {
             </div>
           </div>
 
-          {/* Informations sur l'agrément */}
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Détails de l'Agrément</h3>
@@ -126,7 +124,6 @@ export default function AgrementPrefectoralPage() {
             </div>
           </div>
 
-          {/* Validité de l'agrément */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
             <h3 className="text-xl font-semibold text-blue-800 mb-4">Validité et Portée de l'Agrément</h3>
             <div className="space-y-4 text-gray-700">
@@ -145,7 +142,6 @@ export default function AgrementPrefectoralPage() {
             </div>
           </div>
 
-          {/* Contact */}
           <div className="text-center bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Questions sur l'Agrément ?</h3>
             <p className="text-gray-600 mb-6">

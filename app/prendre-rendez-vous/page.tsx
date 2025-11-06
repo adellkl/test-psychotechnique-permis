@@ -8,9 +8,22 @@ import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 import FAQ from '../components/FAQ'
 import { validateAppointmentForm, sanitizeFormData, checkRateLimit } from '../../lib/validation'
+import HoneypotField from '../components/HoneypotField'
+
+interface Center {
+  id: string
+  name: string
+  address: string
+  city: string
+  postal_code: string
+  phone: string
+  email: string
+}
 
 export default function RendezVous() {
-  const [step, setStep] = useState(1) // 1 = calendrier, 2 = infos, 3 = confirmation
+  const [step, setStep] = useState(0) // 0 = sélection centre, 1 = calendrier, 2 = infos, 3 = confirmation
+  const [selectedCenter, setSelectedCenter] = useState<Center | null>(null)
+  const [centers, setCenters] = useState<Center[]>([])
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
   const [formData, setFormData] = useState({
@@ -21,11 +34,28 @@ export default function RendezVous() {
     reason: '',
     notes: ''
   })
+  const [honeypot, setHoneypot] = useState('') // 🍯 Champ piège pour détecter les bots
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const continueButtonRef = useRef<HTMLButtonElement>(null)
   const personalInfoRef = useRef<HTMLDivElement>(null)
+
+  // Charger les centres au montage du composant
+  useEffect(() => {
+    const fetchCenters = async () => {
+      const { data, error } = await supabase
+        .from('centers')
+        .select('*')
+        .eq('is_active', true)
+        .order('name')
+      
+      if (data && !error) {
+        setCenters(data)
+      }
+    }
+    fetchCenters()
+  }, [])
 
   const handleSlotSelect = (date: string, time: string) => {
     setSelectedDate(date)
@@ -37,16 +67,52 @@ export default function RendezVous() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+    const { name, value } = e.target
+    
+    // Format automatique du téléphone
+    if (name === 'phone') {
+      // Supprimer tous les caractères non numériques sauf le +
+      let cleaned = value.replace(/[^0-9+]/g, '')
+      
+      // Formater avec des espaces tous les 2 chiffres
+      if (cleaned.startsWith('+33')) {
+        cleaned = cleaned.substring(3)
+        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
+        setFormData({
+          ...formData,
+          [name]: '+33 ' + formatted
+        })
+      } else if (cleaned.startsWith('0')) {
+        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
+        setFormData({
+          ...formData,
+          [name]: formatted
+        })
+      } else {
+        setFormData({
+          ...formData,
+          [name]: value
+        })
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log(' Form submitted')
     setErrors({})
+
+    // 🍯 Honeypot: Si rempli, c'est un bot
+    if (honeypot && honeypot.trim() !== '') {
+      console.warn('🤖 Bot détecté via honeypot:', honeypot)
+      setErrors({ general: 'Une erreur est survenue. Veuillez réessayer.' })
+      return
+    }
 
     if (!checkRateLimit('appointment_submit', 5, 60000)) {
       console.error(' Rate limit exceeded')
@@ -80,34 +146,36 @@ export default function RendezVous() {
     setLoading(true)
 
     try {
-      const sanitizedData = sanitizeFormData(formData)
-      const { data, error } = await supabase
-        .from('appointments')
-        .insert([
-          {
-            first_name: sanitizedData.firstName,
-            last_name: sanitizedData.lastName,
-            email: sanitizedData.email.toLowerCase(),
-            phone: sanitizedData.phone.replace(/\s/g, ''),
-            appointment_date: selectedDate,
-            appointment_time: selectedTime,
-            reason: sanitizedData.reason,
-            client_notes: sanitizedData.notes,
-            status: 'confirmed',
-            test_type: sanitizedData.reason,
-            duration_minutes: 40,
-            center_id: '11111111-1111-1111-1111-111111111111' // Centre Clichy par défaut
-          }
-        ])
-        .select()
+      // Utiliser l'API sécurisée au lieu de l'insertion directe Supabase
+      const response = await fetch('/api/appointments/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          reason: formData.reason,
+          notes: formData.notes,
+          appointment_date: selectedDate,
+          appointment_time: selectedTime,
+          center_id: selectedCenter?.id,
+          honeypot: honeypot
+        }),
+      })
 
-      if (error) throw error
+      const result = await response.json()
 
-      const appointment = data?.[0]
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de la création du rendez-vous')
+      }
+
+      const appointment = result.appointment
 
       setSuccess(true)
       setStep(3)
-      scrollToTop()
 
       fetch('/api/send-appointment-emails', {
         method: 'POST',
@@ -115,19 +183,19 @@ export default function RendezVous() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          first_name: sanitizedData.firstName,
-          last_name: sanitizedData.lastName,
-          email: sanitizedData.email,
-          phone: sanitizedData.phone,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
           appointment_date: selectedDate,
           appointment_time: selectedTime,
-          reason: sanitizedData.reason,
+          reason: formData.reason,
           appointment_id: appointment?.id,
           created_at: appointment?.created_at,
-          center_name: 'Centre Clichy',
-          center_address: '82 Rue Henri Barbusse',
-          center_city: 'Clichy',
-          center_postal_code: '92110'
+          center_name: selectedCenter?.name,
+          center_address: selectedCenter?.address,
+          center_city: selectedCenter?.city,
+          center_postal_code: selectedCenter?.postal_code
         }),
       }).then(async (emailResponse) => {
         if (!emailResponse.ok) {
@@ -151,6 +219,12 @@ export default function RendezVous() {
     }
   }
 
+  const handleCenterSelect = (center: Center) => {
+    setSelectedCenter(center)
+    setStep(1)
+    scrollToTop()
+  }
+
   const formatSelectedDateTime = () => {
     if (!selectedDate || !selectedTime) return ''
     const date = new Date(selectedDate)
@@ -161,7 +235,6 @@ export default function RendezVous() {
     <>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-32">
         <div className="container mx-auto px-4 py-6">
-          {/* Breadcrumb Navigation */}
           <nav className="mb-6" aria-label="Fil d'Ariane">
             <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
               <li>
@@ -181,7 +254,6 @@ export default function RendezVous() {
             </ol>
           </nav>
 
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg mb-4">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,18 +263,102 @@ export default function RendezVous() {
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
               Réservation Test Psychotechnique Permis
             </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
-              Prenez rendez-vous pour votre test psychotechnique dans notre centre agréé à Clichy. Réservation en ligne rapide et sécurisée.
+            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg mb-4">
+              Prenez rendez-vous pour votre test psychotechnique dans l'un de nos centres agréés. Réservation en ligne rapide et sécurisée.
             </p>
+            <div className="max-w-2xl mx-auto mt-3 px-2 sm:px-0">
+              <div className="p-2 sm:p-3 bg-amber-50 border border-amber-300 rounded-lg">
+                <p className="text-amber-900 font-bold text-xs sm:text-sm text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                  <svg className="w-4 h-4 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span>Merci de vérifier votre disponibilité avant de réserver un créneau</span>
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Main Layout */}
           <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
-            {/* Left Panel - Content */}
             <div className="flex-1 order-2 lg:order-1">
-              {/* Step 1: Calendar Selection */}
+              {step === 0 && (
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Choisissez votre centre</h2>
+                    <p className="text-gray-600">Sélectionnez le centre le plus proche de chez vous pour votre test psychotechnique.</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {centers.map((center) => (
+                      <button
+                        key={center.id}
+                        onClick={() => {
+                          setSelectedCenter(center)
+                          setStep(1)
+                        }}
+                        className="text-left p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all duration-300 group"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{center.name}</h3>
+                            <p className="text-sm text-gray-600 mb-1">{center.address}</p>
+                            <p className="text-sm text-gray-600 mb-2">{center.postal_code} {center.city}</p>
+                            <div className="flex items-center gap-2 text-sm text-blue-600 font-medium">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                              </svg>
+                              {center.phone}
+                            </div>
+                          </div>
+                          <div className="text-blue-600 group-hover:translate-x-1 transition-transform">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {step === 1 && (
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                  <div className="mb-6 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-blue-900 text-sm sm:text-base truncate">{selectedCenter?.name}</p>
+                          <p className="text-xs sm:text-sm text-blue-700 break-words">{selectedCenter?.address}, {selectedCenter?.city}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setStep(0)
+                          setSelectedDate('')
+                          setSelectedTime('')
+                        }}
+                        className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 whitespace-nowrap self-end sm:self-auto"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Changer
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Choisissez votre créneau de rendez-vous</h2>
                     <p className="text-gray-600">Sélectionnez la date et l'heure de votre test psychotechnique. Disponibilités en temps réel.</p>
@@ -229,6 +385,7 @@ export default function RendezVous() {
                     onSlotSelect={handleSlotSelect}
                     selectedDate={selectedDate}
                     selectedTime={selectedTime}
+                    centerId={selectedCenter?.id}
                   />
 
                   {selectedDate && selectedTime && (
@@ -252,7 +409,7 @@ export default function RendezVous() {
                       ref={continueButtonRef}
                       onClick={() => {
                         setStep(2)
-                        setTimeout(() => {
+                        requestAnimationFrame(() => {
                           if (personalInfoRef.current) {
                             const elementPosition = personalInfoRef.current.getBoundingClientRect().top + window.pageYOffset
                             const offsetPosition = elementPosition - 100
@@ -261,7 +418,7 @@ export default function RendezVous() {
                               behavior: 'smooth'
                             })
                           }
-                        }, 100)
+                        })
                       }}
                       disabled={!selectedDate || !selectedTime}
                       className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
@@ -275,7 +432,6 @@ export default function RendezVous() {
                 </div>
               )}
 
-              {/* Step 2: Personal Information */}
               {step === 2 && (
                 <div ref={personalInfoRef} className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
                   <div className="mb-4">
@@ -283,7 +439,6 @@ export default function RendezVous() {
                     <p className="text-sm text-gray-600">Complétez vos coordonnées pour finaliser votre réservation de test psychotechnique</p>
                   </div>
 
-                  {/* Selected slot reminder */}
                   <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                       <div className="w-8 h-8 bg-emerald-100 rounded-xl flex items-center justify-center">
@@ -298,7 +453,6 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  {/* Error Messages */}
                   {errors.general && (
                     <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                       <div className="flex items-center gap-2">
@@ -387,7 +541,7 @@ export default function RendezVous() {
                           onChange={handleInputChange}
                           className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm ${errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
                             }`}
-                          placeholder="06 ** ** ** **"
+                          placeholder="06 12 34 56 78"
                         />
                         {errors.phone && (
                           <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
@@ -437,12 +591,17 @@ export default function RendezVous() {
                       )}
                     </div>
 
+                    <HoneypotField 
+                      name="website"
+                      value={honeypot}
+                      onChange={setHoneypot}
+                    />
+
                     <div className="flex flex-col sm:flex-row gap-3 pt-4">
                       <button
                         type="button"
                         onClick={() => {
                           setStep(1)
-                          scrollToTop()
                         }}
                         className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-50 hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
                       >
@@ -472,10 +631,9 @@ export default function RendezVous() {
                 </div>
               )}
 
-              {/* Step 3: Success */}
               {step === 3 && success && (
-                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 text-center">
-                  <div className="relative mb-6">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                  <div className="relative mb-6 text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -485,94 +643,45 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  <h2 className="text-2xl font-bold text-green-600 mb-4">
-                    Test Psychotechnique Réservé avec Succès
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600 mb-6 sm:mb-8 text-center px-4">
+                    ✅ Rendez-vous Confirmé
                   </h2>
 
-                  <p className="text-sm text-gray-600 mb-6 max-w-lg mx-auto">
-                    Votre rendez-vous pour le test psychotechnique du permis a été confirmé pour le <span className="font-semibold text-gray-900">{formatSelectedDateTime()}</span> dans notre centre agréé à Clichy.
-                  </p>
-
-                  <div className="space-y-6">
-                    {/* Email confirmation status */}
-                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                  <div className="space-y-4 sm:space-y-5 max-w-2xl mx-auto px-4 sm:px-0">
+                    <div className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-4 border-2 border-green-300 shadow-sm">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 sm:w-5 sm:h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                             <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                           </svg>
                         </div>
-                        <div>
-                          <p className="font-semibold text-green-800">Email de confirmation envoyé</p>
-                          <p className="text-sm text-green-600">Vérifiez votre boîte de réception</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Important information - Mobile responsive */}
-                    <div className="bg-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200">
-                      <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        Informations importantes
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Arrivée 10 minutes avant votre rendez-vous</span>
-                        </div>
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Pièce d'identité obligatoire (carte d'identité ou passeport)</span>
-                        </div>
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Durée : 40 minutes</span>
-                        </div>
-                        <div className="flex items-start gap-2 sm:gap-3 p-3 bg-white rounded-lg">
-                          <div className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm sm:text-base text-blue-800">Paiement sur place (aucun acompte requis)</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-green-900 text-base sm:text-lg break-words">Email de confirmation envoyé</p>
+                          <p className="text-xs sm:text-sm text-green-700 mt-0.5">Vérifiez votre boîte de réception et les spams</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4 mt-8">
+                  <div className="space-y-3 sm:space-y-4 mt-6 sm:mt-8 px-4 sm:px-0 max-w-2xl mx-auto">
                     <button
                       onClick={() => window.location.href = '/'}
-                      className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                      className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                       </svg>
                       Retour à l'accueil
                     </button>
 
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <p className="text-gray-700 mb-1 font-medium text-sm">
+                    <div className="p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl">
+                      <p className="text-gray-700 mb-1 font-medium text-xs sm:text-sm">
                         Besoin de modifier votre rendez-vous ?
                       </p>
-                      <p className="text-gray-600 text-sm">
+                      <p className="text-gray-600 text-xs sm:text-sm">
                         Contactez-nous au{' '}
-                        <a href="tel:0765565379" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                        <a href="tel:0765565379" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors whitespace-nowrap">
                           07 65 56 53 79
                         </a>
                       </p>
@@ -582,13 +691,29 @@ export default function RendezVous() {
               )}
             </div>
 
-            {/* Right Panel - Progress Bar */}
             <div className="w-full lg:w-80 order-1 lg:order-2">
               <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:sticky lg:top-24">
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4 sm:mb-6">Progression</h3>
 
-                {/* Mobile: Horizontal Progress */}
                 <div className="flex lg:hidden justify-between items-center">
+                  <div className="flex flex-col items-center">
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 0 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <span className={`mt-1.5 text-xs sm:text-sm font-medium ${step >= 0 ? 'text-blue-600' : 'text-gray-400'}`}>
+                      Centre
+                    </span>
+                  </div>
+
+                  {/* Connector 0 */}
+                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
+                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded transition-all duration-700 ease-in-out origin-left ${step >= 1 ? 'scale-x-100' : 'scale-x-0'}`}></div>
+                  </div>
+
                   {/* Step 1 */}
                   <div className="flex flex-col items-center">
                     <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm ${step >= 1 ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
@@ -601,8 +726,11 @@ export default function RendezVous() {
                     </span>
                   </div>
 
-                  {/* Connector */}
-                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
+                  {/* Connector 1 */}
+                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
+                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded transition-all duration-700 ease-in-out origin-left ${step >= 2 ? 'scale-x-100' : 'scale-x-0'}`}></div>
+                  </div>
 
                   {/* Step 2 */}
                   <div className="flex flex-col items-center">
@@ -617,9 +745,11 @@ export default function RendezVous() {
                     </span>
                   </div>
 
-                  {/* Connector */}
-                  <div className={`flex-1 h-1 mx-2 sm:mx-3 rounded transition-all duration-300 ${step >= 3 ? 'bg-gradient-to-r from-blue-500 to-emerald-500' : 'bg-gray-200'
-                    }`}></div>
+                  {/* Connector 2 */}
+                  <div className="relative flex-1 h-1 mx-2 sm:mx-3">
+                    <div className="absolute inset-0 bg-gray-200 rounded"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-emerald-500 rounded transition-all duration-700 ease-in-out origin-left ${step >= 3 ? 'scale-x-100' : 'scale-x-0'}`}></div>
+                  </div>
 
                   {/* Step 3 */}
                   <div className="flex flex-col items-center">
@@ -637,6 +767,31 @@ export default function RendezVous() {
 
                 {/* Desktop: Vertical Progress */}
                 <div className="hidden lg:block">
+                  {/* Step 0: Centre */}
+                  <div className="flex items-center mb-6">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${step >= 0
+                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-400'
+                      }`}>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <p className={`font-semibold ${step >= 0 ? 'text-blue-600' : 'text-gray-400'}`}>
+                        Choisir un centre
+                      </p>
+                      <p className="text-sm text-gray-500">Clichy ou Colombes</p>
+                    </div>
+                  </div>
+
+                  {/* Connector 0 */}
+                  <div className="relative w-0.5 h-8 ml-5 mb-6">
+                    <div className="absolute inset-0 bg-gray-200"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-600 transition-all duration-700 ease-in-out origin-top ${step >= 1 ? 'scale-y-100' : 'scale-y-0'}`}></div>
+                  </div>
+
                   {/* Step 1 */}
                   <div className="flex items-center mb-6">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${step >= 1
@@ -656,7 +811,10 @@ export default function RendezVous() {
                   </div>
 
                   {/* Connector 1 */}
-                  <div className={`w-0.5 h-8 ml-5 mb-6 transition-all duration-500 ${step >= 2 ? 'bg-gradient-to-b from-blue-500 to-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className="relative w-0.5 h-8 ml-5 mb-6">
+                    <div className="absolute inset-0 bg-gray-200"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-600 transition-all duration-700 ease-in-out origin-top ${step >= 2 ? 'scale-y-100' : 'scale-y-0'}`}></div>
+                  </div>
 
                   {/* Step 2 */}
                   <div className="flex items-center mb-6">
@@ -676,9 +834,11 @@ export default function RendezVous() {
                     </div>
                   </div>
 
-                  {/* Connector */}
-                  <div className={`w-0.5 h-8 ml-5 mb-6 transition-all duration-500 ${step >= 3 ? 'bg-gradient-to-b from-green-500 to-emerald-500' : 'bg-gray-200'
-                    }`}></div>
+                  {/* Connector 2 */}
+                  <div className="relative w-0.5 h-8 ml-5 mb-6">
+                    <div className="absolute inset-0 bg-gray-200"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-b from-blue-500 to-emerald-500 transition-all duration-700 ease-in-out origin-top ${step >= 3 ? 'scale-y-100' : 'scale-y-0'}`}></div>
+                  </div>
 
                   {/* Step 3 */}
                   <div className="flex items-center">

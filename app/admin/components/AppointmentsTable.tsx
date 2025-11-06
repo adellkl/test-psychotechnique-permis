@@ -73,6 +73,7 @@ export default function AppointmentsTable({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed': return 'bg-green-100 text-green-800 border-green-300'
+      case 'in_progress': return 'bg-blue-100 text-blue-800 border-blue-300'
       case 'completed': return 'bg-gray-100 text-gray-600 border-gray-300'
       case 'cancelled': return 'bg-red-100 text-red-800 border-red-300'
       default: return 'bg-gray-100 text-gray-800 border-gray-300'
@@ -82,6 +83,7 @@ export default function AppointmentsTable({
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'confirmed': return '✅ Confirmé'
+      case 'in_progress': return '🔵 En cours'
       case 'completed': return '✓ Terminé'
       case 'cancelled': return '❌ Annulé'
       default: return status
@@ -92,7 +94,7 @@ export default function AppointmentsTable({
     const created = new Date(createdAt)
     const now = new Date()
     const diffHours = (now.getTime() - created.getTime()) / (1000 * 60 * 60)
-    return diffHours < 24 // Nouveau si créé dans les dernières 24h
+    return diffHours < 24
   }
 
   const isAllSelected = filteredAppointments.length > 0 && selectedAppointments.size === filteredAppointments.length
@@ -119,7 +121,6 @@ export default function AppointmentsTable({
       const result = await response.json()
       console.log('✅ Email envoyé:', result)
 
-      // Rafraîchir la page pour voir les changements
       window.location.reload()
     } catch (error) {
       console.error('❌ Erreur:', error)
@@ -410,6 +411,17 @@ export default function AppointmentsTable({
                         </button>
                       </>
                     )}
+                    {appointment.status === 'in_progress' && (
+                      <button
+                        onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
+                        className="text-red-600 hover:text-red-900 hover:bg-red-50 p-1 rounded transition-colors"
+                        title="Annuler"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
                     {appointment.status === 'cancelled' && (
                       <button
                         onClick={() => onUpdateStatus(appointment.id, 'confirmed')}
@@ -578,6 +590,17 @@ export default function AppointmentsTable({
                     Annuler
                   </button>
                 </>
+              )}
+              {appointment.status === 'in_progress' && (
+                <button
+                  onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
+                  className="flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Annuler
+                </button>
               )}
               {appointment.status === 'cancelled' && (
                 <button

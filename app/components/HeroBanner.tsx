@@ -31,14 +31,16 @@ export default function HeroBanner() {
             {/* Titre */}
             <div className="space-y-1 lg:space-y-2">
               <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 leading-tight">
-                <span className="block animate-text-reveal animation-delay-200">Centre de Test</span>
-                <span className="block text-blue-600 animate-text-reveal animation-delay-500">Psychotechnique</span>
-                <span className="block animate-text-reveal animation-delay-800">Permis</span>
+                <span className="block text-blue-600 animate-text-reveal animation-delay-200">2e Chance</span>
+                <span className="block animate-text-reveal animation-delay-500"> – Centre agréé de tests psychotechniques, valable partout en France</span>
               </h1>
 
               <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed animate-slide-in-right animation-delay-1100">
-                En cas d'échec, une deuxième chance vous sera accordée{" "}
-                <span className="font-bold text-emerald-600 animate-highlight animation-delay-1400">gratuitement !</span>
+                Avec nos{" "}
+                <span className="font-bold text-blue-600">deux centres agréés</span>,{" "}
+                2e Chance vous offre plus de{" "}
+                <span className="font-bold text-emerald-600 animate-highlight animation-delay-1400">flexibilité</span>{" "}
+                pour passer votre test psychotechnique.
               </p>
             </div>
 

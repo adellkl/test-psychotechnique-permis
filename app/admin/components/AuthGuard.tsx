@@ -32,19 +32,17 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
         const session: AdminSession = JSON.parse(sessionData)
         
-        // Validate session structure
         if (!session.id || !session.email || !session.full_name) {
           localStorage.removeItem('admin_session')
           router.push('/admin')
           return
         }
 
-        // Check if session is expired (optional: add timestamp validation)
         const sessionTimestamp = localStorage.getItem('admin_session_timestamp')
         if (sessionTimestamp) {
           const sessionTime = parseInt(sessionTimestamp)
           const currentTime = Date.now()
-          const sessionDuration = 24 * 60 * 60 * 1000 // 24 hours
+          const sessionDuration = 24 * 60 * 60 * 1000
           
           if (currentTime - sessionTime > sessionDuration) {
             localStorage.removeItem('admin_session')
@@ -81,7 +79,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   }
 
   if (!isAuthenticated) {
-    return null // Router will redirect
+    return null
   }
 
   return (

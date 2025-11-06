@@ -3,25 +3,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design System Variables */
 :root {
-  /* Couleurs Principales - Palette "Confiance & Sérénité" */
   --primary-navy: #1e3a8a;
   --primary-navy-light: #3b82f6;
   --primary-navy-dark: #1e40af;
   
-  /* Couleurs Secondaires */
   --secondary-teal: #0d9488;
   --secondary-orange: #ea580c;
   --secondary-gray: #475569;
   
-  /* Couleurs d'État */
   --success-green: #059669;
   --warning-amber: #d97706;
   --error-red: #dc2626;
   --info-teal: #0d9488;
   
-  /* Espacement */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -34,19 +29,16 @@
   --space-16: 4rem;
   --space-20: 5rem;
   
-  /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
   
-  /* Typographie */
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
 }
 
-/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -79,7 +71,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Composants du Design System */
 .btn-primary {
   @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium;
   @apply hover:from-blue-700 hover:to-blue-800 hover:scale-105 hover:shadow-lg;
@@ -113,7 +104,6 @@ body {
   @apply absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-full;
 }
 
-/* Animations */
 @keyframes marquee {
   from {
     transform: translateX(100%);
@@ -368,7 +358,6 @@ body {
   66% { transform: translateY(-6px); }
 }
 
-/* Nouvelles animations améliorées */
 @keyframes pulse-glow {
   0%, 100% { 
     opacity: 0.8; 
@@ -540,7 +529,6 @@ body {
   100% { transform: translateY(0); }
 }
 
-/* Nouvelles classes d'animation améliorées */
 .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 .animate-card-appear { animation: card-appear 0.8s ease-out forwards; }
 .animate-card-float-3d { animation: card-float-3d 4s ease-in-out infinite 1s; }
@@ -567,7 +555,6 @@ body {
 .animate-light-ray-1 { animation: light-ray-1 4s ease-in-out infinite; }
 .animate-light-ray-2 { animation: light-ray-2 5s ease-in-out infinite 1s; }
 
-/* Animation de soulignement automatique pour les titres */
 @keyframes underline {
   0% {
     width: 0%;
@@ -582,4 +569,14 @@ body {
 
 .animate-underline {
   animation: underline 2s ease-in-out;
+}
+
+/* Masquer la scrollbar pour les onglets debug */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE et Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari et Opera */
 }

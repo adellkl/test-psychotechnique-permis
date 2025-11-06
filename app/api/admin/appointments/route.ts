@@ -89,17 +89,28 @@ export async function PUT(request: NextRequest) {
       .from('appointments')
       .update(updateData)
       .eq('id', id)
-      .select()
+      .select('*, centers(*)')
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Si le statut est "cancelled", envoyer un email au client
+    // Si le statut est "cancelled", envoyer un email au client et libérer le créneau
     if (status === 'cancelled' && data && data[0]) {
       try {
         const appointment = data[0]
         const { sendAppointmentCancellation } = await import('../../../../lib/emailService')
+        
+        // Log pour débugger
+        console.log('📧 Envoi email annulation pour:', {
+          email: appointment.email,
+          center_city: appointment.center_city,
+          center_id: appointment.center_id,
+          has_centers_relation: !!appointment.centers
+        })
+        
+        // Récupérer les infos du centre depuis la relation si disponible
+        const centerInfo = appointment.centers
         
         await sendAppointmentCancellation({
           first_name: appointment.first_name,
@@ -108,13 +119,30 @@ export async function PUT(request: NextRequest) {
           appointment_date: appointment.appointment_date,
           appointment_time: appointment.appointment_time,
           reason: admin_notes || 'Annulation par le centre',
-          center_city: appointment.center_city
+          center_city: appointment.center_city || centerInfo?.city,
+          center_id: appointment.center_id?.toString(),
+          center_name: centerInfo?.name,
+          center_address: centerInfo?.address
         })
         
         console.log('✅ Email d\'annulation envoyé au client:', appointment.email)
       } catch (emailError) {
         console.error('❌ Erreur envoi email annulation:', emailError)
         // On ne bloque pas la mise à jour même si l'email échoue
+      }
+
+      // Remettre le créneau disponible dans le calendrier
+      try {
+        await supabase
+          .from('available_slots')
+          .update({ is_available: true })
+          .eq('date', data[0].appointment_date)
+          .eq('time', data[0].appointment_time)
+          .eq('center_id', data[0].center_id || null)
+        
+        console.log('✅ Créneau remis disponible:', data[0].appointment_date, data[0].appointment_time)
+      } catch (slotError) {
+        console.error('⚠️ Erreur lors de la remise à disposition du créneau:', slotError)
       }
     }
 

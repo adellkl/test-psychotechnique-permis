@@ -38,13 +38,25 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
       const startDate = format(startOfMonth(currentDate), 'yyyy-MM-dd')
       const endDate = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
+      console.log('📅 [Calendar] Fetch slots avec:', {
+        centerId,
+        hasCenterId: !!centerId,
+        startDate,
+        endDate
+      })
+
       const centerParam = centerId ? `&centerId=${centerId}` : ''
-      const response = await fetch(`/api/available-slots?startDate=${startDate}&endDate=${endDate}${centerParam}`)
+      const url = `/api/available-slots?startDate=${startDate}&endDate=${endDate}${centerParam}`
+      
+      console.log('🔗 [Calendar] URL de requête:', url)
+      
+      const response = await fetch(url)
       if (!response.ok) {
         throw new Error('Failed to fetch available slots')
       }
 
       const data = await response.json()
+      console.log(`✅ [Calendar] ${data.slots?.length || 0} créneaux reçus`)
       setAvailableSlots(data.slots || [])
     } catch (error) {
       console.error('Error fetching slots:', error)

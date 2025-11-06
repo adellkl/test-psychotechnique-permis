@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '../../../../lib/supabase-server'
+import { supabase } from '../../../../lib/supabase'
 import * as bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier le mot de passe actuel
-    const { data: admin, error: fetchError } = await supabaseServer
+    const { data: admin, error: fetchError } = await supabase
       .from('admins')
       .select('*')
       .eq('id', adminId)
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Mettre à jour les informations
-    const { error: updateError } = await supabaseServer
+    const { error: updateError } = await supabase
       .from('admins')
       .update({
         ...updates,

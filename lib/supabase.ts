@@ -22,7 +22,7 @@ export interface Appointment {
   test_type: string
   reason: string
   is_second_chance: boolean
-  status: 'confirmed' | 'completed' | 'cancelled' | 'no_show'
+  status: 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show'
   admin_notes?: string
   client_notes?: string
   center_id: string

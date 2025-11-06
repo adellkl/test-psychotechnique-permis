@@ -5,6 +5,8 @@ import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import Calendar from '../../components/Calendar'
 import { supabase } from '../../lib/supabase'
+import { validateAppointmentForm, sanitizeFormData, checkRateLimit } from '../../lib/validation'
+import HoneypotField from '../components/HoneypotField'
 
 export default function RendezVous() {
   const [step, setStep] = useState(1)
@@ -18,8 +20,16 @@ export default function RendezVous() {
     reason: '',
     notes: ''
   })
+  const [honeypot, setHoneypot] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [existingAppointment, setExistingAppointment] = useState<{
+    date: string
+    time: string
+    status: string
+  } | null>(null)
+  const [checkingExisting, setCheckingExisting] = useState(false)
 
   const handleSlotSelect = (date: string, time: string) => {
     setSelectedDate(date)
@@ -27,36 +37,145 @@ export default function RendezVous() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+    const { name, value } = e.target
+    
+    // Format automatique du téléphone
+    if (name === 'phone') {
+      let cleaned = value.replace(/[^0-9+]/g, '')
+      
+      if (cleaned.startsWith('+33')) {
+        cleaned = cleaned.substring(3)
+        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
+        setFormData({
+          ...formData,
+          [name]: '+33 ' + formatted
+        })
+      } else if (cleaned.startsWith('0')) {
+        const formatted = cleaned.match(/.{1,2}/g)?.join(' ') || cleaned
+        setFormData({
+          ...formData,
+          [name]: formatted
+        })
+      } else {
+        setFormData({
+          ...formData,
+          [name]: value
+        })
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      })
+    }
+
+    // Vérifier les rendez-vous existants quand nom ET prénom sont remplis
+    if (name === 'firstName' || name === 'lastName') {
+      const firstName = name === 'firstName' ? value : formData.firstName
+      const lastName = name === 'lastName' ? value : formData.lastName
+      
+      if (firstName.length >= 2 && lastName.length >= 2) {
+        checkExistingAppointment(firstName, lastName)
+      } else {
+        setExistingAppointment(null)
+      }
+    }
+  }
+
+  const checkExistingAppointment = async (firstName: string, lastName: string) => {
+    setCheckingExisting(true)
+    try {
+      const response = await fetch(
+        `/api/appointments/check-existing?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`
+      )
+      const data = await response.json()
+      
+      if (data.hasExisting) {
+        setExistingAppointment(data.appointment)
+      } else {
+        setExistingAppointment(null)
+      }
+    } catch (error) {
+      console.error('Erreur vérification rendez-vous:', error)
+      setExistingAppointment(null)
+    } finally {
+      setCheckingExisting(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setErrors({})
+
+    // Bloquer si un rendez-vous existant est détecté
+    if (existingAppointment) {
+      setErrors({ 
+        general: `Vous avez déjà un rendez-vous prévu le ${existingAppointment.date} à ${existingAppointment.time}. Veuillez l'annuler avant d'en prendre un nouveau.` 
+      })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    // 🍯 Honeypot: Si rempli, c'est un bot
+    if (honeypot && honeypot.trim() !== '') {
+      console.warn('🤖 Bot détecté via honeypot:', honeypot)
+      setErrors({ general: 'Une erreur est survenue. Veuillez réessayer.' })
+      return
+    }
+
+    // Rate limiting
+    if (!checkRateLimit('appointment_submit', 5, 60000)) {
+      setErrors({ general: 'Trop de tentatives. Veuillez patienter une minute.' })
+      return
+    }
+
+    // Validation
+    const validation = validateAppointmentForm({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone,
+      reason: formData.reason,
+      notes: formData.notes,
+      date: selectedDate,
+      time: selectedTime
+    })
+
+    if (!validation.isValid) {
+      setErrors(validation.errors)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
     setLoading(true)
 
     try {
-      // Create appointment
-      const { data, error } = await supabase
-        .from('appointments')
-        .insert([
-          {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            appointment_date: selectedDate,
-            appointment_time: selectedTime,
-            reason: formData.reason,
-            client_notes: formData.notes,
-            status: 'confirmed'
-          }
-        ])
-        .select()
+      // Utiliser l'API sécurisée au lieu de l'insertion directe Supabase
+      const response = await fetch('/api/appointments/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          reason: formData.reason,
+          notes: formData.notes,
+          appointment_date: selectedDate,
+          appointment_time: selectedTime,
+          honeypot: honeypot // Champ piège pour détecter les bots
+        }),
+      })
 
-      if (error) throw error
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de la création du rendez-vous')
+      }
+
+      const appointment = result.appointment
 
       // Send confirmation emails automatically
       try {
@@ -72,7 +191,9 @@ export default function RendezVous() {
             phone: formData.phone,
             appointment_date: selectedDate,
             appointment_time: selectedTime,
-            reason: formData.reason
+            reason: formData.reason,
+            appointment_id: appointment?.id,
+            created_at: appointment?.created_at
           }),
         })
 
@@ -81,14 +202,15 @@ export default function RendezVous() {
         }
       } catch (emailError) {
         console.warn('Email sending error:', emailError)
-        // Continue anyway - appointment is created
       }
 
       setSuccess(true)
       setStep(3)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating appointment:', error)
-      alert('Erreur lors de la prise de rendez-vous. Veuillez réessayer.')
+      const errorMessage = error?.message || 'Une erreur est survenue. Veuillez réessayer.'
+      setErrors({ general: errorMessage })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } finally {
       setLoading(false)
     }
@@ -207,6 +329,51 @@ export default function RendezVous() {
                   </div>
                 </div>
 
+                {/* Error Messages */}
+                {errors.general && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-sm font-medium text-red-800">{errors.general}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Existing Appointment Warning */}
+                {existingAppointment && (
+                  <div className="mb-4 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-orange-900 mb-1">
+                          ⚠️ Rendez-vous existant détecté
+                        </h3>
+                        <p className="text-sm text-orange-800 mb-2">
+                          Vous avez déjà un rendez-vous prévu le <strong>{existingAppointment.date}</strong> à <strong>{existingAppointment.time}</strong>.
+                        </p>
+                        <p className="text-sm text-orange-800 mb-3">
+                          Veuillez annuler ce rendez-vous avant d'en prendre un nouveau. Vous avez reçu un email de confirmation avec un bouton d'annulation.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <a 
+                            href="tel:0765565379" 
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-lg hover:bg-orange-700 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            Appeler le 07 65 56 53 79
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -220,9 +387,14 @@ export default function RendezVous() {
                         required
                         value={formData.firstName}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm"
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm ${
+                          errors.firstName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                         placeholder="Votre prénom"
                       />
+                      {errors.firstName && (
+                        <p className="text-xs text-red-600 mt-1">{errors.firstName}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -236,9 +408,14 @@ export default function RendezVous() {
                         required
                         value={formData.lastName}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm"
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm ${
+                          errors.lastName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                         placeholder="Votre nom"
                       />
+                      {errors.lastName && (
+                        <p className="text-xs text-red-600 mt-1">{errors.lastName}</p>
+                      )}
                     </div>
                   </div>
 
@@ -254,9 +431,14 @@ export default function RendezVous() {
                         required
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm"
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm ${
+                          errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                         placeholder="votre@email.com"
                       />
+                      {errors.email && (
+                        <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -270,9 +452,14 @@ export default function RendezVous() {
                         required
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm"
-                        placeholder="06 ** ** ** **"
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm ${
+                          errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                        placeholder="06 12 34 56 78"
                       />
+                      {errors.phone && (
+                        <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
+                      )}
                     </div>
                   </div>
 
@@ -286,13 +473,18 @@ export default function RendezVous() {
                       required
                       value={formData.reason}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-sm ${
+                        errors.reason ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
                     >
                       <option value="">Sélectionnez un motif</option>
                       <option value="invalidation">Invalidation du permis</option>
                       <option value="suspension">Suspension du permis</option>
                       <option value="annulation">Annulation du permis</option>
                     </select>
+                    {errors.reason && (
+                      <p className="text-xs text-red-600 mt-1">{errors.reason}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -305,10 +497,22 @@ export default function RendezVous() {
                       rows={3}
                       value={formData.notes}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white resize-none text-sm"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white resize-none text-sm ${
+                        errors.notes ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
                       placeholder="Informations complémentaires, questions particulières..."
                     />
+                    {errors.notes && (
+                      <p className="text-xs text-red-600 mt-1">{errors.notes}</p>
+                    )}
                   </div>
+
+                  {/* 🍯 Honeypot - Champ invisible pour détecter les bots */}
+                  <HoneypotField 
+                    name="website"
+                    value={honeypot}
+                    onChange={setHoneypot}
+                  />
 
                   <div className="flex flex-col sm:flex-row gap-3 pt-4">
                     <button
@@ -324,8 +528,8 @@ export default function RendezVous() {
 
                     <button
                       type="submit"
-                      disabled={loading}
-                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 disabled:bg-gray-400 transition-colors flex items-center justify-center gap-2"
+                      disabled={loading || !!existingAppointment}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                     >
                       {loading && (
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>

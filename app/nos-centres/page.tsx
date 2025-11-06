@@ -10,7 +10,6 @@ export default function NosCentres() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pt-24">
       <div className="container mx-auto px-4 py-12">
-        {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
             Nos Centres Agréés
@@ -21,10 +20,8 @@ export default function NosCentres() {
           </p>
         </div>
 
-        {/* Centres Showcase */}
         <CentersShowcase variant="full" showBookingButton={true} />
 
-        {/* Informations supplémentaires */}
         <div className="mt-16 grid md:grid-cols-3 gap-8">
           <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

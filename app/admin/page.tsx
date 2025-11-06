@@ -13,11 +13,9 @@ export default function AdminLogin() {
   const [rememberMe, setRememberMe] = useState(false)
   const [savePassword, setSavePassword] = useState(false)
 
-  // Récupérer la liste des admins et les préférences sauvegardées au chargement
   useEffect(() => {
     fetchAvailableAdmins()
 
-    // Charger les identifiants sauvegardés
     const savedEmail = localStorage.getItem('admin_saved_email')
     const savedPassword = localStorage.getItem('admin_saved_password')
     const wasRemembered = localStorage.getItem('admin_remember_me') === 'true'
@@ -74,10 +72,8 @@ export default function AdminLogin() {
         throw new Error(data.error || 'Erreur de connexion')
       }
 
-      // Stocker la session admin
       localStorage.setItem('admin_session', JSON.stringify(data.admin))
 
-      // Sauvegarder les préférences de connexion
       if (rememberMe) {
         localStorage.setItem('admin_remember_me', 'true')
         localStorage.setItem('admin_session_timestamp', Date.now().toString())
@@ -94,7 +90,6 @@ export default function AdminLogin() {
         localStorage.removeItem('admin_saved_password')
       }
 
-      // Rediriger vers le dashboard
       window.location.href = '/admin/dashboard'
 
     } catch (err: any) {
@@ -106,14 +101,12 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 sm:w-80 sm:h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
       <div className="w-full max-w-md mx-auto relative z-10">
-        {/* Header */}
         <div className="text-center mb-6 sm:mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl sm:rounded-3xl shadow-2xl mb-4 sm:mb-6 transform hover:scale-110 transition-transform duration-300">
             <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,7 +121,6 @@ export default function AdminLogin() {
           </p>
         </div>
 
-        {/* Login Form */}
         <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-8">
           <form onSubmit={handleLogin} className="space-y-4 sm:space-y-6">
             {error && (

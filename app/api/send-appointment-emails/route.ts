@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendAppointmentConfirmation, sendAppointmentNotificationToAdmin } from '../../../lib/emailService'
 import { isValidEmail, isValidPhone, isValidName, sanitizeString } from '../../../lib/validation'
+import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,6 +27,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid name format', appointmentData }, { status: 400, })
     }
 
+    // Générer le token de confirmation pour l'annulation
+    const confirmationToken = crypto
+      .createHash('sha256')
+      .update(`${appointmentData.appointment_id}-${appointmentData.email}`)
+      .digest('hex')
+
     // Sanitize all string inputs
     const sanitizedData = {
       first_name: sanitizeString(appointmentData.first_name),
@@ -36,6 +43,7 @@ export async function POST(request: NextRequest) {
       appointment_time: appointmentData.appointment_time,
       reason: appointmentData.reason ? sanitizeString(appointmentData.reason) : '',
       appointment_id: appointmentData.appointment_id,
+      confirmation_token: confirmationToken,
       created_at: appointmentData.created_at,
       center_name: appointmentData.center_name ? sanitizeString(appointmentData.center_name) : 'Centre de Clichy',
       center_address: appointmentData.center_address ? sanitizeString(appointmentData.center_address) : '82 Rue Henri Barbusse',

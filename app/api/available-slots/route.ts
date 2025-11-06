@@ -12,6 +12,13 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate')
     const centerId = searchParams.get('centerId')
 
+    console.log('🔍 [API] Requête available-slots:', {
+      startDate,
+      endDate,
+      centerId,
+      hasCenterId: !!centerId
+    })
+
     if (!startDate || !endDate) {
       return NextResponse.json({ error: 'Start date and end date are required' }, { status: 400 })
     }
@@ -26,7 +33,10 @@ export async function GET(request: NextRequest) {
 
     // Filter by center if centerId is provided
     if (centerId) {
+      console.log('✅ [API] Filtrage par centre:', centerId)
       query = query.eq('center_id', centerId)
+    } else {
+      console.log('⚠️ [API] Aucun filtre de centre appliqué - TOUS les créneaux seront retournés')
     }
 
     const { data: slots, error: slotsError } = await query
@@ -35,6 +45,15 @@ export async function GET(request: NextRequest) {
 
     if (slotsError) {
       return NextResponse.json({ error: slotsError.message }, { status: 500 })
+    }
+
+    console.log(`📊 [API] ${slots?.length || 0} créneaux trouvés avant filtrage appointments`)
+    if (slots && slots.length > 0) {
+      console.log('📋 [API] Exemples de créneaux:', slots.slice(0, 3).map(s => ({
+        date: s.date,
+        time: s.start_time,
+        center_id: s.center_id
+      })))
     }
 
     // Get existing appointments to check which slots are already booked

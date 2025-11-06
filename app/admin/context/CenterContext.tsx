@@ -18,7 +18,6 @@ export function CenterProvider({ children }: { children: ReactNode }) {
   const [selectedCenterId, setSelectedCenterId] = useState<string | null>(null)
   const [loadingCenters, setLoadingCenters] = useState(true)
 
-  // Charger les centres au montage
   useEffect(() => {
     const fetchCenters = async () => {
       try {
@@ -31,7 +30,6 @@ export function CenterProvider({ children }: { children: ReactNode }) {
         if (error) throw error
         setCenters(data || [])
         
-        // Récupérer le centre sauvegardé ou sélectionner le premier
         const savedCenterId = localStorage.getItem('admin_selected_center_id')
         if (savedCenterId && data?.find(c => c.id === savedCenterId)) {
           setSelectedCenterId(savedCenterId)
@@ -47,7 +45,6 @@ export function CenterProvider({ children }: { children: ReactNode }) {
     fetchCenters()
   }, [])
 
-  // Sauvegarder le centre sélectionné dans localStorage
   useEffect(() => {
     if (selectedCenterId) {
       localStorage.setItem('admin_selected_center_id', selectedCenterId)

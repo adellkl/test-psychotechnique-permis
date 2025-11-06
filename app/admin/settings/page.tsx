@@ -26,7 +26,7 @@ function AdminSettingsContent() {
         ...prev,
         fullName: adminData.full_name || '',
         email: adminData.email || '',
-        phone: '' // Le téléphone sera chargé via l'API si nécessaire
+        phone: ''
       }))
     }
   }, [adminData])

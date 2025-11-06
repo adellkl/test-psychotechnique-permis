@@ -23,7 +23,6 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all')
 
   useEffect(() => {
-    // Vérifier l'authentification
     const session = localStorage.getItem('admin_session')
     if (!session) {
       router.push('/admin')

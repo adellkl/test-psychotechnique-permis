@@ -68,7 +68,6 @@ export async function DELETE(request: NextRequest) {
 
     const idsToDelete = appointmentsToDelete.map(apt => apt.id)
 
-    // Récupérer les dates et heures des rendez-vous pour libérer les créneaux
     const slotsToFree = appointmentsToDelete.map(apt => ({
       date: apt.appointment_date,
       time: apt.appointment_time
@@ -84,8 +83,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: deleteError.message }, { status: 500 })
     }
 
-    // Libérer UNIQUEMENT les créneaux des rendez-vous annulés (cancelled)
-    // Les rendez-vous terminés (completed) ne libèrent pas leur créneau
+   
     const cancelledSlots = appointmentsToDelete
       .filter(apt => apt.status === 'cancelled')
       .map(apt => ({ date: apt.appointment_date, time: apt.appointment_time }))

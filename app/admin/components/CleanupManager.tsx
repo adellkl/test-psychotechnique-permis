@@ -81,7 +81,6 @@ export default function CleanupManager() {
       setSelectedAppointments(new Set())
       setSelectAll(false)
       
-      // Refresh the page after successful cleanup
       setTimeout(() => {
         window.location.reload()
       }, 2000)
@@ -119,7 +118,6 @@ export default function CleanupManager() {
       setSelectedAppointments(new Set())
       setSelectAll(false)
       
-      // Refresh the page after successful cleanup
       setTimeout(() => {
         window.location.reload()
       }, 2000)
@@ -147,7 +145,6 @@ export default function CleanupManager() {
     }
     setSelectedAppointments(newSelected)
     
-    // Update select all state
     if (preview) {
       setSelectAll(newSelected.size === preview.appointments.length)
     }

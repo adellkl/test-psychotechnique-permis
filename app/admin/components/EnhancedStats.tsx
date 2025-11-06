@@ -70,7 +70,7 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {/* Total Rendez-vous */}
+
       <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
         <div className="flex items-center justify-between mb-4">
           <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -99,7 +99,7 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
         </div>
       </div>
 
-      {/* Confirmés */}
+
       <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
         <div className="flex items-center justify-between mb-4">
           <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -124,7 +124,7 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
         </div>
       </div>
 
-      {/* Terminés */}
+
       <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
         <div className="flex items-center justify-between mb-4">
           <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -141,7 +141,7 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
           <span className="text-white/80">Taux de complétion:</span>
           <div className="flex items-center gap-2">
             <div className="w-20 h-2 bg-white/20 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-white rounded-full transition-all duration-500"
                 style={{ width: `${stats.completionRate}%` }}
               />
@@ -151,7 +151,7 @@ export default function EnhancedStats({ appointments }: EnhancedStatsProps) {
         </div>
       </div>
 
-      {/* Annulés */}
+
       <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
         <div className="flex items-center justify-between mb-4">
           <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">

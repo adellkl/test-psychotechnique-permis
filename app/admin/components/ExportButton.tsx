@@ -8,7 +8,6 @@ interface ExportButtonProps {
 
 export default function ExportButton({ appointments }: ExportButtonProps) {
   const exportToCSV = () => {
-    // Headers CSV
     const headers = [
       'Date RDV',
       'Heure',
@@ -22,7 +21,6 @@ export default function ExportButton({ appointments }: ExportButtonProps) {
       'Date de création'
     ]
 
-    // Convertir les données en lignes CSV
     const rows = appointments.map(apt => [
       apt.appointment_date,
       apt.appointment_time,
@@ -36,17 +34,14 @@ export default function ExportButton({ appointments }: ExportButtonProps) {
       new Date(apt.created_at).toLocaleString('fr-FR')
     ])
 
-    // Créer le contenu CSV
     const csvContent = [
       headers.join(';'),
       ...rows.map(row => row.map(cell => `"${cell}"`).join(';'))
     ].join('\n')
 
-    // Ajouter BOM pour UTF-8 (Excel)
     const BOM = '\uFEFF'
     const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
     
-    // Créer le lien de téléchargement
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
     const date = new Date().toISOString().split('T')[0]

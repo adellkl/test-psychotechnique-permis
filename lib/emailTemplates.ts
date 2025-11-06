@@ -1,7 +1,7 @@
 export const defaultEmailTemplates = [
     {
         template_name: 'appointment_confirmation_client',
-        subject: 'Confirmation de rendez-vous - Test Psychotechnique',
+        subject: 'Confirmation du rendez-vous - Test Psychotechnique & Plan d\'accès au centre {{location}}',
         html_content: `
 <!DOCTYPE html>
 <html lang="fr">
@@ -72,6 +72,14 @@ export const defaultEmailTemplates = [
                 font-size: 13px !important;
                 margin-bottom: 8px !important;
             }
+            /* Styles responsive pour access details */
+            .access-code-text {
+                font-size: 24px !important;
+                letter-spacing: 2px !important;
+            }
+            .access-instruction-icon {
+                font-size: 16px !important;
+            }
         }
         
         /* Styles pour Outlook */
@@ -96,6 +104,74 @@ export const defaultEmailTemplates = [
             text-decoration: none;
             -ms-interpolation-mode: bicubic;
         }
+        
+        /* Styles pour les détails d'accès */
+        .access-container {
+            background-color: #f0f9ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .access-title {
+            margin: 0 0 15px 0;
+            color: #1e40af;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        
+        .access-address-box {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .access-instructions-box {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .access-instruction-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .access-instruction-row:last-child {
+            border-bottom: none;
+        }
+        
+        .access-code-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .access-code-label {
+            margin: 0 0 8px 0;
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .access-code-text {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            letter-spacing: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            text-shadow: 1px 1px 2px rgba(30, 64, 175, 0.1);
+        }
     </style>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
@@ -119,6 +195,13 @@ export const defaultEmailTemplates = [
                     <!-- Contenu principal -->
                     <tr>
                         <td class="mobile-padding" style="padding: 40px 30px;">
+                            <!-- Message important en haut -->
+                            <div style="background-color: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 15px; margin-bottom: 25px;">
+                                <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6; text-align: center;">
+                                    <strong>Important :</strong> En cas d'empêchement, merci de nous en informer 48h avant, au <a href="tel:0765565379" style="color: #2563eb; text-decoration: none; font-weight: 700;">07 65 56 53 79</a> afin de ne pas bloquer le créneau à d'autres candidats. Merci de votre compréhension.
+                                </p>
+                            </div>
+                            
                             <h2 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #1f2937; font-size: 22px; font-weight: 600; line-height: 1.3;">
                                 Bonjour {{first_name}} {{last_name}},
                             </h2>
@@ -175,6 +258,9 @@ export const defaultEmailTemplates = [
                                             </tr>
                                         </table>
                                         
+                                        <!-- Plan d'accès détaillé (dynamique selon le centre) -->
+                                        {{access_details}}
+                                        
                                         
                                         <!-- Sous-section: À prévoir -->
                                         <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 700; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
@@ -182,18 +268,11 @@ export const defaultEmailTemplates = [
                                         </h3>
                                         <ul class="mobile-font-small" style="margin: 0 0 20px 0; padding-left: 20px; color: #374151; font-size: 14px; line-height: 1.8;">
                                             <li style="margin-bottom: 6px;">Arrivez <strong>15 minutes avant</strong></li>
-                                            <li style="margin-bottom: 6px;"><strong>Pièce d'identité valide</strong> obligatoire</li>
+                                            <li style="margin-bottom: 6px;"><strong>Pièce d'identité valide</strong></li>
                                             <li style="margin-bottom: 6px;">Lunettes ou lentilles si nécessaire</li>
-                                            <li style="margin-bottom: 6px;"><strong>Paiement en espèces</strong></li>
-                                            <li>Durée : 40 minutes</li>
+                                            <li style="margin-bottom: 6px;"><strong>Paiement en espèces & chèques</strong></li>
                                         </ul>
                                         
-                                        <!-- Message important annulation -->
-                                        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                                            <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
-                                                <strong>Important :</strong> Si vous ne pouvez pas être présent(e), merci de nous prévenir à l'avance ou d'annuler votre rendez-vous via le bouton ci-dessous. Cela permettra de libérer le créneau pour d'autres personnes. Merci de votre compréhension.
-                                            </p>
-                                        </div>
                                         
                                         <!-- Sous-section: Contact -->
                                         <h3 style="margin: 0 0 12px 0; color: #1f2937; font-size: 16px; font-weight: 700; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
@@ -217,22 +296,15 @@ export const defaultEmailTemplates = [
                                 </tr>
                             </table>
                             
-                            <!-- Bouton annulation -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
-                                <tr>
-                                    <td align="center" style="padding: 10px 0;">
-                                        <h3 class="mobile-font-medium" style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
-                                            Besoin d'annuler votre rendez-vous ?
-                                        </h3>
-                                        <p class="mobile-font-small" style="margin: 0 0 20px 0; color: #4b5563; font-size: 14px; line-height: 1.6;">
-                                            Votre rendez-vous est <strong style="color: #059669;">confirmé</strong>. Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant sur le bouton ci-dessous.
-                                        </p>
-                                        <a href="{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}" class="mobile-button" style="display: inline-block; padding: 14px 32px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
-                                            Annuler mon rendez-vous
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
+                            <!-- Message annulation -->
+                            <div style="background-color: #fef2f2; border: 2px solid #ef4444; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                                <h3 class="mobile-font-medium" style="margin: 0 0 15px 0; color: #991b1b; font-size: 18px; font-weight: 700;">
+                                    Besoin d'annuler votre rendez-vous ?
+                                </h3>
+                                <p class="mobile-font-small" style="margin: 0; color: #7f1d1d; font-size: 15px; line-height: 1.6;">
+                                    Si vous souhaitez annuler votre rendez-vous, merci de contacter le centre <strong>48 heures avant</strong> au <a href="tel:0765565379" style="color: #2563eb; text-decoration: none; font-weight: 700;">07 65 56 53 79</a>
+                                </p>
+                            </div>
                         </td>
                     </tr>
                     
@@ -259,6 +331,10 @@ export const defaultEmailTemplates = [
 RENDEZ-VOUS CONFIRMÉ
 Test Psychotechnique du Permis de Conduire
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPORTANT : En cas d'empêchement, merci de nous en informer 48h avant, au 07 65 56 53 79 afin de ne pas bloquer le créneau à d'autres candidats. Merci de votre compréhension.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Bonjour {{first_name}} {{last_name}},
 
 Nous avons le plaisir de confirmer votre rendez-vous pour le test psychotechnique.
@@ -274,10 +350,9 @@ Tarif : 90€
 INFORMATIONS IMPORTANTES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 • Arrivez 15 minutes avant l'heure de votre rendez-vous
-• Pièce d'identité valide obligatoire (CNI, passeport ou titre de séjour)
+• Pièce d'identité valide (CNI, passeport ou titre de séjour)
 • Lunettes ou lentilles si vous en portez habituellement
-• Paiement en espèces
-• Durée du test : 40 minutes
+• Paiement en espèces & chèques
 
 ACCÈS ET CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -289,9 +364,7 @@ Site web : {{website}}
 
 BESOIN D'ANNULER ?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Votre rendez-vous est CONFIRMÉ.
-Si vous ne pouvez pas vous présenter, merci de l'annuler en cliquant ici :
-{{website}}/api/appointments/cancel?id={{appointment_id}}&token={{confirmation_token}}
+Si vous souhaitez annuler votre rendez-vous, merci de contacter le centre 48 heures avant au 07 65 56 53 79
 
 Merci de votre confiance.
 L'équipe Test Psychotechnique Permis
@@ -486,7 +559,7 @@ Centre Agréé
 
     {
         template_name: 'appointment_cancellation_client',
-        subject: 'Annulation de votre rendez-vous - Test Psychotechnique',
+        subject: 'Annulation de votre rendez-vous - Test Psychotechnique au centre {{location}}',
         html_content: `
 <!DOCTYPE html>
 <html lang="fr">
@@ -517,6 +590,29 @@ Centre Agréé
                 font-size: 18px !important;
             }
         }
+        
+        /* Styles pour Outlook */
+        body {
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
     </style>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
@@ -543,7 +639,7 @@ Centre Agréé
                             </h2>
                             
                             <p style="margin: 0 0 30px 0; color: #4b5563; font-size: 16px; line-height: 1.6;">
-                                Nous vous informons que votre rendez-vous a été annulé.
+                                Votre rendez-vous pour le test psychotechnique a bien été annulé.
                             </p>
                             
                             <!-- Section Informations -->
@@ -556,16 +652,20 @@ Centre Agréé
                                         
                                         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
                                             <tr>
-                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">Date</td>
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0; width: 40%;">📅 Date</td>
                                                 <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{appointment_date}}</td>
                                             </tr>
                                             <tr style="border-top: 1px solid #fca5a5;">
-                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">Heure</td>
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">🕐 Heure</td>
                                                 <td style="color: #1f2937; font-size: 16px; font-weight: 700; padding: 8px 0; text-align: right;">{{appointment_time}}</td>
                                             </tr>
                                             <tr style="border-top: 1px solid #fca5a5;">
-                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">Raison</td>
-                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{reason}}</td>
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">📍 Centre</td>
+                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right;">{{location}}</td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #fca5a5;">
+                                                <td style="color: #7f1d1d; font-weight: 600; font-size: 14px; padding: 8px 0;">📫 Adresse</td>
+                                                <td style="color: #1f2937; font-size: 14px; padding: 8px 0; text-align: right; line-height: 1.4;">{{address}}</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -573,12 +673,12 @@ Centre Agréé
                             </table>
                             
                             <!-- Reprendre rendez-vous -->
-                            <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+                            <div style="background-color: #dbeafe; border: 2px solid #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: center;">
                                 <h3 style="margin: 0 0 10px 0; color: #1e40af; font-size: 18px; font-weight: 700;">
-                                    Reprendre rendez-vous
+                                    📅 Besoin de reprendre rendez-vous ?
                                 </h3>
-                                <p style="margin: 0; color: #1e40af; font-size: 14px; line-height: 1.6;">
-                                    Vous pouvez reprendre un nouveau rendez-vous à tout moment sur notre site web ou en nous contactant directement.
+                                <p style="margin: 0 0 15px 0; color: #1e3a8a; font-size: 14px; line-height: 1.6;">
+                                    Réservez un nouveau créneau en ligne ou contactez-nous par téléphone.
                                 </p>
                             </div>
                             
@@ -593,18 +693,12 @@ Centre Agréé
                                 </tr>
                             </table>
                             
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-                                <tr>
-                                    <td class="mobile-table-cell" style="color: #374151; font-weight: 600; font-size: 14px; padding: 8px 0;">Téléphone</td>
-                                    <td class="mobile-table-cell mobile-stack-right" style="padding: 8px 0; text-align: right;">
-                                        <a href="tel:{{contact_phone}}" style="color: #2563eb; text-decoration: none; font-weight: 600; font-size: 14px;">{{contact_phone}}</a>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <p style="margin: 20px 0 0 0; color: #6b7280; font-size: 14px; text-align: center; line-height: 1.6;">
-                                Nous nous excusons pour la gêne occasionnée.
-                            </p>
+                            <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-top: 20px; text-align: center;">
+                                <p style="margin: 0 0 10px 0; color: #374151; font-size: 14px; font-weight: 600;">📞 Besoin d'aide ?</p>
+                                <p style="margin: 0;">
+                                    <a href="tel:{{contact_phone}}" style="color: #2563eb; text-decoration: none; font-weight: 700; font-size: 16px;">{{contact_phone}}</a>
+                                </p>
+                            </div>
                         </td>
                     </tr>
                     
@@ -612,11 +706,11 @@ Centre Agréé
                     <tr>
                         <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
                             <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 15px;">
-                                À bientôt.
+                                Nous restons à votre disposition.
                             </p>
                             <p style="margin: 0; color: #9ca3af; font-size: 14px;">
                                 <strong>Test Psychotechnique Permis</strong><br>
-                                Centre Agréé 
+                                Clichy & Colombes - Hauts-de-Seine
                             </p>
                         </td>
                     </tr>
@@ -633,26 +727,32 @@ Test Psychotechnique du Permis de Conduire
 
 Bonjour {{first_name}} {{last_name}},
 
-Nous vous informons que votre rendez-vous a été annulé.
+Votre rendez-vous pour le test psychotechnique a bien été annulé.
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RENDEZ-VOUS ANNULÉ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Date : {{appointment_date}}
-Heure : {{appointment_time}}
-Raison : {{reason}}
 
+📅 Date : {{appointment_date}}
+🕐 Heure : {{appointment_time}}
+📍 Centre : {{location}}
+📫 Adresse : {{address}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 REPRENDRE RENDEZ-VOUS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Vous pouvez reprendre un nouveau rendez-vous à tout moment sur notre site web ou en nous contactant directement.
 
-Site web : {{website}}/prendre-rendez-vous
-Téléphone : {{contact_phone}}
+Réservez un nouveau créneau en ligne ou contactez-nous par téléphone.
 
-Nous nous excusons pour la gêne occasionnée.
+🌐 Site web : {{website}}/prendre-rendez-vous
+📞 Téléphone : {{contact_phone}}
 
-À bientôt.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Nous restons à votre disposition.
+
 L'équipe Test Psychotechnique Permis
-Centre Agréé 
+Clichy & Colombes - Hauts-de-Seine
 `
   },
 
