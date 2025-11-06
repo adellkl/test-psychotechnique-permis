@@ -141,7 +141,20 @@ comparaison-emails.html
 # Scripts de mise à jour temporaires
 update-templates.mjs
 supabase-update-templates.txt
+update-template-supabase.txt
+sync-email-templates.js
 
 # Fichiers de build temporaires
 build-output.txt
 optimize-code.sh
+
+# Fichiers de backup et scripts temporaires
+backup-*.txt
+check-slots-issue.js
+clean-git-repo.sh
+finalize-merge.sh
+resolve-all-conflicts.sh
+fix-env.sh
+
+# Configuration IDE locale
+.vscode/
