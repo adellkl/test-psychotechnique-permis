@@ -3,8 +3,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Test Psychotechnique Suspension Permis - Alcool Vitesse Stupéfiants | Clichy 92",
-  description: "Test psychotechnique obligatoire après suspension permis pour alcool, excès vitesse, stupéfiants. Centre agréé préfecture Clichy. Psychologue ADELI certifiée. Récupération permis suspendu. RDV 07 65 56 53 79.",
+  title: "Test Psychotechnique Suspension Permis - Alcool Vitesse Stupéfiants | Clichy & Colombes",
+  description: "Test après suspension (alcool, vitesse, stupéfiants). Centres Clichy & Colombes 92. Psychologue ADELI. 2e chance gratuite. Récupération permis. RDV 07 65 56 53 79.",
   keywords: "test psychotechnique suspension permis, permis suspendu, suspension alcool, suspension vitesse, suspension stupéfiants, récupération permis suspendu, centre agréé préfecture, Clichy 92, psychologue ADELI, test aptitude conduite, suspension 6 mois, Hauts-de-Seine, visite médicale permis, Île-de-France, Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95, Boulogne-Billancourt, Nanterre, Versailles, Évry, Bobigny, Créteil, Cergy, test psychotechnique suspension permis Île-de-France",
   openGraph: {
     title: "Test Psychotechnique Suspension Permis - Alcool Vitesse Stupéfiants | Clichy",

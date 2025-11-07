@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Agrément Préfectoral - Test Psychotechnique Permis Clichy",
-  description: "Consultez l'agrément préfectoral officiel de SEBTI Fatiha, centre agréé pour les tests psychotechniques. Récépissé 2023, numéro ADELI 929334555.",
+  title: "Agrément Préfectoral - Centres Test Psychotechnique Clichy & Colombes 92",
+  description: "Agrément préfectoral officiel SEBTI Fatiha. Centres agréés Clichy & Colombes. Psychologue ADELI 929334555. Récépissé 2023. RDV 07 65 56 53 79. Hauts-de-Seine 92.",
   keywords: "agrément préfectoral, SEBTI Fatiha, centre agréé, test psychotechnique, ADELI 929334555, récépissé 2023, Clichy",
   openGraph: {
     title: "Agrément Préfectoral - Test Psychotechnique Permis Clichy",

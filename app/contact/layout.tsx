@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Nous Contacter - Test Psychotechnique Permis Clichy | 07 65 56 53 79",
-  description: "Contactez notre centre agréé à Clichy pour toute question sur le test psychotechnique du permis. Téléphone : 07 65 56 53 79. Réponse rapide par téléphone ou email. Ouvert du lundi au samedi de 8h - 20h.",
+  title: "Nous Contacter - Test Psychotechnique Permis Clichy & Colombes | 07 65 56 53 79",
+  description: "Contactez nos centres Clichy & Colombes 92. Téléphone : 07 65 56 53 79. Email : contact@test-psychotechnique-permis.com. Réponse rapide. Lundi-samedi 8h-20h.",
   keywords: "contact test psychotechnique, téléphone centre Clichy, contacter psychologue permis, rendez-vous test psychotechnique, adresse centre agréé, horaires test psychotechnique",
   openGraph: {
     title: "Nous Contacter - Test Psychotechnique Permis Clichy",

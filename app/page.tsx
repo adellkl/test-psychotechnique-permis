@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: "Test Psychotechnique Permis - Centres Agréés Clichy & Colombes 92 | Récupération Permis",
-  description: "2 centres agréés préfecture pour tests psychotechniques : Clichy (métro ligne 13) et Colombes. Invalidation, suspension, annulation permis. Psychologue ADELI certifiée. Deuxième chance gratuite. RDV rapide 07 65 56 53 79. Hauts-de-Seine 92.",
+  description: "Tests psychotechniques à Clichy (82 Rue Henri Barbusse) et Colombes (14 Rue de Mantes). 2e chance gratuite. Psychologue ADELI. RDV 07 65 56 53 79. Hauts-de-Seine 92.",
   keywords: "test psychotechnique permis, centre agréé préfecture, test psychotechnique Clichy, test psychotechnique Colombes, Centre 2e Chance, invalidation permis, suspension permis, annulation permis, psychologue ADELI, récupération permis conduire, permis invalidé, métro ligne 13, Hauts-de-Seine 92, 92110 Clichy, 92700 Colombes, test psychotechnique 92, centre agréé Hauts-de-Seine, psychologue permis conduire, Île-de-France, proche Paris",
   openGraph: {
     title: "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes (92)",

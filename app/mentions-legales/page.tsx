@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Mentions Légales & Protection des Données - Test Psychotechnique Permis Clichy",
-  description: "Mentions légales et politique de confidentialité du centre Test Psychotechnique Permis. SEBTI Fatiha, centre agréé préfecture Clichy. RGPD, protection données personnelles.",
+  title: "Mentions Légales & RGPD - Test Psychotechnique Permis Clichy & Colombes",
+  description: "Mentions légales, RGPD & confidentialité. SEBTI Fatiha centres Clichy & Colombes 92. Protection données personnelles. ADELI 929334555. Contact 07 65 56 53 79.",
   keywords: "mentions légales, protection données, RGPD, test psychotechnique permis, SEBTI Fatiha, centre agréé, Clichy, ADELI 929334555, confidentialité",
   openGraph: {
     title: "Mentions Légales & Protection des Données - Test Psychotechnique Permis",

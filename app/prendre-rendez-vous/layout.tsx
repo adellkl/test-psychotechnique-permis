@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Prendre Rendez-vous Test Psychotechnique Permis | Réservation en Ligne Clichy",
-  description: "Réservez votre test psychotechnique permis en ligne à Clichy. Centre agréé préfecture. Disponibilités immédiates. Psychologue certifiée ADELI. Prise de rendez-vous rapide et sécurisée pour invalidation, suspension ou annulation de permis.",
+  title: "Prendre Rendez-vous Test Psychotechnique Permis | Réservation Clichy & Colombes",
+  description: "Réservation en ligne Clichy & Colombes 92. Disponibilités immédiates. Psychologue ADELI. 2e chance gratuite. Invalidation/suspension/annulation permis.",
   keywords: "prendre rendez-vous test psychotechnique, réservation test psychotechnique permis, rendez-vous permis Clichy, réserver test psychotechnique en ligne, centre agréé Clichy, psychologue permis conduire, rdv test psychotechnique",
   openGraph: {
     title: "Prendre Rendez-vous Test Psychotechnique Permis - Centre Agréé tout départements",

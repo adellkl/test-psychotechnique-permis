@@ -2,8 +2,8 @@ import CentersShowcase from '../components/CentersShowcase'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Nos Centres | Test Psychotechnique Permis',
-  description: 'Découvrez nos deux centres agréés pour votre test psychotechnique du permis de conduire à Clichy et Colombes.',
+  title: 'Nos Centres Agréés Clichy & Colombes | Test Psychotechnique Permis 92',
+  description: 'Centres à Clichy 92110 (82 Rue Henri Barbusse, métro ligne 13) et Colombes 92700 (14 Rue de Mantes). Psychologue ADELI. 2e chance gratuite. RDV 07 65 56 53 79.',
 }
 
 export default function NosCentres() {
