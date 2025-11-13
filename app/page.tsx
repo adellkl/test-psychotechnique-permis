@@ -7,16 +7,39 @@ import LocationSelector from './components/LocationSelector'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Test Psychotechnique Permis - Centres Agréés Clichy & Colombes 92 | Récupération Permis",
-  description: "Tests psychotechniques à Clichy (82 Rue Henri Barbusse) et Colombes (14 Rue de Mantes). 2e chance gratuite. Psychologue ADELI. RDV 07 65 56 53 79. Hauts-de-Seine 92.",
-  keywords: "test psychotechnique permis, centre agréé préfecture, test psychotechnique Clichy, test psychotechnique Colombes, Centre 2e Chance, invalidation permis, suspension permis, annulation permis, psychologue ADELI, récupération permis conduire, permis invalidé, métro ligne 13, Hauts-de-Seine 92, 92110 Clichy, 92700 Colombes, test psychotechnique 92, centre agréé Hauts-de-Seine, psychologue permis conduire, Île-de-France, proche Paris",
+  title: "Test Psychotechnique Permis Colombes (92) | Centre 2e Chance - Agréé Toutes Préfectures - Psychologue ADELI",
+  description: "✓ Tests psychotechniques permis de conduire à Colombes 92700 | Centre 2e Chance, 14 Rue de Mantes dans les locaux de Pro Drive Academy (à 3 min du tram T2 Charlebourg, 3 min de la gare La Garenne-Colombes ligne L, 5 min de La Défense) | Psychologue certifiée ADELI | Centre agréé toutes préfectures France | Invalidation, suspension, annulation permis | 2ème chance GRATUITE | Tarifs 80€ | Réservation en ligne 24/7 | RDV sous 48h | ☎️ 09 72 13 22 50 | Parking gratuit disponible | Accès handicapés",
+  keywords: "test psychotechnique Colombes, test psychotechnique 92700, Centre 2e Chance Colombes, 2ème chance Colombes, test psychotechnique permis Colombes, 14 Rue de Mantes Colombes, Pro Drive Academy locaux, centre agréé toutes préfectures, test psychotechnique permis de conduire, test psychotechnique 92, test psychotechnique Hauts-de-Seine, psychologue ADELI, psychologue agréé permis, invalidation permis, suspension permis, annulation permis, récupération permis conduire, permis invalidé, permis suspendu, repasser permis, tram T2 Charlebourg, gare La Garenne-Colombes ligne L, La Défense, Bois-Colombes, Asnières-sur-Seine, Gennevilliers, Nanterre, Courbevoie, Puteaux, test psychotechnique près de moi, centre agréé Hauts-de-Seine, psychologue permis conduire, examen psychotechnique permis, évaluation psychotechnique, réflexe coordination permis, visite médicale permis, Île-de-France, proche Paris, réservation en ligne test psychotechnique, RDV rapide test psychotechnique, tarif test psychotechnique, 2ème chance gratuite, centre certifié, psychologue diplômée, parking gratuit Colombes, accès handicapés",
+  authors: [{ name: "Test Psychotechnique Permis" }],
+  creator: "Test Psychotechnique Permis",
+  publisher: "Test Psychotechnique Permis",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  category: "Services automobiles",
   openGraph: {
-    title: "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes (92)",
-    description: "Centres agréés préfecture à Clichy et Colombes. Psychologue certifiée ADELI. Deuxième chance gratuite. Métro ligne 13. RDV rapide dans les Hauts-de-Seine.",
+    title: "Test Psychotechnique Permis Colombes (92) | Centre 2e Chance - Agréé Toutes Préfectures",
+    description: "✓ Centre 2e Chance à Colombes (14 Rue de Mantes, locaux Pro Drive Academy) | À 3 min du tram T2 Charlebourg, 3 min gare ligne L, 5 min La Défense | Psychologue certifiée ADELI | 2ème chance GRATUITE | Tarifs 80€ | Parking gratuit | RDV sous 48h | ☎️ 09 72 13 22 50",
     url: "https://test-psychotechnique-permis.com",
     type: "website",
     locale: "fr_FR",
     siteName: "Test Psychotechnique Permis",
+    images: [
+      {
+        url: "https://test-psychotechnique-permis.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Test Psychotechnique Permis - Centre 2e Chance Colombes",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Test Psychotechnique Permis Colombes (92) | Centre 2e Chance",
+    description: "✓ Centre agréé toutes préfectures | 14 Rue de Mantes (locaux Pro Drive Academy) | Tram T2 + Ligne L + La Défense | Parking gratuit | 2ème chance GRATUITE | ☎️ 09 72 13 22 50",
+    images: ["https://test-psychotechnique-permis.com/og-image.jpg"],
   },
   alternates: {
     canonical: "https://test-psychotechnique-permis.com",
@@ -31,6 +54,22 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  verification: {
+    google: "verification_token", // À remplacer par votre token Google Search Console
+  },
+  other: {
+    'geo.region': 'FR-92',
+    'geo.placename': 'Colombes',
+    'geo.position': '48.9228;2.2531', // Coordonnées Colombes
+    'ICBM': '48.9228, 2.2531',
+    'contact:phone': '+33972132250',
+    'contact:email': 'contact@test-psychotechnique-permis.com',
+    'business:contact_data:street_address': '14 Rue de Mantes, Centre 2e Chance (locaux Pro Drive Academy)',
+    'business:contact_data:locality': 'Colombes',
+    'business:contact_data:region': 'Île-de-France',
+    'business:contact_data:postal_code': '92700',
+    'business:contact_data:country_name': 'France',
   },
 }
 

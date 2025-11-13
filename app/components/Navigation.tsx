@@ -51,7 +51,7 @@ export default function Navigation() {
   ]
 
   return (
-    <header className={`fixed ${scrolled ? 'top-0' : 'top-12'} left-0 right-0 z-50 transition-all duration-300 ${isHomePage && !scrolled ? 'bg-transparent backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm shadow-sm'}`}>
+    <header className={`fixed ${scrolled ? 'top-0' : 'top-12'} left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-sm shadow-sm`}>
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -66,10 +66,10 @@ export default function Navigation() {
                 priority
               />
             </div>
-            <span className={`font-bold text-lg transition-colors hidden sm:block ${isHomePage && !scrolled ? 'text-white' : 'text-gray-900'}`}>
+            <span className="font-bold text-lg transition-colors hidden sm:block text-gray-900">
               Test Psychotechnique
             </span>
-            <span className={`font-bold text-base transition-colors sm:hidden ${isHomePage && !scrolled ? 'text-white' : 'text-gray-900'}`}>
+            <span className="font-bold text-base transition-colors sm:hidden text-gray-900">
               Test Psychotechnique Permis
             </span>
           </Link>
@@ -79,14 +79,11 @@ export default function Navigation() {
             <li>
               <Link
                 href="/"
-                className={`relative px-4 py-2 transition-all duration-200 font-medium text-sm ${isActive('/')
-                  ? isHomePage && !scrolled
-                    ? 'text-blue-400 font-semibold'
-                    : 'text-blue-600 font-semibold'
-                  : isHomePage && !scrolled
-                    ? 'text-white/90 hover:text-white'
+                className={`relative px-4 py-2 transition-all duration-200 font-medium text-sm ${
+                  isActive('/') 
+                    ? 'text-blue-600 font-semibold' 
                     : 'text-gray-800 hover:text-blue-600'
-                  }`}
+                }`}
               >
                 Accueil
               </Link>
@@ -94,14 +91,11 @@ export default function Navigation() {
             <li>
               <Link
                 href="/a-propos"
-                className={`relative px-4 py-2 transition-all duration-200 font-medium text-sm ${isActive('/a-propos')
-                  ? isHomePage && !scrolled
-                    ? 'text-blue-400 font-semibold'
-                    : 'text-blue-600 font-semibold'
-                  : isHomePage && !scrolled
-                    ? 'text-white/90 hover:text-white'
+                className={`relative px-4 py-2 transition-all duration-200 font-medium text-sm ${
+                  isActive('/a-propos')
+                    ? 'text-blue-600 font-semibold'
                     : 'text-gray-800 hover:text-blue-600'
-                  }`}
+                }`}
               >
                 À propos
               </Link>
@@ -113,14 +107,11 @@ export default function Navigation() {
               onMouseLeave={() => setServicesDesktopOpen(false)}
             >
               <button
-                className={`relative px-4 py-2 transition-all duration-200 flex items-center gap-1 font-medium text-sm ${(isActive('/invalidation-permis') || isActive('/suspension-permis') || isActive('/annulation-permis'))
-                  ? isHomePage && !scrolled
-                    ? 'text-blue-400 font-semibold'
-                    : 'text-blue-600 font-semibold'
-                  : isHomePage && !scrolled
-                    ? 'text-white/90 hover:text-white'
-                    : 'text-gray-700 hover:text-blue-600'
-                  }`}
+                className={`relative px-4 py-2 transition-all duration-200 flex items-center gap-1 font-medium text-sm ${
+                  (isActive('/invalidation-permis') || isActive('/suspension-permis') || isActive('/annulation-permis'))
+                    ? 'text-blue-600 font-semibold'
+                    : 'text-gray-800 hover:text-blue-600'
+                }`}
               >
                 Services
                 <svg
@@ -153,14 +144,11 @@ export default function Navigation() {
             <li>
               <Link
                 href="/contact"
-                className={`relative px-4 py-2 transition-all duration-200 font-medium text-sm ${isActive('/contact')
-                  ? isHomePage && !scrolled
-                    ? 'text-blue-400 font-semibold'
-                    : 'text-blue-600 font-semibold'
-                  : isHomePage && !scrolled
-                    ? 'text-white/90 hover:text-white'
+                className={`relative px-4 py-2 transition-all duration-200 font-medium text-sm ${
+                  isActive('/contact')
+                    ? 'text-blue-600 font-semibold'
                     : 'text-gray-800 hover:text-blue-600'
-                  }`}
+                }`}
               >
                 Contact
               </Link>
@@ -168,8 +156,7 @@ export default function Navigation() {
             <li className="ml-4">
               <Link
                 href="/prendre-rendez-vous"
-                className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors ${isHomePage && !scrolled ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
+                className="px-6 py-2.5 rounded-lg font-medium text-sm transition-colors bg-blue-600 text-white hover:bg-blue-700"
               >
                 Prendre rendez-vous
               </Link>
@@ -181,9 +168,9 @@ export default function Navigation() {
             onClick={toggleMenu}
             className="lg:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none"
           >
-            <span className={`block w-6 h-0.5 transition-all duration-300 ${isHomePage && !scrolled ? 'bg-white' : 'bg-gray-800'} ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-6 h-0.5 transition-all duration-300 ${isHomePage && !scrolled ? 'bg-white' : 'bg-gray-800'} ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-6 h-0.5 transition-all duration-300 ${isHomePage && !scrolled ? 'bg-white' : 'bg-gray-800'} ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            <span className={`block w-6 h-0.5 transition-all duration-300 bg-gray-800 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-6 h-0.5 transition-all duration-300 bg-gray-800 ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-6 h-0.5 transition-all duration-300 bg-gray-800 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </button>
         </div>
       </nav>

@@ -193,7 +193,7 @@ export default function APropos() {
                   alt="SEBTI Fatiha - Psychologue certifiée ADELI pour tests psychotechniques"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
+                  className="object-cover object-[60%_center]"
                 />
               </div>
               <div className="absolute top-4 right-4 bg-slate-800 text-white p-3 rounded-lg shadow-lg">

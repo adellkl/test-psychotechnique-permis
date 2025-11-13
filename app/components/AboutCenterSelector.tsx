@@ -181,23 +181,30 @@ export default function AboutCenterSelector() {
             </div>
           </div>
 
-          {/* Colonne image */}
+          {/* Colonne infos clés */}
           <div className="relative order-1 lg:order-2">
-            <div className="relative h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src="/images/IMG_6134.png"
-                alt={`${currentCenter.name} - Accueil professionnel`}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-                style={{ objectPosition: '75% center' }}
-                priority
-              />
-            </div>
-            <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-white p-3 sm:p-4 rounded-xl shadow-lg z-10">
-              <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-blue-600">90€</div>
-                <div className="text-xs sm:text-sm text-gray-600">Test complet</div>
+            <div className="bg-white rounded-xl border-2 border-gray-200 p-8 space-y-6">
+              
+              {/* Tarif principal */}
+              <div className="text-center pb-6 border-b border-gray-200">
+                <div className="text-5xl font-bold text-gray-900 mb-2">90€</div>
+                <div className="text-sm text-gray-600">Test complet</div>
+              </div>
+
+              {/* Informations clés */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm text-gray-700">2 centres agréés</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm text-gray-700">Psychologue ADELI certifiée</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm text-gray-700">2ème chance gratuite</span>
+                </div>
               </div>
             </div>
           </div>

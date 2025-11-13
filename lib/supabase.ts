@@ -51,6 +51,7 @@ export interface AvailableSlot {
   is_available: boolean
   isPending?: boolean
   max_appointments: number
+  center_id?: string
   created_at?: string
 }
 

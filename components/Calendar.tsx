@@ -47,17 +47,33 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
 
       const centerParam = centerId ? `&centerId=${centerId}` : ''
       const url = `/api/available-slots?startDate=${startDate}&endDate=${endDate}${centerParam}`
-      
+
       console.log('🔗 [Calendar] URL de requête:', url)
-      
+
       const response = await fetch(url)
       if (!response.ok) {
         throw new Error('Failed to fetch available slots')
       }
 
       const data = await response.json()
-      console.log(`✅ [Calendar] ${data.slots?.length || 0} créneaux reçus`)
-      setAvailableSlots(data.slots || [])
+      let slots: AvailableSlot[] = data.slots || []
+      console.log(`✅ [Calendar] ${slots.length} créneaux reçus${centerId ? ` (centre=${centerId})` : ''}`)
+
+      // Fallback: si filtre centre actif mais 0 résultat, retenter sans filtre et filtrer côté client
+      if (centerId && slots.length === 0) {
+        const fallbackUrl = `/api/available-slots?startDate=${startDate}&endDate=${endDate}`
+        console.warn('↩️ [Calendar] Aucun créneau filtré par centre. Tentative fallback sans filtre:', fallbackUrl)
+        const allResp = await fetch(fallbackUrl)
+        if (allResp.ok) {
+          const allData = await allResp.json()
+          const allSlots: AvailableSlot[] = allData.slots || []
+          const filtered = allSlots.filter(s => s.center_id === centerId)
+          console.log(`🪄 [Calendar] Fallback: ${filtered.length} créneaux trouvés côté client pour centre=${centerId}`)
+          slots = filtered
+        }
+      }
+
+      setAvailableSlots(slots)
     } catch (error) {
       console.error('Error fetching slots:', error)
       setAvailableSlots([])

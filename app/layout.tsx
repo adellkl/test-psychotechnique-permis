@@ -11,12 +11,21 @@ import ConditionalLayout from "./components/ConditionalLayout"
 export const metadata: Metadata = {
   metadataBase: new URL('https://test-psychotechnique-permis.com'),
   title: {
-    default: "Test Psychotechnique Permis - 2 Centres Agréés Clichy & Colombes 92 | Récupération Permis",
+    default: "Test Psychotechnique Permis - Centres Agréés tout départements | Récupération Permis",
     template: "%s | Test Psychotechnique Permis"
   },
-  description: "👨‍⚕️ 2 centres agréés préfecture : Clichy (métro ligne 13, psychologue ADELI, 2ème chance gratuite) et Centre 2e Chance Colombes. Contact : 📞 07 65 56 53 79 - ✉️ contact@test-psychotechnique-permis.com. Invalidation, suspension, annulation permis. RDV rapide Hauts-de-Seine 92. Service Île-de-France : Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95.",
+  description: "👨‍⚕️ 2 centres agréés tout départements : Clichy (métro ligne 13, psychologue ADELI, 2ème chance gratuite) et Centre 2e Chance Colombes. Contact : 📞 07 65 56 53 79 - ✉️ contact@test-psychotechnique-permis.com. Invalidation, suspension, annulation permis. RDV rapide Hauts-de-Seine 92. Service Île-de-France : Paris 75, Seine-et-Marne 77, Yvelines 78, Essonne 91, Seine-Saint-Denis 93, Val-de-Marne 94, Val-d'Oise 95.",
   keywords: [
     "test psychotechnique permis",
+    "test psychotechnique prefecture",
+    "test de psychotechnique",
+    "rdv test psychotechnique",
+    "centre psychotechnique permis",
+    "test suspension permis",
+    "permis de conduire test psychotechnique",
+    "faire test psychotechnique",
+    "test annulation permis",
+    "test invalidation permis",
     "test psychotechnique Clichy",
     "test psychotechnique Colombes",
     "Centre 2e Chance Colombes",
@@ -137,8 +146,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     url: "https://test-psychotechnique-permis.com",
-    siteName: "Test Psychotechnique Permis - 2 Centres Agréés Hauts-de-Seine",
-    title: "👨‍⚕️ Test Psychotechnique Permis | 2 Centres Agréés Clichy & Colombes (92)",
+    siteName: "Test Psychotechnique Permis - Centres Agréés tout départements",
+    title: "👨‍⚕️ Test Psychotechnique Permis | Centres Agréés tout départements",
     description: "2 centres agréés préfecture à Clichy et Colombes. Psychologue certifiée ADELI. Deuxième chance GRATUITE. Contact : 📞 07 65 56 53 79 - ✉️ contact@test-psychotechnique-permis.com. Invalidation, suspension, annulation permis.",
     images: [
       {
@@ -206,19 +215,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         {/* End Google Tag Manager */}
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LSRMGX06E"></script>
+        {/* Google tag (gtag.js) - GA4 + Google Ads */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-DJVMK0Z2PZ"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
+              function gtag(){dataLayer.push(arguments);} 
               gtag('js', new Date());
-              gtag('config', 'G-5LSRMGX06E');
+              // GA4 config
+              gtag('config', 'G-DJVMK0Z2PZ');
+              // Google Ads config
+              gtag('config', 'AW-441917829');
             `,
           }}
         />
-        {/* End Google Analytics */}
+        {/* End Google tag */}
         <meta name="google-site-verification" content="4pYjLHX5ai-q0_nkEDN4bvOWOAUDoV2Nubte0kHic20" />
         <link rel="canonical" href="https://test-psychotechnique-permis.com" />
         <link rel="icon" href="/favicon.ico" />

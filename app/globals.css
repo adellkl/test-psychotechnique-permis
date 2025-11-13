@@ -577,6 +577,43 @@ body {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Animation de scroll infini pour le bandeau */
+@keyframes scroll-infinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-infinite {
+  animation: scroll-infinite 30s linear infinite;
+}
+
+.animate-scroll-infinite:hover {
+  animation-play-state: paused;
+}
+
+/* Animation de scroll infini ultra-smooth avec 3 copies */
+@keyframes scroll-infinite-smooth {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% / 3));
+  }
+}
+
+.animate-scroll-infinite-smooth {
+  animation: scroll-infinite-smooth 25s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-infinite-smooth:hover {
+  animation-play-state: paused;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari et Opera */
 }

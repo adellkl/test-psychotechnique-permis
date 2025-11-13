@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
       .select('*')
       .gte('date', startDate)
       .lte('date', endDate)
-      .eq('is_available', true)
 
     // Filter by center if centerId is provided
     if (centerId) {
@@ -39,22 +38,48 @@ export async function GET(request: NextRequest) {
       console.log('⚠️ [API] Aucun filtre de centre appliqué - TOUS les créneaux seront retournés')
     }
 
-    const { data: slots, error: slotsError } = await query
-      .order('date')
-      .order('start_time')
+    let { data: slots, error: slotsError } = await query.order('date')
 
     if (slotsError) {
+      console.error('❌ [API] Erreur lors de la récupération des créneaux:', slotsError)
       return NextResponse.json({ error: slotsError.message }, { status: 500 })
     }
-
-    console.log(`📊 [API] ${slots?.length || 0} créneaux trouvés avant filtrage appointments`)
+    
+    // Filtrer manuellement les créneaux disponibles et trier
     if (slots && slots.length > 0) {
-      console.log('📋 [API] Exemples de créneaux:', slots.slice(0, 3).map(s => ({
+      // Garder seulement les créneaux disponibles (is_available = true ou null)
+      slots = slots.filter(s => s.is_available !== false)
+      
+      // Trier par start_time
+      slots = slots.sort((a, b) => {
+        const timeA = a.start_time || a.time || ''
+        const timeB = b.start_time || b.time || ''
+        return timeA.localeCompare(timeB)
+      })
+    }
+
+    console.log(`📊 [API] ${slots?.length || 0} créneaux disponibles trouvés avant filtrage appointments`)
+    
+    if (slots && slots.length > 0) {
+      console.log('📋 [API] Exemples de créneaux trouvés avec is_available=true:', slots.slice(0, 3).map(s => ({
         date: s.date,
-        time: s.start_time,
-        center_id: s.center_id
+        time: s.start_time || s.time,
+        center_id: s.center_id,
+        is_available: s.is_available
       })))
     }
+
+    // Log si aucun créneau trouvé
+    if (!slots || slots.length === 0) {
+      console.warn('⚠️ [API] Aucun créneau disponible trouvé pour les critères donnés')
+    }
+
+    // Normaliser les champs: utiliser 'time' si 'start_time' est vide
+    const normalizedSlots = (slots || []).map((s: any) => ({
+      ...s,
+      start_time: s.start_time || s.time,
+      is_available: s.is_available !== false, // traiter null/undefined comme disponible
+    }))
 
     // Get existing appointments to check which slots are already booked
     // Only confirmed and completed appointments block the slot
@@ -83,14 +108,23 @@ export async function GET(request: NextRequest) {
     )
 
     // Filter out booked slots - cancelled appointments free up the slot
-    const availableSlots = slots?.filter(slot => {
-      const slotKey = `${slot.date}_${slot.start_time}`
+    const availableSlots = normalizedSlots?.filter(slot => {
+      const time = slot.start_time || slot.time
+      if (!time) return false
+      const slotKey = `${slot.date}_${time}`
       return !bookedSlots.has(slotKey)
     }) || []
 
+    console.log(`✅ [API] ${availableSlots.length} créneaux disponibles retournés au client${centerId ? ` (centre=${centerId})` : ''}`)
+
     return NextResponse.json({ slots: availableSlots })
-  } catch (error) {
-    console.error('Error fetching available slots:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error: any) {
+    console.error('❌ [API] Erreur fatale:', error)
+    console.error('Stack:', error?.stack)
+    return NextResponse.json({ 
+      error: 'Internal server error', 
+      message: error?.message || 'Unknown error',
+      details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    }, { status: 500 })
   }
 }
