@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import ModernHero from './components/ModernHero'
+import SoberHero from './components/SoberHero'
 import FAQ from './components/FAQ'
 import CentersShowcase from './components/CentersShowcase'
 import LocationSelector from './components/LocationSelector'
@@ -76,7 +76,8 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <ModernHero />
+      <SoberHero />
+
 
       <section className="bg-gray-50 py-16 -mt-1">
         <div className="max-w-7xl mx-auto px-6">
@@ -101,6 +102,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-slide-in-left">
@@ -148,11 +150,9 @@ export default function HomePage() {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900 z-10">
-                    📍 Clichy - Ligne 13
-                  </div>
                 </div>
               </div>
+
 
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="flex flex-row-reverse lg:flex-row items-start gap-4 mb-4">
@@ -182,6 +182,7 @@ export default function HomePage() {
               </div>
             </div>
 
+
             <div className="animate-slide-in-right">
               <div className="bg-gradient-to-br from-blue-50 to-emerald-50 p-8 rounded-2xl border border-blue-100 overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 opacity-20 flex items-center justify-center">
@@ -191,6 +192,7 @@ export default function HomePage() {
                     </svg>
                   </div>
                 </div>
+
 
                 <div className="relative z-10">
                   <div className="text-center mb-6">
@@ -206,6 +208,7 @@ export default function HomePage() {
                     </div>
                   </div>
 
+
                   <div className="space-y-4 mb-6">
                     <p className="text-gray-700 leading-relaxed text-center">
                       Pour certains candidats, les tests peuvent être un moment stressant. En cas d'échec, notre psychologue vous proposera un <span className="font-bold text-blue-600">second rendez-vous offert</span> — votre "deuxième chance".
@@ -214,6 +217,7 @@ export default function HomePage() {
                       Gardez votre sérénité, repassez votre test <span className="font-bold text-blue-600">sans frais supplémentaires</span> en cas d'échec.
                     </p>
                   </div>
+
 
                   <div className="text-center">
                     <Link
@@ -233,6 +237,7 @@ export default function HomePage() {
         </div>
       </section>
 
+
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -245,6 +250,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
+
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up animation-delay-200">
@@ -272,6 +278,7 @@ export default function HomePage() {
               </div>
             </div>
 
+
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up animation-delay-400">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -296,6 +303,7 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
+
 
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up animation-delay-600">
               <div className="text-center mb-6">
@@ -323,6 +331,7 @@ export default function HomePage() {
             </div>
           </div>
 
+
           <div className="text-center mt-8 sm:mt-12 animate-smooth-bounce animation-delay-800">
             <Link
               href="/prendre-rendez-vous"
@@ -337,6 +346,7 @@ export default function HomePage() {
         </div>
       </section>
 
+
       <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -347,6 +357,7 @@ export default function HomePage() {
               Un centre agréé, des psychologues qualifiés et un service de qualité pour votre récupération de permis.
             </p>
           </div>
+
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-fade-in-up animation-delay-200">
@@ -360,10 +371,12 @@ export default function HomePage() {
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Tarifs transparents</h3>
               </div>
 
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
                   <span className="font-semibold text-gray-700">Prix du test</span>
                 </div>
+
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 animate-slide-in-left" style={{ animationDelay: '0ms' }}>
@@ -375,6 +388,7 @@ export default function HomePage() {
                     <span className="text-gray-600">Aucun acompte</span>
                   </div>
 
+
                   <div className="flex items-center gap-3 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -383,6 +397,7 @@ export default function HomePage() {
                     </div>
                     <span className="text-gray-600">Paiement sur place</span>
                   </div>
+
 
                   <div className="flex items-center gap-3 animate-slide-in-left" style={{ animationDelay: '200ms' }}>
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
@@ -395,6 +410,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+
 
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-fade-in-up animation-delay-400 overflow-hidden">
               <div className="text-center mb-6">
@@ -415,15 +431,18 @@ export default function HomePage() {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Psychologue certifiée</h3>
               </div>
 
+
               <div className="text-center space-y-4">
                 <p className="text-gray-600 leading-relaxed animate-slide-in-left" style={{ animationDelay: '0ms' }}>
                   Notre psychologue est <span className="font-semibold text-blue-600">agréée par la préfecture</span> et dispose d'un numéro ADELI délivré par l'ARS.
                 </p>
 
+
                 <div className="p-4 bg-blue-50 rounded-lg animate-slide-in-left" style={{ animationDelay: '100ms' }}>
                   <p className="text-sm text-gray-600 mb-2">Numéro ADELI</p>
                   <p className="text-xl font-bold text-blue-600 font-mono">929334555</p>
                 </div>
+
 
                 <Link
                   href="/agrement-prefectoral"
@@ -438,10 +457,12 @@ export default function HomePage() {
               </div>
             </div>
 
+
             <LocationSelector />
           </div>
         </div>
       </section>
+
 
       <FAQ />
     </>
