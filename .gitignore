@@ -97,9 +97,14 @@ verify-*.js
 # SQL files
 *.sql
 
-# Markdown documentation files - TOUS sauf README.md
+# Markdown documentation files - TOUS sauf README.md et fichiers de documentation du projet
 *.md
 !README.md
+!PROJECT-CONTEXT.md
+!DEV-NOTES.md
+!API-ENDPOINTS.md
+!TROUBLESHOOTING.md
+!ARCHITECTURE.md
 
 # Netlify
 netlify.toml

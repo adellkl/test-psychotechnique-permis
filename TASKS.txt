@@ -1,0 +1,211 @@
+================================================================================
+                    LISTE DES MODIFICATIONS À FAIRE
+================================================================================
+
+INSTRUCTIONS POUR L'IA :
+------------------------
+Ce fichier contient les modifications demandées par le propriétaire du projet.
+Consultez ce fichier avant chaque session de travail pour comprendre les tâches
+en cours et les priorités.
+
+Format : 
+  [PRIORITÉ] Titre de la tâche
+  Description détaillée
+  Fichiers concernés : ...
+  Contexte : ...
+  ---
+
+STATUTS POSSIBLES :
+  [ ] TODO       - À faire
+  [⏳] EN COURS   - En cours de développement
+  [✓] FAIT       - Terminé
+  [X] ABANDONNÉ  - Annulé/Abandonné
+
+================================================================================
+
+=== MODIFICATIONS EN COURS ===
+
+[⏳] EXEMPLE : Ajouter système de rappel email automatique
+Description :
+  - Envoyer un email de rappel 24h avant le rendez-vous
+  - Créer un cron job ou utiliser Supabase Functions
+  - Nouveau template email "appointment_reminder"
+  
+Fichiers concernés :
+  - lib/emailService.ts (ajouter fonction sendReminder)
+  - lib/emailTemplates.ts (nouveau template)
+  - À créer : /app/api/cron/send-reminders/route.ts
+  
+Contexte :
+  Les clients oublient parfois leur rendez-vous. Un rappel automatique
+  améliorerait le taux de présentation.
+
+Détails techniques :
+  1. Requête Supabase : SELECT appointments WHERE appointment_date = tomorrow
+  2. Pour chaque RDV : sendReminder(email, details)
+  3. Logger l'envoi dans notifications
+  4. Gérer les erreurs d'envoi
+
+---
+
+=== MODIFICATIONS À FAIRE ===
+
+[ ] EXEMPLE : Ajouter export CSV des rendez-vous
+Description :
+  - Bouton "Exporter CSV" dans le dashboard admin
+  - Génération côté client avec tous les rendez-vous filtrés
+  - Colonnes : Prénom, Nom, Email, Téléphone, Date, Heure, Centre, Statut
+  
+Fichiers concernés :
+  - /app/admin/dashboard/page.tsx (ajouter bouton)
+  - Créer : /lib/csvExport.ts (fonction génération CSV)
+  
+Contexte :
+  L'admin a besoin d'exporter les données pour comptabilité et suivi.
+
+---
+
+[ ] Votre prochaine modification ici...
+Description :
+  ...
+
+Fichiers concernés :
+  - ...
+
+---
+
+=== MODIFICATIONS TERMINÉES ===
+
+[✓] Documentation complète du projet
+Description :
+  - PROJECT-CONTEXT.md : Vue d'ensemble
+  - API-ENDPOINTS.md : Documentation API
+  - TROUBLESHOOTING.md : Guide dépannage
+  - DEV-NOTES.md : Notes de développement
+  - ARCHITECTURE.md : Architecture technique
+  
+Date : 2025-01-13
+Fait par : IA + Adel
+
+---
+
+[✓] Migration vers Elastic Email
+Description :
+  - Remplacement de Resend par Elastic Email API
+  - Configuration domaine professionnel
+  - DNS : SPF, DKIM, CNAME
+  
+Date : 2025-01-12
+Fait par : IA + Adel
+
+---
+
+=== IDÉES / BACKLOG ===
+
+[ ] PWA (Progressive Web App)
+[ ] Synchronisation Google Calendar
+[ ] QR Code pour check-in au centre
+[ ] Chatbot d'assistance
+[ ] Mode sombre
+[ ] Notifications push navigateur
+[ ] Système de paiement en ligne (Stripe)
+[ ] Multi-langue (FR/EN)
+[ ] Tests automatisés (Jest + Playwright)
+
+================================================================================
+
+=== BUGS À CORRIGER ===
+
+[ ] EXEMPLE : Animation saccadée sur anciens mobiles
+Priorité : Faible
+Description :
+  Sur les smartphones < 2018, les animations de ModernHero.tsx sont lentes
+  
+Solution possible :
+  - Détecter la puissance de l'appareil
+  - Désactiver animations si GPU faible
+  - Ou simplifier les animations mobiles
+
+Fichiers concernés :
+  - components/ModernHero.tsx
+
+---
+
+[ ] Votre bug à corriger ici...
+
+================================================================================
+
+=== NOTES IMPORTANTES POUR L'IA ===
+
+TOUJOURS FAIRE :
+  ✓ Lire ce fichier au début de chaque session
+  ✓ Consulter PROJECT-CONTEXT.md pour comprendre le projet
+  ✓ Vérifier API-ENDPOINTS.md avant de modifier une API
+  ✓ Checker TROUBLESHOOTING.md si problème connu
+  ✓ Utiliser 'use client' en première ligne pour composants React
+  ✓ Toujours valider les données côté serveur
+  ✓ Logger les actions critiques (connexion, suppression, emails)
+  ✓ Tester après chaque modification importante
+
+NE JAMAIS FAIRE :
+  ✗ Modifier la structure de la BDD sans confirmation
+  ✗ Supprimer des fichiers sans demander
+  ✗ Commit des secrets (.env) dans Git
+  ✗ Utiliser 'password' au lieu de 'password_hash' pour les admins
+  ✗ Faire du tri SQL sur start_time (erreur 500, voir TROUBLESHOOTING.md)
+
+CONVENTION DE NOMMAGE :
+  - Composants : PascalCase (ModernHero.tsx)
+  - Fonctions : camelCase (sendEmail)
+  - Constants : UPPER_SNAKE_CASE (API_URL)
+  - Fichiers API : kebab-case (send-email.ts)
+
+AVANT DE FAIRE UNE GROSSE MODIFICATION :
+  1. Lire la documentation existante
+  2. Comprendre l'architecture actuelle
+  3. Vérifier les problèmes connus
+  4. Proposer le plan d'action à l'utilisateur
+  5. Implémenter après validation
+
+================================================================================
+
+WORKFLOW AVEC CE FICHIER :
+--------------------------
+
+1. L'UTILISATEUR ajoute une tâche dans "MODIFICATIONS À FAIRE"
+   avec tous les détails nécessaires
+
+2. L'IA consulte ce fichier et dit :
+   "J'ai vu dans TASKS.txt que vous voulez [tâche]. 
+    Je vais procéder comme suit : [plan]"
+
+3. Pendant le développement, l'IA change le statut :
+   [ ] → [⏳]
+
+4. Une fois terminé, l'IA change le statut et déplace dans "TERMINÉES" :
+   [⏳] → [✓] et déplace dans la section appropriée
+
+5. L'IA met à jour DEV-NOTES.md avec les changements importants
+
+================================================================================
+
+UTILISATION RECOMMANDÉE :
+-------------------------
+
+Quand vous voulez une modification, au lieu de tout expliquer dans le chat :
+
+1. Ajoutez une entrée détaillée dans ce fichier
+2. Dites simplement à l'IA : "Regarde TASKS.txt"
+3. L'IA consultera le fichier et comprendra le contexte complet
+
+Avantages :
+  ✓ Contexte persistant entre sessions
+  ✓ Moins de répétition dans le chat
+  ✓ Historique des modifications
+  ✓ Priorisation claire
+  ✓ Documentation automatique
+
+================================================================================
+
+Dernière mise à jour : 2025-01-13
+Maintenu par : Adel Loukal
