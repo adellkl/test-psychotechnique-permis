@@ -2,8 +2,22 @@ import CentersShowcase from '../components/CentersShowcase'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Nos Centres Agréés Clichy & Colombes | Test Psychotechnique Permis 92',
-  description: 'Centres à Clichy 92110 (82 Rue Henri Barbusse, métro ligne 13) et Colombes 92700 (14 Rue de Mantes). Psychologue ADELI. 2e chance gratuite. RDV 07 65 56 53 79.',
+  title: 'Test Psychotechnique Colombes 92700 & Clichy 92110 | Centres Agréés Tous Départements',
+  description: 'Test psychotechnique Colombes 92700 (14 Rue de Mantes, 09 72 13 22 50) et Clichy 92110 (82 Rue Henri Barbusse, 07 65 56 53 79). Centres agréés toutes préfectures. Permis suspendu, annulé, invalidé. Résultats immédiats.',
+  keywords: [
+    'test psychotechnique colombes',
+    'test psychotechnique colombes 92700',
+    'centre psychotechnique colombes',
+    'test psychotechnique clichy',
+    'test psychotechnique 92',
+    'test psychotechnique hauts de seine',
+    'permis suspendu colombes',
+    'test permis colombes',
+    'psychologue permis colombes',
+    'centre agréé colombes',
+    'examen psychotechnique colombes',
+    'rdv test psychotechnique colombes'
+  ],
 }
 
 export default function NosCentres() {
@@ -15,7 +29,7 @@ export default function NosCentres() {
             Nos Centres Agréés
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Deux centres à votre disposition dans les Hauts-de-Seine pour votre test psychotechnique. 
+            Deux centres à votre disposition dans les Hauts-de-Seine pour votre test psychotechnique.
             Choisissez celui qui vous convient le mieux !
           </p>
         </div>

@@ -72,7 +72,7 @@ function DashboardContent() {
       if (!silent) {
         setLoading(true)
       }
-      
+
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
@@ -80,11 +80,11 @@ function DashboardContent() {
         .order('appointment_time', { ascending: false })
 
       if (error) throw error
-      
+
       if (silent && data) {
         const currentIds = new Set(appointments.map(apt => apt.id))
         const newAppointments = data.filter(apt => !currentIds.has(apt.id))
-        
+
         if (newAppointments.length > 0) {
           setNewAppointmentsCount(prev => prev + newAppointments.length)
           setToast({
@@ -93,17 +93,17 @@ function DashboardContent() {
           })
         }
       }
-      
+
       const now = new Date()
       const today = now.toISOString().split('T')[0]
       const currentTime = now.toTimeString().slice(0, 5)
-      
+
       let todayApts = (data || []).filter(apt => {
         if (apt.appointment_date !== today) return false
-        
+
         // Masquer les rendez-vous terminés (status === 'completed')
         if (apt.status === 'completed') return false
-        
+
         // Afficher les rendez-vous confirmés et en cours
         return true
       })
@@ -111,10 +111,10 @@ function DashboardContent() {
         todayApts = todayApts.filter(apt => apt.center_id === selectedCenterId)
       }
       setTodayAppointments(todayApts)
-      
+
       const appointmentsToMarkInProgress: string[] = []
       const appointmentsToMarkCompleted: string[] = []
-      
+
       data?.forEach(apt => {
         if (apt.appointment_date < today && apt.status === 'confirmed') {
           // Rendez-vous des jours précédents → terminés
@@ -126,7 +126,7 @@ function DashboardContent() {
           const appointmentEndInMinutes = appointmentStartInMinutes + 15 // +15 minutes
           const [currentHours, currentMinutes] = currentTime.split(':').map(Number)
           const currentTimeInMinutes = currentHours * 60 + currentMinutes
-          
+
           if (apt.status === 'confirmed' && currentTimeInMinutes >= appointmentStartInMinutes) {
             // Le rendez-vous a commencé → en cours
             appointmentsToMarkInProgress.push(apt.id)
@@ -137,7 +137,7 @@ function DashboardContent() {
           }
         }
       })
-      
+
       // Mettre à jour les rendez-vous en cours
       if (appointmentsToMarkInProgress.length > 0) {
         await supabase
@@ -145,7 +145,7 @@ function DashboardContent() {
           .update({ status: 'in_progress' })
           .in('id', appointmentsToMarkInProgress)
       }
-      
+
       // Mettre à jour les rendez-vous terminés
       if (appointmentsToMarkCompleted.length > 0) {
         await supabase
@@ -153,24 +153,24 @@ function DashboardContent() {
           .update({ status: 'completed' })
           .in('id', appointmentsToMarkCompleted)
       }
-      
+
       if (appointmentsToMarkInProgress.length > 0 || appointmentsToMarkCompleted.length > 0) {
-        
+
         const { data: updatedData } = await supabase
           .from('appointments')
           .select('*')
           .order('appointment_date', { ascending: false })
           .order('appointment_time', { ascending: false })
-        
+
         setAppointments(updatedData || [])
         setFilteredAppointments(updatedData || [])
-        
+
         let refreshedTodayApts = (updatedData || []).filter(apt => {
           if (apt.appointment_date !== today) return false
-          
+
           // Masquer les rendez-vous terminés
           if (apt.status === 'completed') return false
-          
+
           // Afficher les rendez-vous confirmés et en cours
           return true
         })
@@ -274,14 +274,14 @@ function DashboardContent() {
         try {
           // Utiliser l'API sécurisée au lieu de Supabase direct
           const adminSession = localStorage.getItem('admin_session')
-          
+
           if (!adminSession) {
             throw new Error('Session expirée. Veuillez vous reconnecter.')
           }
-          
+
           const sessionData = JSON.parse(adminSession)
           console.log('📤 Envoi requête PUT avec session:', sessionData)
-          
+
           const response = await fetch('/api/admin/appointments', {
             method: 'PUT',
             headers: {
@@ -302,16 +302,16 @@ function DashboardContent() {
             console.error('❌ Erreur API:', data)
             throw new Error(data.error || 'Erreur lors de la mise à jour')
           }
-          
+
           await fetchAppointments()
-          
+
           setToast({
             type: 'success',
-            message: status === 'cancelled' 
+            message: status === 'cancelled'
               ? `Rendez-vous annulé et email envoyé au client`
               : `Rendez-vous marqué comme ${statusLabels[status]} avec succès`
           })
-          
+
           await logAdminActivity(
             AdminLogger.ACTIONS.UPDATE_APPOINTMENT,
             `Rendez-vous ${appointment.first_name} ${appointment.last_name} marqué comme ${statusLabels[status]}`
@@ -462,13 +462,13 @@ function DashboardContent() {
                     {todayAppointments.map((apt) => {
                       const statusColors = {
                         confirmed: 'bg-green-100 text-green-800',
-                        in_progress: 'bg-blue-500 text-white animate-pulse',
+                        in_progress: 'bg-blue-500 text-white',
                         completed: 'bg-gray-100 text-gray-800',
                         cancelled: 'bg-red-100 text-red-800'
                       }
                       const statusLabels = {
                         confirmed: 'Confirmé',
-                        in_progress: '🔵 En cours',
+                        in_progress: 'En cours',
                         completed: 'Terminé',
                         cancelled: 'Annulé'
                       }
@@ -498,16 +498,14 @@ function DashboardContent() {
                               }, 500)
                             }
                           }}
-                          className={`w-full bg-white rounded-lg p-3 border hover:bg-blue-50 transition-colors cursor-pointer text-left group ${
-                            apt.status === 'in_progress' 
-                              ? 'border-blue-500 ring-2 ring-blue-300 animate-pulse bg-blue-50' 
+                          className={`w-full bg-white rounded-lg p-3 border hover:bg-blue-50 transition-colors cursor-pointer text-left group ${apt.status === 'in_progress'
+                              ? 'border-blue-500 ring-2 ring-blue-300 bg-blue-50'
                               : 'border-gray-200'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`flex-shrink-0 text-white rounded px-2 py-1 text-center min-w-[60px] ${
-                              apt.status === 'in_progress' ? 'bg-blue-500 animate-pulse' : 'bg-blue-600'
-                            }`}>
+                            <div className={`flex-shrink-0 text-white rounded px-2 py-1 text-center min-w-[60px] ${apt.status === 'in_progress' ? 'bg-blue-500' : 'bg-blue-600'
+                              }`}>
                               <div className="text-lg font-bold">{apt.appointment_time}</div>
                             </div>
 

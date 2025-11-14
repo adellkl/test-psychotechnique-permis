@@ -83,7 +83,7 @@ export default function AppointmentsTable({
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'confirmed': return '✅ Confirmé'
-      case 'in_progress': return '🔵 En cours'
+      case 'in_progress': return 'En cours'
       case 'completed': return '✓ Terminé'
       case 'cancelled': return '❌ Annulé'
       default: return status
