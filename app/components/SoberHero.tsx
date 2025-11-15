@@ -93,8 +93,7 @@ export default function SoberHero() {
             </div>
 
             <p className="text-sm sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
-              Avec nos <span className="font-semibold text-blue-600">deux centres agréés tous départements</span> à Clichy et Colombes,
-              nous vous offrons <span className="font-semibold text-emerald-600">flexibilité et accompagnement</span> pour récupérer votre permis
+              Avec nos <span className="font-semibold text-blue-600">deux centres agréés</span>, 2e Chance vous offre plus de <span className="font-semibold text-emerald-600">flexibilité</span> pour passer votre test psychotechnique.
             </p>
           </motion.div>
 
