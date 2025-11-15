@@ -181,29 +181,20 @@ export default function AboutCenterSelector() {
             </div>
           </div>
 
-          {/* Colonne infos clés */}
+          {/* Colonne photo bureau */}
           <div className="relative order-1 lg:order-2">
-            <div className="bg-white rounded-xl border-2 border-gray-200 p-8 space-y-6">
-              
-              {/* Tarif principal */}
-              <div className="text-center pb-6 border-b border-gray-200">
-                <div className="text-5xl font-bold text-gray-900 mb-2">90€</div>
-                <div className="text-sm text-gray-600">Test complet</div>
-              </div>
-
-              {/* Informations clés */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm text-gray-700">2 centres agréés</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm text-gray-700">Psychologue ADELI certifiée</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm text-gray-700">2ème chance gratuite</span>
+            <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-lg">
+              <div className="relative h-80 lg:h-96">
+                <Image
+                  src="/images/IMG_6134.png"
+                  alt="Bureau Centre 2e Chance - Colombes"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+                <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-lg border border-gray-200">
+                  <div className="text-3xl font-bold text-gray-900">90€</div>
+                  <div className="text-xs text-gray-600 mt-1">Test complet</div>
                 </div>
               </div>
             </div>
@@ -217,8 +208,8 @@ export default function AboutCenterSelector() {
               key={index}
               onClick={() => setSelectedCenter(index)}
               className={`h-2 rounded-full transition-all duration-300 hover:scale-110 ${selectedCenter === index
-                  ? 'w-8 bg-blue-600 shadow-md'
-                  : 'w-2 bg-gray-300 hover:bg-gray-400'
+                ? 'w-8 bg-blue-600 shadow-md'
+                : 'w-2 bg-gray-300 hover:bg-gray-400'
                 }`}
               aria-label={`Sélectionner le centre ${index + 1}`}
             />
