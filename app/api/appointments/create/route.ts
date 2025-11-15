@@ -6,7 +6,7 @@ import { logSecurityEvent } from '../../../../lib/securityLogger'
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-  
+
   try {
     const rateLimit = checkFormRateLimit(request, 'appointment')
     if (!rateLimit.allowed) {
@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
         ip,
         blockedUntil: rateLimit.blockedUntil
       })
-      
+
       return NextResponse.json(
-        { 
+        {
           error: 'Trop de tentatives. Veuillez patienter quelques minutes.',
           resetTime: rateLimit.resetTime
         },
@@ -26,12 +26,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { 
-      firstName, 
-      lastName, 
-      email, 
-      phone, 
-      reason, 
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      reason,
       notes,
       appointment_date,
       appointment_time,
@@ -45,10 +45,10 @@ export async function POST(request: NextRequest) {
         ip,
         honeypot
       })
-      
-      return NextResponse.json({ 
+
+      return NextResponse.json({
         success: true,
-        message: 'Rendez-vous créé avec succès' 
+        message: 'Rendez-vous créé avec succès'
       })
     }
 
@@ -69,11 +69,11 @@ export async function POST(request: NextRequest) {
         ip,
         errors: validation.errors
       })
-      
+
       return NextResponse.json(
-        { 
+        {
           error: 'Données invalides',
-          errors: validation.errors 
+          errors: validation.errors
         },
         { status: 400 }
       )
@@ -103,63 +103,50 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const today = new Date().toISOString().split('T')[0]
-    const { data: existingAppointments } = await supabase
+    // Vérification anti-doublon : bloquer si la personne a déjà un rendez-vous actif (confirmé ou en attente)
+    const { data: activeAppointments } = await supabase
       .from('appointments')
-      .select('id, appointment_date, appointment_time, status, email, phone')
-      .ilike('first_name', sanitizedData.firstName)
-      .ilike('last_name', sanitizedData.lastName)
+      .select('id, appointment_date, appointment_time, first_name, last_name, email, phone, status')
       .in('status', ['confirmed', 'pending'])
-      .gte('appointment_date', today)
-
-    if (existingAppointments && existingAppointments.length > 0) {
-      const existingRdv = existingAppointments[0]
-      const rdvDate = new Date(existingRdv.appointment_date).toLocaleDateString('fr-FR', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-      
-      await logSecurityEvent('DUPLICATE_APPOINTMENT_NAME', {
-        endpoint: '/api/appointments/create',
-        ip,
-        firstName: sanitizedData.firstName,
-        lastName: sanitizedData.lastName,
-        existingAppointmentId: existingRdv.id
-      })
-      
-      return NextResponse.json(
-        { 
-          error: `Vous avez déjà un rendez-vous prévu le ${rdvDate} à ${existingRdv.appointment_time}. Pour prendre un nouveau rendez-vous, vous devez d'abord annuler celui-ci en utilisant le bouton d'annulation dans votre email de confirmation.`,
-          existingAppointment: {
-            date: rdvDate,
-            time: existingRdv.appointment_time,
-            status: existingRdv.status
-          }
-        },
-        { status: 409 }
-      )
-    }
-
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    const { data: emailDuplicates } = await supabase
-      .from('appointments')
-      .select('id, appointment_date, appointment_time')
-      .eq('email', sanitizedData.email.toLowerCase())
-      .in('status', ['confirmed', 'pending'])
-      .gte('created_at', oneDayAgo)
+      .or(`email.eq.${sanitizedData.email.toLowerCase()},and(first_name.eq.${sanitizedData.firstName},last_name.eq.${sanitizedData.lastName})`)
       .limit(1)
 
-    if (emailDuplicates && emailDuplicates.length > 0) {
-      await logSecurityEvent('DUPLICATE_APPOINTMENT_EMAIL', {
+    if (activeAppointments && activeAppointments.length > 0) {
+      const existing = activeAppointments[0]
+      const isSameEmail = existing.email.toLowerCase() === sanitizedData.email.toLowerCase()
+      const isSameName = existing.first_name === sanitizedData.firstName && existing.last_name === sanitizedData.lastName
+
+      await logSecurityEvent('DUPLICATE_APPOINTMENT', {
         endpoint: '/api/appointments/create',
         ip,
-        email: sanitizedData.email
+        email: sanitizedData.email,
+        firstName: sanitizedData.firstName,
+        lastName: sanitizedData.lastName,
+        existingAppointmentId: existing.id,
+        existingStatus: existing.status,
+        duplicateType: isSameEmail && isSameName ? 'both' : isSameEmail ? 'email' : 'name'
       })
-      
+
+      const appointmentDate = new Date(existing.appointment_date).toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+
+      let errorMessage = ''
+      if (isSameEmail && isSameName) {
+        errorMessage = `Vous avez déjà un rendez-vous prévu le ${appointmentDate} à ${existing.appointment_time.slice(0, 5)}.`
+      } else if (isSameEmail) {
+        errorMessage = `Un rendez-vous existe déjà avec cet email pour le ${appointmentDate} à ${existing.appointment_time.slice(0, 5)}.`
+      } else {
+        errorMessage = `Un rendez-vous existe déjà au nom de ${existing.first_name} ${existing.last_name} pour le ${appointmentDate} à ${existing.appointment_time.slice(0, 5)}.`
+      }
+
+      errorMessage += ' Pour annuler ou modifier votre rendez-vous, utilisez le lien dans votre email de confirmation ou contactez-nous au 07 65 56 53 79.'
+
       return NextResponse.json(
-        { error: 'Vous avez déjà effectué une réservation récente avec cet email. Veuillez patienter ou contacter le centre.' },
+        { error: errorMessage },
         { status: 409 }
       )
     }
@@ -193,7 +180,7 @@ export async function POST(request: NextRequest) {
         ip,
         error: insertError.message
       })
-      
+
       return NextResponse.json(
         { error: 'Erreur lors de la création du rendez-vous' },
         { status: 500 }
@@ -207,7 +194,7 @@ export async function POST(request: NextRequest) {
         .eq('id', existingSlot.id)
     }
 
-          
+
     await logSecurityEvent('APPOINTMENT_CREATED', {
       endpoint: '/api/appointments/create',
       ip,
@@ -215,7 +202,7 @@ export async function POST(request: NextRequest) {
       email: sanitizedData.email
     })
 
-      
+
     return NextResponse.json({
       success: true,
       appointment: {
@@ -236,7 +223,7 @@ export async function POST(request: NextRequest) {
       ip,
       error: error.message
     })
-    
+
     return NextResponse.json(
       { error: 'Une erreur est survenue. Veuillez réessayer.' },
       { status: 500 }

@@ -14,7 +14,7 @@ interface SidebarProps {
 
 export default function Sidebar({ activeSection, onSectionChange, adminName, onLogout, isCollapsed: externalIsCollapsed, setIsCollapsed: externalSetIsCollapsed }: SidebarProps) {
   const { centers, selectedCenterId, setSelectedCenterId, loadingCenters } = useCenterContext()
-  
+
   const [internalIsCollapsed, setInternalIsCollapsed] = useState(false)
 
   const isCollapsed = externalIsCollapsed !== undefined ? externalIsCollapsed : internalIsCollapsed
@@ -36,16 +36,6 @@ export default function Sidebar({ activeSection, onSectionChange, adminName, onL
         </svg>
       ),
       href: '/admin/dashboard'
-    },
-    {
-      id: 'completed',
-      label: 'RDV Terminés',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      href: '/admin/completed'
     },
     {
       id: 'slots',

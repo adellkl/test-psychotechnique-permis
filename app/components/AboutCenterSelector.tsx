@@ -181,6 +181,7 @@ export default function AboutCenterSelector() {
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Colonne image */}
           <div className="relative order-1 lg:order-2">
             <div className="relative h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
@@ -198,6 +199,23 @@ export default function AboutCenterSelector() {
               <div className="text-center">
                 <div className="text-xl sm:text-2xl font-bold text-blue-600">90€</div>
                 <div className="text-xs sm:text-sm text-gray-600">Test complet</div>
+=======
+          {/* Colonne photo bureau */}
+          <div className="relative order-1 lg:order-2">
+            <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-lg">
+              <div className="relative h-80 lg:h-96">
+                <Image
+                  src="/images/IMG_6134.png"
+                  alt="Bureau Centre 2e Chance - Colombes"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+                <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-lg border border-gray-200">
+                  <div className="text-3xl font-bold text-gray-900">90€</div>
+                  <div className="text-xs text-gray-600 mt-1">Test complet</div>
+                </div>
+>>>>>>> origin/main
               </div>
             </div>
           </div>
@@ -210,8 +228,8 @@ export default function AboutCenterSelector() {
               key={index}
               onClick={() => setSelectedCenter(index)}
               className={`h-2 rounded-full transition-all duration-300 hover:scale-110 ${selectedCenter === index
-                  ? 'w-8 bg-blue-600 shadow-md'
-                  : 'w-2 bg-gray-300 hover:bg-gray-400'
+                ? 'w-8 bg-blue-600 shadow-md'
+                : 'w-2 bg-gray-300 hover:bg-gray-400'
                 }`}
               aria-label={`Sélectionner le centre ${index + 1}`}
             />

@@ -27,28 +27,31 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'week' | 'month'>('month')
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set())
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
     fetchAvailableSlots()
+
+    // Rafraîchir toutes les 10 secondes de manière silencieuse
+    const intervalId = setInterval(() => {
+      fetchAvailableSlots(true) // true = silent mode (pas de loader)
+    }, 10000) // 10000ms = 10 secondes
+
+    return () => clearInterval(intervalId)
   }, [currentDate, viewMode, centerId])
 
-  const fetchAvailableSlots = async () => {
+  const fetchAvailableSlots = async (silent = false) => {
     try {
-      setLoading(true)
+      if (!silent) {
+        setLoading(true)
+      } else {
+        setIsRefreshing(true)
+      }
       const startDate = format(startOfMonth(currentDate), 'yyyy-MM-dd')
       const endDate = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
-      console.log('📅 [Calendar] Fetch slots avec:', {
-        centerId,
-        hasCenterId: !!centerId,
-        startDate,
-        endDate
-      })
-
       const centerParam = centerId ? `&centerId=${centerId}` : ''
       const url = `/api/available-slots?startDate=${startDate}&endDate=${endDate}${centerParam}`
-
-      console.log('🔗 [Calendar] URL de requête:', url)
 
       const response = await fetch(url)
       if (!response.ok) {
@@ -57,18 +60,15 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
 
       const data = await response.json()
       let slots: AvailableSlot[] = data.slots || []
-      console.log(`✅ [Calendar] ${slots.length} créneaux reçus${centerId ? ` (centre=${centerId})` : ''}`)
 
       // Fallback: si filtre centre actif mais 0 résultat, retenter sans filtre et filtrer côté client
       if (centerId && slots.length === 0) {
         const fallbackUrl = `/api/available-slots?startDate=${startDate}&endDate=${endDate}`
-        console.warn('↩️ [Calendar] Aucun créneau filtré par centre. Tentative fallback sans filtre:', fallbackUrl)
         const allResp = await fetch(fallbackUrl)
         if (allResp.ok) {
           const allData = await allResp.json()
           const allSlots: AvailableSlot[] = allData.slots || []
           const filtered = allSlots.filter(s => s.center_id === centerId)
-          console.log(`🪄 [Calendar] Fallback: ${filtered.length} créneaux trouvés côté client pour centre=${centerId}`)
           slots = filtered
         }
       }
@@ -78,7 +78,11 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
       console.error('Error fetching slots:', error)
       setAvailableSlots([])
     } finally {
-      setLoading(false)
+      if (!silent) {
+        setLoading(false)
+      } else {
+        setIsRefreshing(false)
+      }
     }
   }
 
@@ -127,7 +131,7 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
     slotsByDate.forEach((slots, dateStr) => {
       const day = new Date(dateStr)
 
-      // Ne garder que les jours avec des créneaux disponibles
+      // Afficher tous les jours qui ont au moins 1 créneau (disponible ou réservé)
       if (slots.length > 0 && (!isBefore(day, new Date()) || isToday(day))) {
         days.push({
           date: day,
@@ -194,9 +198,21 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
           <span className="hidden sm:inline text-sm text-gray-600">Mois précédent</span>
         </button>
 
-        <h3 className="text-xl font-bold text-gray-900 capitalize">
-          {format(currentDate, 'MMMM yyyy', { locale: fr })}
-        </h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-xl font-bold text-gray-900 capitalize">
+            {format(currentDate, 'MMMM yyyy', { locale: fr })}
+          </h3>
+          <button
+            onClick={() => fetchAvailableSlots()}
+            disabled={loading}
+            className="p-2 hover:bg-blue-50 rounded-lg transition-colors text-blue-600 hover:text-blue-700"
+            title="Rafraîchir les créneaux"
+          >
+            <svg className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
 
         <button
           onClick={goToNextMonth}
@@ -243,32 +259,47 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
                 <div className="space-y-2 sm:space-y-2.5">
                   {/* Show first 3 slots or all if expanded */}
                   <div className="space-y-2">
-                    {(expandedDays.has(format(day.date, 'yyyy-MM-dd')) ? day.slots : day.slots.slice(0, 3)).map((slot: AvailableSlot) => (
-                      <div key={slot.id} className="relative">
-                        <button
-                          onClick={() => handleSlotClick(slot.date, slot.start_time)}
-                          disabled={slot.isPending}
-                          className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${selectedDate === slot.date && selectedTime === slot.start_time
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
-                            : slot.isPending
-                              ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
-                              : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
-                            }`}
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            <span>{slot.start_time.slice(0, 5)}</span>
-                            {slot.isPending && (
-                              <span className="text-xs">⏳</span>
-                            )}
-                          </div>
-                        </button>
-                        {slot.isPending && (
-                          <div className="text-xs text-orange-600 text-center mt-1 font-medium">
-                            Réservé - En attente
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                    {(expandedDays.has(format(day.date, 'yyyy-MM-dd')) ? day.slots : day.slots.slice(0, 3)).map((slot: AvailableSlot) => {
+                      const isBooked = slot.is_booked
+                      const isAvailable = !isBooked && slot.is_available !== false
+
+                      return (
+                        <div key={slot.id} className="relative">
+                          <button
+                            onClick={() => isAvailable && handleSlotClick(slot.date, slot.start_time)}
+                            disabled={isBooked || slot.isPending}
+                            className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${selectedDate === slot.date && selectedTime === slot.start_time
+                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
+                              : isBooked
+                                ? 'bg-gray-200 text-gray-500 border border-gray-300 cursor-not-allowed opacity-60'
+                                : slot.isPending
+                                  ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
+                                  : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
+                              }`}
+                          >
+                            <div className="flex items-center justify-center gap-2">
+                              <span>{slot.start_time.slice(0, 5)}</span>
+                              {isBooked && (
+                                <span className="text-xs">🔒</span>
+                              )}
+                              {slot.isPending && (
+                                <span className="text-xs">⏳</span>
+                              )}
+                            </div>
+                          </button>
+                          {isBooked && (
+                            <div className="text-xs text-gray-500 text-center mt-1 font-medium">
+                              Déjà réservé
+                            </div>
+                          )}
+                          {slot.isPending && (
+                            <div className="text-xs text-orange-600 text-center mt-1 font-medium">
+                              Réservé - En attente
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                     {day.slots.length > 3 && (
                       <button
                         onClick={() => toggleDayExpansion(format(day.date, 'yyyy-MM-dd'))}
@@ -289,20 +320,24 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded"></div>
-          <span>Disponible</span>
+      <div className="mt-6 space-y-3">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded"></div>
+            <span>Disponible</span>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-blue-600 rounded"></div>
+            <span>Sélectionné</span>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-gray-200 border border-gray-300 rounded"></div>
+            <span>🔒 Déjà réservé</span>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-600 rounded"></div>
-          <span>Sélectionné</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-gray-200 rounded"></div>
-          <span>Indisponible</span>
-        </div>
       </div>
     </div>
   )

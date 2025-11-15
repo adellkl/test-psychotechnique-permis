@@ -4,12 +4,13 @@ import SoberHero from './components/SoberHero'
 import FAQ from './components/FAQ'
 import CentersShowcase from './components/CentersShowcase'
 import LocationSelector from './components/LocationSelector'
+import LocalBusinessSchema from './components/LocalBusinessSchema'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Test Psychotechnique Permis Colombes (92) | Centre 2e Chance - Agréé Toutes Préfectures - Psychologue ADELI",
-  description: "✓ Tests psychotechniques permis de conduire à Colombes 92700 | Centre 2e Chance, 14 Rue de Mantes dans les locaux de Pro Drive Academy (à 3 min du tram T2 Charlebourg, 3 min de la gare La Garenne-Colombes ligne L, 5 min de La Défense) | Psychologue certifiée ADELI | Centre agréé toutes préfectures France | Invalidation, suspension, annulation permis | 2ème chance GRATUITE | Tarifs 80€ | Réservation en ligne 24/7 | RDV sous 48h | ☎️ 09 72 13 22 50 | Parking gratuit disponible | Accès handicapés",
-  keywords: "test psychotechnique Colombes, test psychotechnique 92700, Centre 2e Chance Colombes, 2ème chance Colombes, test psychotechnique permis Colombes, 14 Rue de Mantes Colombes, Pro Drive Academy locaux, centre agréé toutes préfectures, test psychotechnique permis de conduire, test psychotechnique 92, test psychotechnique Hauts-de-Seine, psychologue ADELI, psychologue agréé permis, invalidation permis, suspension permis, annulation permis, récupération permis conduire, permis invalidé, permis suspendu, repasser permis, tram T2 Charlebourg, gare La Garenne-Colombes ligne L, La Défense, Bois-Colombes, Asnières-sur-Seine, Gennevilliers, Nanterre, Courbevoie, Puteaux, test psychotechnique près de moi, centre agréé Hauts-de-Seine, psychologue permis conduire, examen psychotechnique permis, évaluation psychotechnique, réflexe coordination permis, visite médicale permis, Île-de-France, proche Paris, réservation en ligne test psychotechnique, RDV rapide test psychotechnique, tarif test psychotechnique, 2ème chance gratuite, centre certifié, psychologue diplômée, parking gratuit Colombes, accès handicapés",
+  title: "Test Psychotechnique Colombes 92700 | RDV Rapide ✅ 2e Chance Gratuite | Centre Agréé | 07 65 56 53 79",
+  description: "✅ TEST PSYCHOTECHNIQUE COLOMBES 92700 - RDV SOUS 48H • Centre 2e Chance agréé préfecture • 14 Rue de Mantes (3min tram T2, 3min gare ligne L, 5min La Défense) • Psychologue ADELI diplômée • Invalidation/Suspension/Annulation permis • 2ème CHANCE GRATUITE si échec • 90€ tout compris • Réservation 24/7 • Parking gratuit • ☎️ 07 65 56 53 79 | Bois-Colombes, Asnières, Gennevilliers, Nanterre, Courbevoie, La Défense",
+  keywords: "test psychotechnique Colombes, test psychotechnique 92700, test psychotechnique Colombes 92, psychotechnique Colombes, test psychotechnique permis Colombes, centre test psychotechnique Colombes, passer test psychotechnique Colombes, rendez-vous test psychotechnique Colombes, rdv test psychotechnique Colombes, centre agréé Colombes, test psychotechnique près Colombes, test psychotechnique 14 rue de mantes, Centre 2e Chance Colombes, psychologue Colombes ADELI, psychologue agréé Colombes, test psychotechnique suspension permis Colombes, test psychotechnique invalidation permis Colombes, test psychotechnique annulation permis Colombes, test psychotechnique Bois-Colombes, test psychotechnique La Garenne-Colombes, test psychotechnique Asnières, test psychotechnique Gennevilliers, test psychotechnique Nanterre, test psychotechnique Courbevoie, test psychotechnique La Défense, test psychotechnique Hauts-de-Seine 92, test psychotechnique 92110, test psychotechnique Clichy, test psychotechnique Levallois, test psychotechnique Neuilly, récupération permis Colombes, repasser permis Colombes, permis invalidé Colombes, permis suspendu Colombes, 2ème chance gratuite, deuxième passage gratuit, tarif test psychotechnique 90 euros, test psychotechnique pas cher, centre certifié préfecture, psychologue ADELI 929334555, tram T2 Charlebourg, ligne L La Garenne, parking gratuit, rendez-vous rapide 48h, réservation en ligne 24/7, tests réflexes coordination, examen aptitude conduite, visite médicale permis, commission médicale, récupérer son permis, refaire son permis",
   authors: [{ name: "Test Psychotechnique Permis" }],
   creator: "Test Psychotechnique Permis",
   publisher: "Test Psychotechnique Permis",
@@ -76,8 +77,13 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+<<<<<<< HEAD
       <SoberHero />
 
+=======
+      <LocalBusinessSchema />
+      <SoberHero />
+>>>>>>> origin/main
 
       <section className="bg-gray-50 py-16 -mt-1">
         <div className="max-w-7xl mx-auto px-6">
@@ -331,13 +337,17 @@ export default function HomePage() {
             </div>
           </div>
 
+<<<<<<< HEAD
 
           <div className="text-center mt-8 sm:mt-12 animate-smooth-bounce animation-delay-800">
+=======
+          <div className="text-center mt-12">
+>>>>>>> origin/main
             <Link
               href="/prendre-rendez-vous"
-              className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3.5 sm:px-10 sm:py-5 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-xl sm:rounded-2xl font-bold text-base sm:text-xl hover:from-blue-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl w-full sm:w-auto max-w-sm sm:max-w-none mx-auto"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg"
             >
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
               </svg>
               Prendre rendez-vous

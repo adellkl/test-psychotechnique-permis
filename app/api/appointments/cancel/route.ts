@@ -242,14 +242,22 @@ export async function GET(request: NextRequest) {
 
     // Remettre le créneau disponible dans le calendrier
     try {
-      await supabase
+      const slotTime = appointment.appointment_time.includes(':')
+        ? appointment.appointment_time
+        : `${appointment.appointment_time}:00`
+
+      const { error: slotError } = await supabase
         .from('available_slots')
         .update({ is_available: true })
         .eq('date', appointment.appointment_date)
-        .eq('time', appointment.appointment_time)
-        .eq('center_id', appointment.center_id || null)
-      
-      console.log('✅ Créneau remis disponible:', appointment.appointment_date, appointment.appointment_time)
+        .eq('start_time', slotTime)
+        .eq('center_id', appointment.center_id)
+
+      if (slotError) {
+        console.error('⚠️ Erreur lors de la remise à disposition du créneau:', slotError)
+      } else {
+        console.log('✅ Créneau remis disponible dans le calendrier client:', appointment.appointment_date, slotTime, `(centre: ${appointment.center_id})`)
+      }
     } catch (slotError) {
       console.error('⚠️ Erreur lors de la remise à disposition du créneau:', slotError)
       // On ne bloque pas l'annulation si la mise à jour du slot échoue

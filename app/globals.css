@@ -595,13 +595,13 @@ body {
   animation-play-state: paused;
 }
 
-/* Animation de scroll infini ultra-smooth avec 3 copies */
+/* Animation de scroll infini ultra-smooth avec 4 copies */
 @keyframes scroll-infinite-smooth {
   0% {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(-100% / 3));
+    transform: translateX(-25%);
   }
 }
 
