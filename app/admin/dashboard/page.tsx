@@ -42,6 +42,9 @@ function DashboardContent() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null)
   const [newAppointmentsCount, setNewAppointmentsCount] = useState(0)
+  const [autoAnalysisRunning, setAutoAnalysisRunning] = useState(false)
+  const [lastAutoAnalysis, setLastAutoAnalysis] = useState<Date | null>(null)
+  const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     const adminSession = localStorage.getItem('admin_session')
@@ -60,12 +63,70 @@ function DashboardContent() {
     logAdminActivity(AdminLogger.ACTIONS.VIEW_DASHBOARD, 'Viewed admin dashboard')
     fetchAppointments()
 
-    const intervalId = setInterval(() => {
+    // Intervalle pour rafraîchir les données (toutes les 30 secondes)
+    const refreshIntervalId = setInterval(() => {
       fetchAppointments(true)
     }, 30000)
 
-    return () => clearInterval(intervalId)
+    // Intervalle pour l'analyse automatique des statuts (toutes les minutes)
+    const autoUpdateIntervalId = setInterval(() => {
+      runAutoStatusUpdate()
+    }, 60000)
+
+    // Exécuter l'analyse immédiatement
+    runAutoStatusUpdate()
+
+    return () => {
+      clearInterval(refreshIntervalId)
+      clearInterval(autoUpdateIntervalId)
+    }
   }, [selectedCenterId])
+
+  // Mettre à jour l'heure courante toutes les secondes
+  useEffect(() => {
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+
+    return () => clearInterval(timeInterval)
+  }, [])
+
+  const runAutoStatusUpdate = async () => {
+    try {
+      setAutoAnalysisRunning(true)
+      console.log('🔄 Analyse automatique des statuts en cours...')
+
+      const response = await fetch('/api/admin/auto-status-update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('✅ Analyse automatique terminée:', result)
+        setLastAutoAnalysis(new Date())
+
+        // Si des mises à jour ont été effectuées, rafraîchir les données
+        if (result.updates > 0) {
+          console.log(`🔄 ${result.updates} statuts mis à jour, rafraîchissement...`)
+          await fetchAppointments(true)
+
+          setToast({
+            type: 'info',
+            message: `🔄 ${result.updates} statut${result.updates > 1 ? 's' : ''} mis à jour automatiquement`
+          })
+        }
+      } else {
+        console.error('❌ Erreur lors de l\'analyse automatique:', response.status)
+      }
+    } catch (error) {
+      console.error('❌ Erreur analyse automatique:', error)
+    } finally {
+      setAutoAnalysisRunning(false)
+    }
+  }
 
   const fetchAppointments = async (silent = false) => {
     try {
@@ -93,11 +154,14 @@ function DashboardContent() {
         const currentIds = new Set(appointments.map(apt => apt.id))
         const newAppointments = data.filter(apt => !currentIds.has(apt.id))
 
-        if (newAppointments.length > 0) {
-          setNewAppointmentsCount(prev => prev + newAppointments.length)
+        // Filtrer uniquement les nouveaux RDV confirmés pour les notifications
+        const newConfirmedAppointments = newAppointments.filter(apt => apt.status === 'confirmed')
+
+        if (newConfirmedAppointments.length > 0) {
+          setNewAppointmentsCount(prev => prev + newConfirmedAppointments.length)
           setToast({
             type: 'info',
-            message: `🔔 ${newAppointments.length} nouveau${newAppointments.length > 1 ? 'x' : ''} rendez-vous !`
+            message: `🔔 ${newConfirmedAppointments.length} nouveau${newConfirmedAppointments.length > 1 ? 'x' : ''} rendez-vous confirmé${newConfirmedAppointments.length > 1 ? 's' : ''} !`
           })
         }
       }
@@ -105,9 +169,11 @@ function DashboardContent() {
       // Afficher les rendez-vous
       setAppointments(data || [])
 
-      // Calculer les rendez-vous d'aujourd'hui
+      // Calculer les rendez-vous d'aujourd'hui (confirmés ET en cours)
       const today = new Date().toISOString().split('T')[0]
-      let todayApts = (data || []).filter(apt => apt.appointment_date === today)
+      let todayApts = (data || []).filter(apt =>
+        apt.appointment_date === today && (apt.status === 'confirmed' || apt.status === 'in_progress')
+      )
       setTodayAppointments(todayApts)
     } catch (error) {
       console.error('Error fetching appointments:', error)
@@ -343,6 +409,26 @@ function DashboardContent() {
                 </div>
               </div>
               <div className="flex items-center gap-3 ml-auto">
+                {/* Indicateur d'analyse automatique */}
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${autoAnalysisRunning
+                  ? 'bg-blue-50 border-blue-200 text-blue-700'
+                  : 'bg-green-50 border-green-200 text-green-700'
+                  }`}>
+                  {autoAnalysisRunning ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border border-blue-600 border-t-transparent"></div>
+                      <span>Analyse en cours...</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span>Auto-statuts actif</span>
+                      <span className="text-green-600">
+                        • {currentTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -361,7 +447,12 @@ function DashboardContent() {
                     </div>
                     <div>
                       <h2 className="text-lg font-bold text-gray-900">Rendez-vous aujourd&apos;hui</h2>
-                      <p className="text-xs text-gray-600">{new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                      <p className="text-xs text-gray-600">
+                        {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                        <span className="ml-2 text-blue-600">
+                          • Rendez-vous actifs uniquement
+                        </span>
+                      </p>
                     </div>
                   </div>
                   <span className="inline-flex items-center px-3 py-1 bg-blue-600 text-white font-bold text-sm rounded-lg">
@@ -376,23 +467,20 @@ function DashboardContent() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <p className="text-base font-semibold text-gray-700 mb-1">Aucun rendez-vous aujourd&apos;hui</p>
-                    <p className="text-sm text-gray-500">Profitez de cette journée calme ! 🌟</p>
+                    <p className="text-base font-semibold text-gray-700 mb-1">Aucun rendez-vous actif aujourd&apos;hui</p>
+                    <p className="text-sm text-gray-500">Tous les RDV sont terminés ou annulés 📋</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {todayAppointments.map((apt) => {
+                      // Gérer les statuts confirmés ET en cours
                       const statusColors = {
                         confirmed: 'bg-green-100 text-green-800',
-                        in_progress: 'bg-blue-500 text-white',
-                        completed: 'bg-gray-100 text-gray-800',
-                        cancelled: 'bg-red-100 text-red-800'
+                        in_progress: 'bg-blue-100 text-blue-800'
                       }
                       const statusLabels = {
                         confirmed: 'Confirmé',
-                        in_progress: 'En cours',
-                        completed: 'Terminé',
-                        cancelled: 'Annulé'
+                        in_progress: 'En cours'
                       }
                       return (
                         <button
@@ -420,14 +508,10 @@ function DashboardContent() {
                               }, 500)
                             }
                           }}
-                          className={`w-full bg-white rounded-lg p-3 border hover:bg-blue-50 transition-colors cursor-pointer text-left group ${apt.status === 'in_progress'
-                            ? 'border-blue-500 ring-2 ring-blue-300 bg-blue-50'
-                            : 'border-gray-200'
-                            }`}
+                          className="w-full bg-white rounded-lg p-3 border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer text-left group"
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`flex-shrink-0 text-white rounded px-2 py-1 text-center min-w-[60px] ${apt.status === 'in_progress' ? 'bg-blue-500' : 'bg-blue-600'
-                              }`}>
+                            <div className={`flex-shrink-0 text-white rounded px-2 py-1 text-center min-w-[60px] ${apt.status === 'in_progress' ? 'bg-blue-600' : 'bg-green-600'}`}>
                               <div className="text-lg font-bold">{apt.appointment_time}</div>
                             </div>
 
@@ -444,8 +528,8 @@ function DashboardContent() {
                             </div>
 
                             <div className="flex-shrink-0 flex items-center gap-2">
-                              <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${statusColors[apt.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}`}>
-                                {statusLabels[apt.status as keyof typeof statusLabels] || apt.status}
+                              <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${statusColors[apt.status as keyof typeof statusColors]}`}>
+                                {statusLabels[apt.status as keyof typeof statusLabels]}
                               </span>
                               <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
