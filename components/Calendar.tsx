@@ -32,11 +32,10 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
   useEffect(() => {
     fetchAvailableSlots()
 
-    // Rafraîchir toutes les minutes pour détecter les annulations
+    // Rafraîchir toutes les 10 secondes de manière silencieuse
     const intervalId = setInterval(() => {
-      console.log(' [Calendar] Rafraîchissement automatique des créneaux...')
       fetchAvailableSlots(true) // true = silent mode (pas de loader)
-    }, 60000) // 60000ms = 1 minute
+    }, 10000) // 10000ms = 10 secondes
 
     return () => clearInterval(intervalId)
   }, [currentDate, viewMode, centerId])
@@ -51,17 +50,8 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
       const startDate = format(startOfMonth(currentDate), 'yyyy-MM-dd')
       const endDate = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
-      console.log(' [Calendar] Fetch slots avec:', {
-        centerId,
-        hasCenterId: !!centerId,
-        startDate,
-        endDate
-      })
-
       const centerParam = centerId ? `&centerId=${centerId}` : ''
       const url = `/api/available-slots?startDate=${startDate}&endDate=${endDate}${centerParam}`
-
-      console.log('🔗 [Calendar] URL de requête:', url)
 
       const response = await fetch(url)
       if (!response.ok) {
@@ -70,33 +60,16 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
 
       const data = await response.json()
       let slots: AvailableSlot[] = data.slots || []
-      console.log(`✅ [Calendar] ${slots.length} créneaux reçus${centerId ? ` (centre=${centerId})` : ''}`)
 
       // Fallback: si filtre centre actif mais 0 résultat, retenter sans filtre et filtrer côté client
       if (centerId && slots.length === 0) {
         const fallbackUrl = `/api/available-slots?startDate=${startDate}&endDate=${endDate}`
-        console.warn('↩️ [Calendar] Aucun créneau filtré par centre. Tentative fallback sans filtre:', fallbackUrl)
         const allResp = await fetch(fallbackUrl)
         if (allResp.ok) {
           const allData = await allResp.json()
           const allSlots: AvailableSlot[] = allData.slots || []
           const filtered = allSlots.filter(s => s.center_id === centerId)
-          console.log(`🪄 [Calendar] Fallback: ${filtered.length} créneaux trouvés côté client pour centre=${centerId}`)
           slots = filtered
-        }
-      }
-
-      // En mode silent, comparer avec les créneaux précédents
-      if (silent && availableSlots.length > 0) {
-        const previousBooked = availableSlots.filter(s => s.is_booked).length
-        const newBooked = slots.filter(s => s.is_booked).length
-
-        if (previousBooked !== newBooked) {
-          console.log(`🔄 [Calendar] Changement détecté: ${previousBooked} → ${newBooked} créneaux réservés`)
-
-          if (newBooked < previousBooked) {
-            console.log(`✅ [Calendar] ${previousBooked - newBooked} créneau(x) libéré(s) suite à une annulation`)
-          }
         }
       }
 
@@ -225,9 +198,21 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
           <span className="hidden sm:inline text-sm text-gray-600">Mois précédent</span>
         </button>
 
-        <h3 className="text-xl font-bold text-gray-900 capitalize">
-          {format(currentDate, 'MMMM yyyy', { locale: fr })}
-        </h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-xl font-bold text-gray-900 capitalize">
+            {format(currentDate, 'MMMM yyyy', { locale: fr })}
+          </h3>
+          <button
+            onClick={() => fetchAvailableSlots()}
+            disabled={loading}
+            className="p-2 hover:bg-blue-50 rounded-lg transition-colors text-blue-600 hover:text-blue-700"
+            title="Rafraîchir les créneaux"
+          >
+            <svg className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
 
         <button
           onClick={goToNextMonth}
@@ -239,14 +224,6 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
           </svg>
         </button>
       </div>
-
-      {/* Indicateur de rafraîchissement */}
-      {isRefreshing && (
-        <div className="mb-4 flex items-center justify-center gap-2 text-xs text-blue-600 bg-blue-50 py-2 px-3 rounded-lg border border-blue-200">
-          <div className="animate-spin rounded-full h-3 w-3 border-2 border-blue-600 border-t-transparent"></div>
-          <span>Mise à jour des disponibilités...</span>
-        </div>
-      )}
 
       {/* Calendar Grid - Only days with available slots */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
@@ -361,12 +338,6 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
           </div>
         </div>
 
-        <div className="text-center text-xs text-gray-500 flex items-center justify-center gap-1">
-          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
-          <span>Le calendrier se met à jour automatiquement chaque minute</span>
-        </div>
       </div>
     </div>
   )
