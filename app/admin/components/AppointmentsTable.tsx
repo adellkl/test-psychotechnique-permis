@@ -147,7 +147,6 @@ export default function AppointmentsTable({
             >
               <option value="all">Tous les statuts</option>
               <option value="confirmed">✅ Confirmés</option>
-              <option value="completed">✓ Terminés</option>
               <option value="cancelled">❌ Annulés</option>
             </select>
 
@@ -235,12 +234,6 @@ export default function AppointmentsTable({
               className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
             >
               Confirmé
-            </button>
-            <button
-              onClick={() => handleBulkStatusChange('completed')}
-              className="px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
-            >
-              Terminé
             </button>
             <button
               onClick={() => handleBulkStatusChange('cancelled')}
@@ -391,15 +384,6 @@ export default function AppointmentsTable({
                     </button>
                     {appointment.status === 'confirmed' && (
                       <>
-                        <button
-                          onClick={() => onUpdateStatus(appointment.id, 'completed')}
-                          className="text-green-600 hover:text-green-900 hover:bg-green-50 p-1 rounded transition-colors"
-                          title="Marquer comme terminé"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </button>
                         <button
                           onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
                           className="text-red-600 hover:text-red-900 hover:bg-red-50 p-1 rounded transition-colors"
@@ -570,26 +554,15 @@ export default function AppointmentsTable({
                 Email
               </button>
               {appointment.status === 'confirmed' && (
-                <>
-                  <button
-                    onClick={() => onUpdateStatus(appointment.id, 'completed')}
-                    className="flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-xl transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Terminé
-                  </button>
-                  <button
-                    onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
-                    className="flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Annuler
-                  </button>
-                </>
+                <button
+                  onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
+                  className="flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Annuler
+                </button>
               )}
               {appointment.status === 'in_progress' && (
                 <button

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const authResult = await requireAdmin(request, {
       rateLimit: { maxRequests: 30, windowMs: 60000 }
     })
-    
+
     if (authResult instanceof NextResponse) return authResult
 
     const { searchParams } = new URL(request.url)
@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest) {
     const authResult = await requireAdmin(request, {
       rateLimit: { maxRequests: 20, windowMs: 60000 }
     })
-    
+
     if (authResult instanceof NextResponse) return authResult
     const { admin } = authResult
 
@@ -76,11 +76,11 @@ export async function PUT(request: NextRequest) {
     }
 
     // Sanitization
-    const updateData: any = { 
-      status, 
-      updated_at: new Date().toISOString() 
+    const updateData: any = {
+      status,
+      updated_at: new Date().toISOString()
     }
-    
+
     if (admin_notes !== undefined) {
       updateData.admin_notes = sanitizeString(admin_notes)
     }
@@ -100,7 +100,7 @@ export async function PUT(request: NextRequest) {
       try {
         const appointment = data[0]
         const { sendAppointmentCancellation } = await import('../../../../lib/emailService')
-        
+
         // Log pour débugger
         console.log('📧 Envoi email annulation pour:', {
           email: appointment.email,
@@ -108,10 +108,10 @@ export async function PUT(request: NextRequest) {
           center_id: appointment.center_id,
           has_centers_relation: !!appointment.centers
         })
-        
+
         // Récupérer les infos du centre depuis la relation si disponible
         const centerInfo = appointment.centers
-        
+
         await sendAppointmentCancellation({
           first_name: appointment.first_name,
           last_name: appointment.last_name,
@@ -124,25 +124,35 @@ export async function PUT(request: NextRequest) {
           center_name: centerInfo?.name,
           center_address: centerInfo?.address
         })
-        
+
         console.log('✅ Email d\'annulation envoyé au client:', appointment.email)
       } catch (emailError) {
         console.error('❌ Erreur envoi email annulation:', emailError)
         // On ne bloque pas la mise à jour même si l'email échoue
       }
 
-      // Remettre le créneau disponible dans le calendrier
+      // Remettre le créneau disponible dans le calendrier client
       try {
-        await supabase
+        const appointment = data[0]
+        const slotTime = appointment.appointment_time.includes(':')
+          ? appointment.appointment_time
+          : `${appointment.appointment_time}:00`
+
+        const { error: slotError } = await supabase
           .from('available_slots')
           .update({ is_available: true })
-          .eq('date', data[0].appointment_date)
-          .eq('time', data[0].appointment_time)
-          .eq('center_id', data[0].center_id || null)
-        
-        console.log('✅ Créneau remis disponible:', data[0].appointment_date, data[0].appointment_time)
+          .eq('date', appointment.appointment_date)
+          .eq('start_time', slotTime)
+          .eq('center_id', appointment.center_id)
+
+        if (slotError) {
+          console.error('⚠️ Erreur lors de la remise à disposition du créneau:', slotError)
+        } else {
+          console.log('✅ Créneau remis disponible dans le calendrier client:', appointment.appointment_date, slotTime, `(centre: ${appointment.center_id})`)
+        }
       } catch (slotError) {
-        console.error('⚠️ Erreur lors de la remise à disposition du créneau:', slotError)
+        console.error('⚠️ Erreur lors de la libération du créneau:', slotError)
+        // On ne bloque pas l'annulation si la mise à jour du slot échoue
       }
     }
 
@@ -165,7 +175,7 @@ export async function DELETE(request: NextRequest) {
       requireRole: ['super_admin', 'admin'],
       rateLimit: { maxRequests: 10, windowMs: 60000 }
     })
-    
+
     if (authResult instanceof NextResponse) return authResult
     const { admin } = authResult
 
@@ -185,7 +195,7 @@ export async function DELETE(request: NextRequest) {
     // Récupérer les infos du rendez-vous avant de le supprimer
     const { data: appointment, error: fetchError } = await supabase
       .from('appointments')
-      .select('appointment_date, appointment_time, status')
+      .select('appointment_date, appointment_time, status, center_id')
       .eq('id', id)
       .single()
 
@@ -203,17 +213,28 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: deleteError.message }, { status: 500 })
     }
 
-    // Libérer le créneau UNIQUEMENT si le rendez-vous était annulé (cancelled)
-    if (appointment && appointment.status === 'cancelled') {
-      const slotTime = appointment.appointment_time.includes(':') 
-        ? appointment.appointment_time 
-        : `${appointment.appointment_time}:00`
+    // Libérer le créneau si le rendez-vous était confirmé ou annulé
+    if (appointment && (appointment.status === 'confirmed' || appointment.status === 'cancelled')) {
+      try {
+        const slotTime = appointment.appointment_time.includes(':')
+          ? appointment.appointment_time
+          : `${appointment.appointment_time}:00`
 
-      await supabase
-        .from('available_slots')
-        .update({ is_available: true })
-        .eq('date', appointment.appointment_date)
-        .eq('start_time', slotTime)
+        const { error: slotError } = await supabase
+          .from('available_slots')
+          .update({ is_available: true })
+          .eq('date', appointment.appointment_date)
+          .eq('start_time', slotTime)
+          .eq('center_id', appointment.center_id)
+
+        if (slotError) {
+          console.error('⚠️ Erreur lors de la libération du créneau:', slotError)
+        } else {
+          console.log('✅ Créneau libéré après suppression:', appointment.appointment_date, slotTime, `(centre: ${appointment.center_id})`)
+        }
+      } catch (slotError) {
+        console.error('⚠️ Erreur lors de la libération du créneau:', slotError)
+      }
     }
 
     // Log de l'action

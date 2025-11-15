@@ -44,12 +44,12 @@ export async function GET(request: NextRequest) {
       console.error('❌ [API] Erreur lors de la récupération des créneaux:', slotsError)
       return NextResponse.json({ error: slotsError.message }, { status: 500 })
     }
-    
+
     // Filtrer manuellement les créneaux disponibles et trier
     if (slots && slots.length > 0) {
       // Garder seulement les créneaux disponibles (is_available = true ou null)
       slots = slots.filter(s => s.is_available !== false)
-      
+
       // Trier par start_time
       slots = slots.sort((a, b) => {
         const timeA = a.start_time || a.time || ''
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(`📊 [API] ${slots?.length || 0} créneaux disponibles trouvés avant filtrage appointments`)
-    
+
     if (slots && slots.length > 0) {
       console.log('📋 [API] Exemples de créneaux trouvés avec is_available=true:', slots.slice(0, 3).map(s => ({
         date: s.date,
@@ -82,14 +82,14 @@ export async function GET(request: NextRequest) {
     }))
 
     // Get existing appointments to check which slots are already booked
-    // Only confirmed and completed appointments block the slot
-    // Cancelled, pending, and no_show appointments free up the slot
+    // Only confirmed appointments block the slot
+    // Cancelled appointments free up the slot
     let appointmentsQuery = supabase
       .from('appointments')
       .select('appointment_date, appointment_time, status, center_id')
       .gte('appointment_date', startDate)
       .lte('appointment_date', endDate)
-      .in('status', ['confirmed', 'completed'])
+      .eq('status', 'confirmed')
 
     // Filter appointments by center if centerId is provided
     if (centerId) {
@@ -102,27 +102,35 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: appointmentsError.message }, { status: 500 })
     }
 
-    // Create set of booked slots (confirmed and completed only)
+    // Create set of booked slots (confirmed only)
     const bookedSlots = new Set(
       appointments?.map(apt => `${apt.appointment_date}_${apt.appointment_time}`) || []
     )
 
-    // Filter out booked slots - cancelled appointments free up the slot
-    const availableSlots = normalizedSlots?.filter(slot => {
+    console.log(`🔒 [API] ${bookedSlots.size} créneaux réservés (confirmed)`)
+
+    // Mark slots as booked or available - return ALL slots
+    const allSlots = normalizedSlots?.map(slot => {
       const time = slot.start_time || slot.time
-      if (!time) return false
+      if (!time) return null
       const slotKey = `${slot.date}_${time}`
-      return !bookedSlots.has(slotKey)
-    }) || []
+      const isBooked = bookedSlots.has(slotKey)
 
-    console.log(`✅ [API] ${availableSlots.length} créneaux disponibles retournés au client${centerId ? ` (centre=${centerId})` : ''}`)
+      return {
+        ...slot,
+        is_booked: isBooked,
+        is_available: !isBooked && slot.is_available !== false
+      }
+    }).filter(slot => slot !== null) || []
 
-    return NextResponse.json({ slots: availableSlots })
+    console.log(`✅ [API] ${allSlots.length} créneaux retournés (${allSlots.filter(s => s.is_available).length} disponibles, ${allSlots.filter(s => s.is_booked).length} réservés)${centerId ? ` (centre=${centerId})` : ''}`)
+
+    return NextResponse.json({ slots: allSlots })
   } catch (error: any) {
     console.error('❌ [API] Erreur fatale:', error)
     console.error('Stack:', error?.stack)
-    return NextResponse.json({ 
-      error: 'Internal server error', 
+    return NextResponse.json({
+      error: 'Internal server error',
       message: error?.message || 'Unknown error',
       details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
     }, { status: 500 })

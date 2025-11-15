@@ -27,18 +27,31 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'week' | 'month'>('month')
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set())
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
     fetchAvailableSlots()
+
+    // Rafraîchir toutes les minutes pour détecter les annulations
+    const intervalId = setInterval(() => {
+      console.log(' [Calendar] Rafraîchissement automatique des créneaux...')
+      fetchAvailableSlots(true) // true = silent mode (pas de loader)
+    }, 60000) // 60000ms = 1 minute
+
+    return () => clearInterval(intervalId)
   }, [currentDate, viewMode, centerId])
 
-  const fetchAvailableSlots = async () => {
+  const fetchAvailableSlots = async (silent = false) => {
     try {
-      setLoading(true)
+      if (!silent) {
+        setLoading(true)
+      } else {
+        setIsRefreshing(true)
+      }
       const startDate = format(startOfMonth(currentDate), 'yyyy-MM-dd')
       const endDate = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
-      console.log('📅 [Calendar] Fetch slots avec:', {
+      console.log(' [Calendar] Fetch slots avec:', {
         centerId,
         hasCenterId: !!centerId,
         startDate,
@@ -73,12 +86,30 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
         }
       }
 
+      // En mode silent, comparer avec les créneaux précédents
+      if (silent && availableSlots.length > 0) {
+        const previousBooked = availableSlots.filter(s => s.is_booked).length
+        const newBooked = slots.filter(s => s.is_booked).length
+
+        if (previousBooked !== newBooked) {
+          console.log(`🔄 [Calendar] Changement détecté: ${previousBooked} → ${newBooked} créneaux réservés`)
+
+          if (newBooked < previousBooked) {
+            console.log(`✅ [Calendar] ${previousBooked - newBooked} créneau(x) libéré(s) suite à une annulation`)
+          }
+        }
+      }
+
       setAvailableSlots(slots)
     } catch (error) {
       console.error('Error fetching slots:', error)
       setAvailableSlots([])
     } finally {
-      setLoading(false)
+      if (!silent) {
+        setLoading(false)
+      } else {
+        setIsRefreshing(false)
+      }
     }
   }
 
@@ -127,7 +158,7 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
     slotsByDate.forEach((slots, dateStr) => {
       const day = new Date(dateStr)
 
-      // Ne garder que les jours avec des créneaux disponibles
+      // Afficher tous les jours qui ont au moins 1 créneau (disponible ou réservé)
       if (slots.length > 0 && (!isBefore(day, new Date()) || isToday(day))) {
         days.push({
           date: day,
@@ -209,6 +240,14 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
         </button>
       </div>
 
+      {/* Indicateur de rafraîchissement */}
+      {isRefreshing && (
+        <div className="mb-4 flex items-center justify-center gap-2 text-xs text-blue-600 bg-blue-50 py-2 px-3 rounded-lg border border-blue-200">
+          <div className="animate-spin rounded-full h-3 w-3 border-2 border-blue-600 border-t-transparent"></div>
+          <span>Mise à jour des disponibilités...</span>
+        </div>
+      )}
+
       {/* Calendar Grid - Only days with available slots */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
         {/* Available days only */}
@@ -243,32 +282,47 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
                 <div className="space-y-2 sm:space-y-2.5">
                   {/* Show first 3 slots or all if expanded */}
                   <div className="space-y-2">
-                    {(expandedDays.has(format(day.date, 'yyyy-MM-dd')) ? day.slots : day.slots.slice(0, 3)).map((slot: AvailableSlot) => (
-                      <div key={slot.id} className="relative">
-                        <button
-                          onClick={() => handleSlotClick(slot.date, slot.start_time)}
-                          disabled={slot.isPending}
-                          className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${selectedDate === slot.date && selectedTime === slot.start_time
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
-                            : slot.isPending
-                              ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
-                              : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
-                            }`}
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            <span>{slot.start_time.slice(0, 5)}</span>
-                            {slot.isPending && (
-                              <span className="text-xs">⏳</span>
-                            )}
-                          </div>
-                        </button>
-                        {slot.isPending && (
-                          <div className="text-xs text-orange-600 text-center mt-1 font-medium">
-                            Réservé - En attente
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                    {(expandedDays.has(format(day.date, 'yyyy-MM-dd')) ? day.slots : day.slots.slice(0, 3)).map((slot: AvailableSlot) => {
+                      const isBooked = slot.is_booked
+                      const isAvailable = !isBooked && slot.is_available !== false
+
+                      return (
+                        <div key={slot.id} className="relative">
+                          <button
+                            onClick={() => isAvailable && handleSlotClick(slot.date, slot.start_time)}
+                            disabled={isBooked || slot.isPending}
+                            className={`w-full text-sm sm:text-base px-3 py-2.5 sm:py-2 rounded-lg transition-all font-medium ${selectedDate === slot.date && selectedTime === slot.start_time
+                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
+                              : isBooked
+                                ? 'bg-gray-200 text-gray-500 border border-gray-300 cursor-not-allowed opacity-60'
+                                : slot.isPending
+                                  ? 'bg-orange-50 text-orange-700 border border-orange-300 cursor-not-allowed opacity-75'
+                                  : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
+                              }`}
+                          >
+                            <div className="flex items-center justify-center gap-2">
+                              <span>{slot.start_time.slice(0, 5)}</span>
+                              {isBooked && (
+                                <span className="text-xs">🔒</span>
+                              )}
+                              {slot.isPending && (
+                                <span className="text-xs">⏳</span>
+                              )}
+                            </div>
+                          </button>
+                          {isBooked && (
+                            <div className="text-xs text-gray-500 text-center mt-1 font-medium">
+                              Déjà réservé
+                            </div>
+                          )}
+                          {slot.isPending && (
+                            <div className="text-xs text-orange-600 text-center mt-1 font-medium">
+                              Réservé - En attente
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                     {day.slots.length > 3 && (
                       <button
                         onClick={() => toggleDayExpansion(format(day.date, 'yyyy-MM-dd'))}
@@ -289,19 +343,29 @@ export default function Calendar({ onSlotSelect, selectedDate, selectedTime, cen
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded"></div>
-          <span>Disponible</span>
+      <div className="mt-6 space-y-3">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded"></div>
+            <span>Disponible</span>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-blue-600 rounded"></div>
+            <span>Sélectionné</span>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-gray-200 border border-gray-300 rounded"></div>
+            <span>🔒 Déjà réservé</span>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-600 rounded"></div>
-          <span>Sélectionné</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-gray-200 rounded"></div>
-          <span>Indisponible</span>
+        <div className="text-center text-xs text-gray-500 flex items-center justify-center gap-1">
+          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+          </svg>
+          <span>Le calendrier se met à jour automatiquement chaque minute</span>
         </div>
       </div>
     </div>

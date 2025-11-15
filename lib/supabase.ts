@@ -49,6 +49,7 @@ export interface AvailableSlot {
   start_time: string
   end_time: string
   is_available: boolean
+  is_booked?: boolean
   isPending?: boolean
   max_appointments: number
   center_id?: string

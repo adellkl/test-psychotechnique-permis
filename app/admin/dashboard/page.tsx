@@ -73,11 +73,19 @@ function DashboardContent() {
         setLoading(true)
       }
 
-      const { data, error } = await supabase
+      // Récupérer tous les rendez-vous (le filtre par statut se fait dans l'interface)
+      let query = supabase
         .from('appointments')
         .select('*')
-        .order('appointment_date', { ascending: false })
-        .order('appointment_time', { ascending: false })
+        .order('appointment_date', { ascending: true })
+        .order('appointment_time', { ascending: true })
+
+      // Filtrer par centre si sélectionné
+      if (selectedCenterId) {
+        query = query.eq('center_id', selectedCenterId)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
 
@@ -94,94 +102,13 @@ function DashboardContent() {
         }
       }
 
-      const now = new Date()
-      const today = now.toISOString().split('T')[0]
-      const currentTime = now.toTimeString().slice(0, 5)
+      // Afficher les rendez-vous
+      setAppointments(data || [])
 
-      let todayApts = (data || []).filter(apt => {
-        if (apt.appointment_date !== today) return false
-
-        // Masquer les rendez-vous terminés (status === 'completed')
-        if (apt.status === 'completed') return false
-
-        // Afficher les rendez-vous confirmés et en cours
-        return true
-      })
-      if (selectedCenterId) {
-        todayApts = todayApts.filter(apt => apt.center_id === selectedCenterId)
-      }
+      // Calculer les rendez-vous d'aujourd'hui
+      const today = new Date().toISOString().split('T')[0]
+      let todayApts = (data || []).filter(apt => apt.appointment_date === today)
       setTodayAppointments(todayApts)
-
-      const appointmentsToMarkInProgress: string[] = []
-      const appointmentsToMarkCompleted: string[] = []
-
-      data?.forEach(apt => {
-        if (apt.appointment_date < today && apt.status === 'confirmed') {
-          // Rendez-vous des jours précédents → terminés
-          appointmentsToMarkCompleted.push(apt.id)
-        }
-        else if (apt.appointment_date === today) {
-          const [hours, minutes] = apt.appointment_time.split(':').map(Number)
-          const appointmentStartInMinutes = hours * 60 + minutes
-          const appointmentEndInMinutes = appointmentStartInMinutes + 15 // +15 minutes
-          const [currentHours, currentMinutes] = currentTime.split(':').map(Number)
-          const currentTimeInMinutes = currentHours * 60 + currentMinutes
-
-          if (apt.status === 'confirmed' && currentTimeInMinutes >= appointmentStartInMinutes) {
-            // Le rendez-vous a commencé → en cours
-            appointmentsToMarkInProgress.push(apt.id)
-          }
-          else if (apt.status === 'in_progress' && currentTimeInMinutes >= appointmentEndInMinutes) {
-            // 15 minutes écoulées → terminé
-            appointmentsToMarkCompleted.push(apt.id)
-          }
-        }
-      })
-
-      // Mettre à jour les rendez-vous en cours
-      if (appointmentsToMarkInProgress.length > 0) {
-        await supabase
-          .from('appointments')
-          .update({ status: 'in_progress' })
-          .in('id', appointmentsToMarkInProgress)
-      }
-
-      // Mettre à jour les rendez-vous terminés
-      if (appointmentsToMarkCompleted.length > 0) {
-        await supabase
-          .from('appointments')
-          .update({ status: 'completed' })
-          .in('id', appointmentsToMarkCompleted)
-      }
-
-      if (appointmentsToMarkInProgress.length > 0 || appointmentsToMarkCompleted.length > 0) {
-
-        const { data: updatedData } = await supabase
-          .from('appointments')
-          .select('*')
-          .order('appointment_date', { ascending: false })
-          .order('appointment_time', { ascending: false })
-
-        setAppointments(updatedData || [])
-        setFilteredAppointments(updatedData || [])
-
-        let refreshedTodayApts = (updatedData || []).filter(apt => {
-          if (apt.appointment_date !== today) return false
-
-          // Masquer les rendez-vous terminés
-          if (apt.status === 'completed') return false
-
-          // Afficher les rendez-vous confirmés et en cours
-          return true
-        })
-        if (selectedCenterId) {
-          refreshedTodayApts = refreshedTodayApts.filter(apt => apt.center_id === selectedCenterId)
-        }
-        setTodayAppointments(refreshedTodayApts)
-      } else {
-        setAppointments(data || [])
-        setFilteredAppointments(data || [])
-      }
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {
@@ -193,12 +120,7 @@ function DashboardContent() {
 
   useEffect(() => {
     let filtered = appointments
-
-    if (selectedCenterId) {
-      filtered = filtered.filter(apt => apt.center_id === selectedCenterId)
-    }
-
-    filtered = filtered.filter(apt => apt.status !== 'completed')
+    // Les rendez-vous sont déjà filtrés par centre et statut dans fetchAppointments()
 
     if (!searchFilters || !searchFilters.searchTerm) {
       if (searchFilters?.dateFrom || searchFilters?.dateTo) {
@@ -242,7 +164,7 @@ function DashboardContent() {
     }
 
     setFilteredAppointments(filtered)
-  }, [searchFilters, appointments, selectedCenterId])
+  }, [searchFilters, appointments])
 
   const handleSearch = (filters: SearchFilters) => {
     setSearchFilters(filters)
@@ -499,8 +421,8 @@ function DashboardContent() {
                             }
                           }}
                           className={`w-full bg-white rounded-lg p-3 border hover:bg-blue-50 transition-colors cursor-pointer text-left group ${apt.status === 'in_progress'
-                              ? 'border-blue-500 ring-2 ring-blue-300 bg-blue-50'
-                              : 'border-gray-200'
+                            ? 'border-blue-500 ring-2 ring-blue-300 bg-blue-50'
+                            : 'border-gray-200'
                             }`}
                         >
                           <div className="flex items-center gap-3">
