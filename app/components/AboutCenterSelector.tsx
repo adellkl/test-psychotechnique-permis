@@ -181,25 +181,6 @@ export default function AboutCenterSelector() {
             </div>
           </div>
 
-<<<<<<< HEAD
-          {/* Colonne image */}
-          <div className="relative order-1 lg:order-2">
-            <div className="relative h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src="/images/IMG_6134.png"
-                alt={`${currentCenter.name} - Accueil professionnel`}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-                style={{ objectPosition: '75% center' }}
-                priority
-              />
-            </div>
-            <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-white p-3 sm:p-4 rounded-xl shadow-lg z-10">
-              <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-blue-600">90€</div>
-                <div className="text-xs sm:text-sm text-gray-600">Test complet</div>
-=======
           {/* Colonne photo bureau */}
           <div className="relative order-1 lg:order-2">
             <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-lg">
@@ -215,7 +196,6 @@ export default function AboutCenterSelector() {
                   <div className="text-3xl font-bold text-gray-900">90€</div>
                   <div className="text-xs text-gray-600 mt-1">Test complet</div>
                 </div>
->>>>>>> origin/main
               </div>
             </div>
           </div>

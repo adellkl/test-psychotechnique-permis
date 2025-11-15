@@ -77,13 +77,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-<<<<<<< HEAD
       <SoberHero />
-
-=======
-      <LocalBusinessSchema />
-      <SoberHero />
->>>>>>> origin/main
 
       <section className="bg-gray-50 py-16 -mt-1">
         <div className="max-w-7xl mx-auto px-6">
@@ -337,12 +331,7 @@ export default function HomePage() {
             </div>
           </div>
 
-<<<<<<< HEAD
-
-          <div className="text-center mt-8 sm:mt-12 animate-smooth-bounce animation-delay-800">
-=======
           <div className="text-center mt-12">
->>>>>>> origin/main
             <Link
               href="/prendre-rendez-vous"
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg"
