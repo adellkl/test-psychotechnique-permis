@@ -37,7 +37,7 @@ export default function SoberHero() {
   }), [])
 
   return (
-    <section className="relative bg-gradient-to-br from-white via-blue-50/30 to-emerald-50/20 overflow-hidden min-h-[90vh] lg:min-h-screen flex items-center justify-center pt-28 sm:pt-32 md:pt-36 lg:pt-40 pb-12 sm:pb-16">
+    <section className="relative bg-gradient-to-br from-white via-blue-50/30 to-emerald-50/20 overflow-hidden min-h-[85vh] lg:min-h-screen flex items-center justify-center pt-24 sm:pt-32 md:pt-36 lg:pt-40 pb-8 sm:pb-16">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.03]">
         <div className="absolute inset-0" style={{
@@ -58,7 +58,7 @@ export default function SoberHero() {
           className="text-center space-y-6 sm:space-y-8"
         >
           {/* Badge */}
-          <motion.div variants={itemVariants} className="flex justify-center mt-4 sm:mt-0">
+          <motion.div variants={itemVariants} className="flex justify-center mt-8 sm:mt-0">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-full text-xs sm:text-sm font-semibold shadow-sm">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               Deuxième chance gratuite
@@ -66,16 +66,17 @@ export default function SoberHero() {
           </motion.div>
 
           {/* Main Title */}
-          <motion.div variants={itemVariants} className="space-y-3 sm:space-y-4 px-2">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-              <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+          <motion.div variants={itemVariants} className="space-y-4 sm:space-y-4 px-4">
+            <h1 className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <span className="block bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
                 2e Chance
               </span>
-              <span className="text-gray-800 text-2xl sm:text-3xl md:text-4xl lg:text-5xl"> – Centre agréé de tests psychotechniques, valable partout en France</span>
+              <span className="block text-gray-800 text-xl sm:text-3xl md:text-4xl lg:text-5xl leading-snug">Centre agréé de tests psychotechniques</span>
+              <span className="block text-gray-600 text-base sm:text-xl md:text-2xl lg:text-3xl mt-2 font-medium">Valable partout en France</span>
             </h1>
-            
+
             {/* Animated rotating text */}
-            <div className="flex flex-row items-center justify-center gap-2 text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-semibold px-4 whitespace-nowrap">
+            <div className="flex flex-wrap items-center justify-center gap-2 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold px-4">
               <span className="text-gray-700">Pour votre</span>
               <AnimatePresence mode="wait">
                 <motion.span
@@ -84,26 +85,26 @@ export default function SoberHero() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
-                  className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent min-w-[120px] sm:min-w-[140px] md:min-w-[160px] lg:min-w-[180px] text-left"
+                  className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent"
                 >
                   {words[currentWordIndex]}
                 </motion.span>
               </AnimatePresence>
             </div>
 
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-2">
-              Avec nos <span className="font-semibold text-blue-600">deux centres agréés</span> à Clichy et Colombes,
+            <p className="text-sm sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+              Avec nos <span className="font-semibold text-blue-600">deux centres agréés tous départements</span> à Clichy et Colombes,
               nous vous offrons <span className="font-semibold text-emerald-600">flexibilité et accompagnement</span> pour récupérer votre permis
             </p>
           </motion.div>
 
           {/* CTA Buttons */}
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-2">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center px-4 max-w-md sm:max-w-none mx-auto">
             <Link
               href="tel:0765565379"
-              className="group relative inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto max-w-sm sm:max-w-none"
+              className="group relative inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
               </svg>
               <span>07 65 56 53 79</span>
@@ -111,9 +112,9 @@ export default function SoberHero() {
 
             <Link
               href="/prendre-rendez-vous"
-              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white border-2 border-gray-200 text-gray-800 rounded-xl font-semibold text-sm sm:text-base hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 shadow-sm hover:shadow-md w-full sm:w-auto max-w-sm sm:max-w-none"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white border-2 border-gray-200 text-gray-800 rounded-xl font-semibold text-base hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 shadow-sm hover:shadow-md"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
               </svg>
               Prendre rendez-vous
@@ -121,9 +122,9 @@ export default function SoberHero() {
           </motion.div>
 
           {/* Info Cards - Responsive Grid/Scroll */}
-          <motion.div variants={itemVariants} className="pt-8">
+          <motion.div variants={itemVariants} className="pt-6 sm:pt-8">
             {/* Mobile: Grid 2x2 */}
-            <div className="grid grid-cols-2 gap-3 sm:hidden">
+            <div className="grid grid-cols-2 gap-3 px-4 sm:hidden">
               {/* Card 1 - Centres */}
               <div className="group bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
                 <div className="flex flex-col items-center text-center space-y-2">
@@ -191,10 +192,10 @@ export default function SoberHero() {
                 {/* Gradient masks for smooth edges */}
                 <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white via-white to-transparent z-10 pointer-events-none" />
                 <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white via-white to-transparent z-10 pointer-events-none" />
-                
+
                 <div className="flex animate-scroll-infinite-smooth">
-                  {/* Duplicate cards 3 times for ultra-smooth seamless loop */}
-                  {[...Array(3)].map((_, setIndex) => (
+                  {/* Duplicate cards 4 times for ultra-smooth seamless loop */}
+                  {[...Array(4)].map((_, setIndex) => (
                     <div key={setIndex} className="flex gap-6 px-3 flex-shrink-0">
                       {/* Card 1 - Centres */}
                       <div className="flex-shrink-0 group bg-white/70 backdrop-blur-sm border border-gray-200 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 w-52">
